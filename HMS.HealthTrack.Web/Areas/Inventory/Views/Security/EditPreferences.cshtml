@@ -1,0 +1,81 @@
+﻿@{
+   ViewBag.Title = "Preferences";
+}
+@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.InventoryPreferenceModel
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Chief of Staff Edit 2.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Edit user preferences</h2>
+         </div>
+      </div>
+   </div>
+</div>
+@using (Html.BeginForm("EditPreferences", "Security"))
+{
+   @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+   <div class="form-group">
+      <dl class="dl-horizontal">
+         <dt>@(Html.LabelFor(m => m.UserId))</dt>
+         <dd>@Html.DisplayFor(m => m.UserId)</dd>
+         @Html.HiddenFor(m => m.UserId)
+      
+         <dt>@Html.LabelFor(m => m.LocationId)</dt>
+         <dd>@(Html.Kendo().DropDownListFor(m => m.LocationId)
+            .DataSource(ds => ds.Read(read => read.Action("GetStockLocations", "StockLocations")).ServerFiltering(true))
+                  .DataTextField("Text").DataValueField("Value").OptionLabel(" ")
+                  )
+            @Html.ValidationMessageFor(model => model.LocationId, "Please select a location", new { @class = "text-danger" })
+         </dd>
+      </dl>
+   </div>
+   <div class="form-group">
+      <a class="k-button" href="@Url.Action("Preferences")">Cancel</a>
+      <button type="submit" class="k-button k-primary">Save</button>
+   </div>
+}
+
+@section Scripts {
+   <script type="text/javascript">
+      $(document).ready(function() {
+         $('#preferenceAlert').hide();
+      });
+   </script>
+}
+
+<style>
+   .k-textbox, .k-combobox { width: 100%; }
+
+   .dl-horizontal {
+       margin-top: 10px;
+      margin-bottom: 10px;
+   }
+
+   .dl-horizontal dd {
+      width: 200px;
+      float: left;
+      margin: 0;
+      padding: 5px 0 7px 0;
+   }
+
+   .dl-horizontal dt {
+      clear: left;
+      width: 250px;
+      margin-right: 7px;
+      padding: 5px 0 7px 0;
+      text-align: right;
+   }
+
+   .dl-horizontal:after, .wrapper:after {
+      content: "";
+      display: block;
+      clear: both;
+      height: 0;
+      visibility: hidden;
+   }
+</style>

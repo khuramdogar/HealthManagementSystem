@@ -1,0 +1,57 @@
+﻿@using HMS.HealthTrack.Web.Data.Model.Inventory
+@using Kendo.Mvc.UI
+@model dynamic
+
+@{
+   ViewBag.Title = "System settings";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Gauge Configuration.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>System settings</h2>
+         </div>
+      </div>
+   </div>
+</div>
+<div>
+   @(Html.Kendo().Grid<Property>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+           columns.Bound(property => property.PropertyId).Filterable(ftb => ftb.Cell(cell => cell.ShowOperators(false))).Width(150);
+           columns.Bound(property => property.PropertyName).Filterable(ftb => ftb.Cell(cell => cell.ShowOperators(false)));
+           columns.Bound(property => property.PropertyValue).Filterable(ftb => ftb.Cell(cell => cell.ShowOperators(false))).Width(250);
+           columns.Command(commands => commands.Edit().UpdateText("Save")).Title("").Width(200);
+        })
+        .Editable(editable => editable.Mode(GridEditMode.InLine)) // Use inline editing mode
+        .Events(events => events.DataBound("onDataBound"))
+        .DataSource(dataSource => dataSource
+           .WebApi()
+           .PageSize(20)
+           .Model(model =>
+           {
+              model.Id(property => property.PropertyId); // Specify the property which is the unique identifier of the model
+              model.Field(property => property.PropertyId).Editable(false); // Make the propertyID property not editable
+              model.Field(property => property.PropertyName).Editable(false); // Make the propertyID property not editable
+           })
+           .Create(create => create.Url(Url.HttpRouteUrl("DefaultApi", new {controller = "Properties"}))) // Action invoked when the user saves a new data item
+           .Read(read => read.Url(Url.HttpRouteUrl("DefaultApi", new {controller = "Properties"}))) // Action invoked when the grid needs data
+           .Update(update => update.Url(Url.HttpRouteUrl("DefaultApi", new {controller = "Properties", id = "{0}"}))) // Action invoked when the user saves an updated data item
+           .Destroy(destroy => destroy.Url(Url.HttpRouteUrl("DefaultApi", new {controller = "Properties", id = "{0}"}))) // Action invoked when the user removes a data item
+        )
+        .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+        .Sortable()
+        .Filterable(ftb => ftb.Mode(GridFilterMode.Row)))
+</div>
+
+<script src="~/Scripts/Inventory.js"></script>
+<script type="text/javascript">
+   function onDataBound() {
+      applyGridTooltips();
+   }
+</script>

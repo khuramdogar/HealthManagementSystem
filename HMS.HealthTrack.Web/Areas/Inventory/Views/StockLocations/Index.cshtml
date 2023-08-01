@@ -1,0 +1,97 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.Shared
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.StockLocations
+@using Kendo.Mvc.UI
+@model IEnumerable<IndexLocationsDisplayModel>
+
+@{
+   ViewBag.Title = "Stock locations";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Shopping Center.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Stock locations</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div id="alertPlaceholder"></div>
+<div>
+   @(Html.Kendo().Grid<IndexLocationsDisplayModel>()
+        .Name("Locations")
+        .Columns(columns =>
+        {
+           columns.Bound(c => c.Name);
+           columns.Bound(c => c.LocationId).Title("").Filterable(false).Width(120)
+              .ClientTemplate("<a title='Details' class='glyphicon glyphicon-list' href=" + @Url.Action("Details", "StockLocations") + "/#: LocationId #></a>" +
+                              "<a title='Manage stock' class='glyphicon glyphicon-transfer' href=" + @Url.Action("ReallocateStock", "Stock") + "/#: LocationId #></a>" +
+                              "# if (!IsDeleted) {#" +
+                              " <a title='Delete' class='glyphicon glyphicon-trash delete'></a>" +
+                              "#}#");
+        })
+        .DataSource(ds => ds.WebApi().PageSize(20)
+                 .Read(read => read.Url(Url.HttpRouteUrl("DefaultApi", new { controller = "StockLocations" })))
+           .Filter(filter => filter.Add(model => model.IsDeleted).IsEqualTo(false)))
+        .Events(events => events.DataBound("onDataBound"))
+        .Filterable()
+        .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+        .Resizable(resize => resize.Columns(true))
+        .Sortable()
+        .ToolBar(toolbar => toolbar.Template(@<text>
+                                                 <div class="toolbar">
+                                                    <span class="toolbar-left">
+                                                       @(Html.Kendo().Button().Content("New location").Name("Create").Events(events => events.Click("onCreate")))
+                                                    </span>
+                                                    <span class="toolbar-right">
+                                                       @(Html.Kendo().Button().Content("Show deleted").Name("ShowDeleted").Events(events => events.Click("onShowDeleted")))
+                                                    </span>
+                                                 </div>
+                                              </text>))
+        )
+</div>
+
+@{
+   Html.RenderPartial("_DeletePrompt", new DeletePromptModel());
+}
+
+@section Scripts {
+   <script src="~/Scripts/Inventory.js"></script>
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+   <script type="text/javascript">
+      function onCreate(e) {
+         window.location = '@Url.Action("Create", "StockLocations")';
+      }
+
+      function onShowDeleted(e) {
+         var grid = $('#Locations').data('kendoGrid');
+         var filters = GetFilters(grid);
+         var button = $('#ShowDeleted');
+         var primary = 'k-primary';
+         // default behaviour
+         if (button.hasClass(primary)) {
+            button.removeClass(primary);
+            filters = UpdateSearchFilters(filters, "IsDeleted", "eq", "false", "and");
+            // show deleted
+         } else {
+            button.addClass(primary);
+            filters = RemoveSearchFilter(filters, "IsDeleted");
+            filters = UpdateSearchFilters(filters, "IsDeleted", "eq", "true", "and");
+         }
+         grid.dataSource.filter(filters);
+      }
+
+      function onDataBound(e) {
+         applyGridTooltips();
+         $('.delete').click(function(e) {
+            var grid = $('#Locations').data('kendoGrid');
+            var item = grid.dataItem($(e.currentTarget).closest('tr'));
+            dynamicDeletePrompt(grid, item.Name, '@Url.HttpRouteUrl("DefaultApi", new { controller = "StockLocations" })/' + item.LocationId);
+         });
+      }
+   </script>
+}

@@ -1,0 +1,183 @@
+﻿@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.StockLocations.StockLocationViewModel
+
+@{
+   ViewBag.Title = "Edit";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Shopping Center.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Edit stock location</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div id="alertPlaceholder"></div>
+@using (Html.BeginForm())
+{
+   @Html.AntiForgeryToken()
+   <div class="form-horizontal">
+      <div class="row">
+         <div class="col-sm-6">
+            @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+            @Html.HiddenFor(model => model.LocationId)
+
+            <div class="form-group">
+               <div class="col-sm-5 control-label text-right">
+                  @Html.LabelFor(model => model.Name)
+               </div>
+               <div class="col-sm-7">
+                  @Html.Kendo().TextBoxFor(model => model.Name).HtmlAttributes(new {@class = "page-input"})
+                  @Html.ValidationMessageFor(model => model.Name, "", new {@class = "text-danger"})
+               </div>
+            </div>
+
+            <div class="form-group">
+               <div class="col-sm-5 control-label text-right">
+                  @Html.LabelFor(model => model.Address.Address1)
+               </div>
+               <div class="col-sm-7">
+                  @Html.Kendo().TextBoxFor(model => model.Address.Address1).HtmlAttributes(new {@class = "page-input"})
+                  @Html.ValidationMessageFor(model => model.Address.Address1, "", new {@class = "text-danger"})
+               </div>
+            </div>
+
+            <div class="form-group">
+               <div class="col-sm-5 control-label text-right">
+                  @Html.LabelFor(model => model.Address.Address2)
+               </div>
+               <div class="col-sm-7">
+                  @Html.Kendo().TextBoxFor(model => model.Address.Address2).HtmlAttributes(new {@class = "page-input"})
+                  @Html.ValidationMessageFor(model => model.Address.Address2, "", new {@class = "text-danger"})
+               </div>
+            </div>
+
+            <div class="form-group">
+               <div class="col-sm-5 control-label text-right">
+                  @Html.LabelFor(model => model.Address.Suburb)
+               </div>
+               <div class="col-sm-7">
+                  @Html.Kendo().TextBoxFor(model => model.Address.Suburb).HtmlAttributes(new {@class = "page-input"})
+                  @Html.ValidationMessageFor(model => model.Address.Suburb, "", new {@class = "text-danger"})
+               </div>
+            </div>
+
+            <div class="form-group">
+               <div class="col-sm-5 control-label text-right">
+                  @Html.LabelFor(model => model.Address.State)
+               </div>
+               <div class="col-sm-7">
+                  @Html.Kendo().TextBoxFor(model => model.Address.State).HtmlAttributes(new {@class = "page-input"})
+                  @Html.ValidationMessageFor(model => model.Address.State, "", new {@class = "text-danger"})
+               </div>
+            </div>
+
+            <div class="form-group">
+               <div class="col-sm-5 control-label text-right">
+                  @Html.LabelFor(model => model.Address.PostCode)
+               </div>
+               <div class="col-sm-7">
+                  @Html.Kendo().TextBoxFor(model => model.Address.PostCode).HtmlAttributes(new {@class = "page-input"})
+                  @Html.ValidationMessageFor(model => model.Address.PostCode, "", new {@class = "text-danger"})
+               </div>
+            </div>
+
+            <div class="form-group">
+               <div class="col-sm-5 control-label text-right">
+                  @Html.LabelFor(model => model.Address.Country)
+               </div>
+               <div class="col-sm-7">
+                  @Html.Kendo().TextBoxFor(model => model.Address.Country).HtmlAttributes(new {@class = "page-input"})
+                  @Html.ValidationMessageFor(model => model.Address.Country, "", new {@class = "text-danger"})
+               </div>
+            </div>
+
+            <div class="form-group">
+               <div class="col-sm-5 control-label text-right">
+                  @Html.LabelFor(model => model.LogoImage)
+               </div>
+               <div class="col-sm-5">
+                  <input type="file" id="logoFile" multiple="false" class="form-control" />
+                  @Html.ValidationMessageFor(model => model.LogoImage, "", new {@class = "text-danger"})
+               </div>
+               <div class="col-sm-2">
+                  <button type="button" class="k-button" id="uploadLogo">Upload</button>
+               </div>
+            </div>
+
+            <div class="form-group">
+               <div class="col-sm-5 control-label text-right">
+                  @Html.LabelFor(model => model.HealthTrackLocations)
+               </div>
+               <div class="col-sm-7">
+                  @(Html.Kendo().MultiSelectFor(m => m.HealthTrackLocations)
+                       .AutoBind(true)
+                       .DataTextField("Text").DataValueField("Value")
+                       .DataSource(ds => ds.Read(read => read.Action("GetAll", "HealthTrackLocation")).ServerFiltering(true))
+                       .HtmlAttributes(new {@class = "page-input"})
+                       )
+                  @Html.ValidationMessageFor(model => model.HealthTrackLocations, "", new {@class = "text-danger"})
+               </div>
+            </div>
+            <div class="form-group" style="padding-top: 1em;">
+               <div class="col-sm-12">
+                  <a class="k-button" href="@Url.Action("Index")">Back to list</a>
+                  <button type="submit" class="k-button k-primary">Save</button>
+               </div>
+            </div>
+         </div>
+
+         <div class="col-sm-6">
+            <div class="col-sm-offset-1 col-sm-8">
+               <img src="~/api/inventory/Logos/@Model.LocationId" id="Logo" alt="" onerror=" this.onerror = null; this.src = ''; " class="img-responsive" />
+            </div>
+         </div>
+      </div>
+   </div>
+}
+
+@section scripts
+{
+   <script type="text/javascript">
+      $(document).ready(function() {
+         $("#uploadLogo").click(function() {
+            var files = $("#logoFile").get(0).files;
+            if (files.length > 0) {
+               if (window.FormData !== undefined) {
+                  var data = new FormData();
+                  for (i = 0; i < files.length; i++) {
+                     data.append("file" + i, files[i]);
+                  }
+                  $.ajax({
+                     type: "POST",
+                     url: "/api/inventory/Logos/@Model.LocationId",
+                     contentType: false,
+                     processData: false,
+                     data: data,
+                     success: function(results) {
+                        $("#Logo").attr('src', '/api/inventory/Logos/@Model.LocationId' + '?' + Math.random());
+                     }
+                  });
+               } else {
+                  alert("This browser doesn't support HTML5 multiple file uploads!");
+               }
+            }
+         });
+      });
+   </script>
+}
+
+<style>
+   #Logo {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+   }
+
+</style>

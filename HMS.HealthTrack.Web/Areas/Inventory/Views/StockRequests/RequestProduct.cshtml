@@ -1,0 +1,139 @@
+﻿@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.StockRequests.CreateStockRequestViewModel
+
+@{
+   ViewBag.Title = "Request product";
+}
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Surgery Tool.png"  />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Request a specific product</h2>
+         </div>
+      </div>
+   </div>
+</div>
+<div id="alertPlaceholder"></div>
+<div class="row row-wide">
+   <div class="col-lg-6">
+      <div class="panel panel-default">
+         <div class="panel-heading">Product to request</div>
+         <div class="panel-body" id="productPanel">
+            <div class="form-horizontal">
+               <div class="form-group">
+                  <div class="col-md-3 col-lg-3 control-label">
+                     <label for="scanCodeSearch">Scan code</label>
+                  </div>
+                  <div class="col-md-6 col-lg-6">
+                     <span id="scanCodeSearch">
+                        @(Html.Kendo().ComboBox().Name("Code")
+                             .AutoBind(true)
+                             .DataSource(source => source.Read(read => read.Action("GetProductByCode", "Products")).ServerFiltering(true))
+                             .DataTextField("Key").DataValueField("Key")
+                             .Events(events => events.DataBound("onCodeDataBound").Filtering("onCodeFiltering").Open("onCodeOpen").Select("onCodeSelect"))
+                             .Filter("contains")
+                             .HtmlAttributes(new {@class = "page-input"})
+                             )
+                     </span>
+                  </div>
+                  <div class="col-md-2 col-lg-3">
+                     @Html.Kendo().Button().Name("ProductSearch").Content("Adv. Search").Events(e => e.Click("onAdvancedSearch"))
+                  </div>
+               </div>
+               <div id="productInformation" class="hidden">
+                  <div class="form-group">
+                     <div class="col-md-offset-3 col-md-6 col-lg-offset-3 col-lg-6">
+                        <hr class="no-margin" />
+                     </div>
+                  </div>
+                  <div class="form-group">
+                     <div class="col-md-3 text-right">
+                        @Html.Label("Description")
+                     </div>
+                     <div class="col-sm-7">
+                        <span id="productDescription"></span>
+                     </div>
+                  </div>
+                  <div class="form-group">
+                     <div class="col-md-3 text-right">
+                        @Html.Label("SPC")
+                     </div>
+                     <div class="col-sm-7 control-label-text">
+                        <span id="productSPC"></span>
+                     </div>
+                  </div>
+                  <div class="form-group">
+                     <div class="col-md-3 text-right">
+                        @Html.Label("UPN")
+                     </div>
+                     <div class="col-sm-7">
+                        <span id="productUPN"></span>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="col-lg-6">
+      <div class="panel panel-default">
+         <div class="panel-heading">Request information</div>
+         <div class="panel-body" id="requestPanel">
+            @using (Html.BeginForm("RequestProduct", "StockRequests"))
+            {
+               @Html.Partial("_RequestProduct")
+            }         
+         </div>
+      </div>
+   </div>
+</div>
+<div id="CreateProductWindow"></div>
+<div id="advancedSearchWindow"></div>
+@section scripts
+{
+   @Scripts.Render("~/bundles/jqueryval")
+<script src="~/Areas/Inventory/Scripts/AdvancedSearch.js"></script>
+<script src="~/Areas/Inventory/Scripts/CreateProduct.js"></script>
+   <script src="~/Areas/Inventory/Scripts/ScanCodeControl.js"></script>
+
+   <script src="~/Scripts/Inventory.js"></script>
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+         createAdvancedSearchWithGrid();
+         createQuickCreateWindow();
+         initialiseScanCodeControl();
+         $('#closeWindow').click(function() {
+            window.location.href = "@Url.Action("Index", "StockRequests")";
+         });
+
+         $('#ProductId').change(function () {
+            $('#Code').data('kendoComboBox').select(-1);
+            setProductDetails($('#ProductId').val());
+            showProductInformation();
+         });
+
+         if ($('#ProductId').val() != '' && $('#ProductId').val() > 0) {
+            setProductDetails($('#ProductId').val());
+            showProductInformation();
+         }
+
+      });
+      function onAdvancedSearch(e) {
+         e.preventDefault();
+         $('#alertPlaceholder').empty();
+         openAdvancedSearch();
+      }
+
+      function showProductInformation() {
+         $('#productPanel').height(function () {
+            return $('#requestPanel').height();
+         });
+         $('#productInformation').removeClass('hidden');
+         $('#Quantity').data('kendoNumericTextBox').focus();
+      }
+   </script>
+}

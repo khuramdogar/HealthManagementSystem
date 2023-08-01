@@ -1,0 +1,104 @@
+﻿@model HMS.HealthTrack.Web.Areas.Inventory.Models.Products.DetailsMedicareProductsViewModel
+<div class="panel panel-default">
+   <div class="panel-heading">
+      <h3 class="panel-title">Medicare details</h3>
+   </div>
+   <div class="panel-body">
+      <div class="col-lg-6">
+         <dl class="dl-horizontal">
+            <dt>
+               @Html.DisplayNameFor(model => model.MedicareProductName)
+            </dt>
+            <dd>
+               @Html.DisplayFor(model => model.MedicareProductName)
+            </dd>
+
+            <dt>
+               @Html.DisplayNameFor(model => model.MedicareCode)
+            </dt>
+            <dd>
+               @Html.DisplayFor(model => model.MedicareCode)
+            </dd>
+
+            <dt>
+               @Html.DisplayNameFor(model => model.MedicareDescription)
+            </dt>
+            <dd>
+               @Html.DisplayFor(model => model.MedicareDescription)
+            </dd>
+
+            <dt>
+               @Html.DisplayNameFor(model => model.MedicareSize)
+            </dt>
+            <dd>
+               @Html.DisplayFor(model => model.MedicareSize)
+            </dd>
+
+            <dt>
+               @Html.DisplayNameFor(model => model.MedicareMinBenefit)
+            </dt>
+            <dd>
+               @Html.DisplayFor(model => model.MedicareMinBenefit)
+            </dd>
+
+            <dt>
+               @Html.DisplayNameFor(model => model.MedicareMaxBenefit)
+            </dt>
+            <dd>
+               @Html.DisplayFor(model => model.MedicareMaxBenefit)
+            </dd>
+         </dl>
+      </div>
+      <div class="col-lg-6">
+         <dl class="dl-horizontal">
+            <dt>
+               @Html.DisplayNameFor(model => model.MedicareGroup)
+            </dt>
+            <dd>
+               @Html.DisplayFor(model => model.MedicareGroup)
+            </dd>
+
+            <dt>
+               @Html.DisplayNameFor(model => model.MedicareSubGroup)
+            </dt>
+            <dd>
+               @Html.DisplayFor(model => model.MedicareSubGroup)
+            </dd>
+
+            <dt>
+               @Html.DisplayNameFor(model => model.MedicareSupplier)
+            </dt>
+            <dd>
+               @Html.DisplayFor(model => model.MedicareSupplier)
+            </dd>
+
+            <dt>
+               @Html.DisplayNameFor(model => model.MedicareManufacturer)
+            </dt>
+            <dd>
+               @Html.DisplayFor(model => model.MedicareManufacturer)
+            </dd>
+
+            <dt>
+               @Html.DisplayNameFor(model => model.MedicareSuffix)
+            </dt>
+            <dd>
+               @Html.DisplayFor(model => model.MedicareSuffix)
+            </dd>
+
+            <dt>
+               @Html.DisplayNameFor(model => model.MedicareNote)
+            </dt>
+            <dd>
+               @Html.DisplayFor(model => model.MedicareNote)
+            </dd>
+         </dl>
+      </div>
+   </div>
+</div>
+
+<style>
+   .dl-horizontal dd, .dl-horizontal dt {
+      padding: 0 0 .25em 0;
+   }
+</style>

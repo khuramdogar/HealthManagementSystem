@@ -1,0 +1,173 @@
+﻿@using HMS.HealthTrack.Web.Data.Model.Inventory
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.Orders
+@using HMS.HealthTrack.Web.Views
+@using Kendo.Mvc.UI
+@{
+   ViewBag.Title = "Orders";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Delivery Truck 2.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>All orders</h2>
+         </div>
+      </div>
+   </div>
+</div>
+<div id="alertPlaceholder"></div>
+<div id="orderGrid">
+   @Html.Hidden("ProductId")
+   @(Html.Kendo().Grid<IndexOrdersViewModel>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+           columns.Bound(c => c.Name).Filterable(ftb => ftb.Extra(false));
+           columns.Bound(c => c.NeedBy).Format("{0:dd/MM/yyyy}");
+           columns.Bound(c => c.CreatedBy).Filterable(ftb => ftb.Extra(false));
+           columns.Bound(c => c.DateCreated).Format("{0:dd/MM/yyyy HH:mm}").Width(130);
+           columns.Bound(c => c.Status).Filterable(ftb => ftb.Extra(false)).Width(120);
+           columns.Bound(c => c.Items).Filterable(ftb => ftb.Extra(false)).Width(90);
+           columns.Bound(c => c.StatusNumber).Hidden(true);
+           columns.Bound(c => c.IsUrgent).Width(121);
+           columns.Bound(c => c.InventoryOrderId).Title("").Filterable(false).Width(60).ClientTemplate("<a title=\"Details\" class=\"glyphicon glyphicon-list\" href=" + @Url.Action("Details", "Orders") + "/#: InventoryOrderId #></a>" +
+                                                                                                       "# if (Status == 'Pending Approval') {#" +
+                                                                                                       "<a title=\"Approve\" class=\"glyphicon glyphicon-check\" href=" + @Url.Action("Approve", "Orders") + "/#: InventoryOrderId #></a>" +
+                                                                                                       "<a title=\"Reject\" class=\"glyphicon glyphicon-ban-circle\" href=" + @Url.Action("Reject", "Orders") + "/#: InventoryOrderId #></a>" +
+                                                                                                       "#} else if (Status == 'Approved') {#" +
+                                                                                                       "<a title=\"Place Order\" class=\"glyphicon glyphicon-cloud-upload\" href=" + @Url.Action("Place", "Orders") + "/#: InventoryOrderId #></a>" +
+                                                                                                       "#} else if (Status == 'Invoiced') {#" +
+                                                                                                       "<a title=\"View invoice\" class=\"glyphicon glyphicon-file\" href=" + @Url.Action("Print", "Orders") + "/#:InventoryOrderId #></a>" + 
+                                                                                                       "#}#"
+              );
+        })
+        .DataSource(ds => ds.WebApi()
+           .PageSize(20)
+           .Model(model => model.Id(order => order.InventoryOrderId))
+                 .Read(read => read.Action("GetOrdersForProduct", "Orders").Data("orderProductId"))
+           .Filter(filter => filter.Add(f => f.StatusNumber).IsEqualTo((int) OrderStatus.Ordered))
+           .Group(xx => xx.AddDescending(gg => gg.Status)).Sort(sort =>
+           {
+              sort.Add(s => s.StatusNumber);
+              sort.Add(xx => xx.IsUrgent).Descending();
+              sort.Add(xx => xx.NeedBy).Descending();
+           }))
+        .Events(events => events.DataBound("onDataBound"))
+        .Filterable()
+        .Groupable()
+        .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+        .Resizable(resize => resize.Columns(true))
+        .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+        .ToolBar(toolbar => toolbar.Template(@<text>
+                                                 <span class="toolbar">
+                                                    <span class="toolbar-right">
+                                                       <label class="filter-label" for="name">Name:</label>
+                                                       @(Html.Kendo().TextBox().Name("name").HtmlAttributes(new {@class = "filter-control"}))
+                                                       @(Html.Separator())
+                                                       <label class="filter-label" for="orderStatus">Status: </label>
+                                                       @(Html.Kendo().DropDownList()
+                                                            .Name("orderStatus")
+                                                            .AutoBind(true)
+                                                            .DataSource(ds => ds.Read("GetOrderStatuses", "Orders"))
+                                                            .DataTextField("Text")
+                                                            .DataValueField("Value")
+                                                            .Events(e => e.DataBound("onOrderStatusBound"))
+                                                            .HtmlAttributes(new { @class = "filter-control" })
+                                                            .OptionLabel("All"))
+                                                       @(Html.Separator())
+                                                       @(Html.Kendo().Button().Content("Adv. Search").Name("advancedSearch").Events(events => events.Click("onAdvancedSearchClick")))
+                                                       @(Html.Kendo().Button().Content("Filter").Name("applyFilter"))
+                                                       @(Html.Kendo().Button().Content("Clear").Name("clearFilter"))
+                                                    </span>
+                                                 </span>
+                                              </text>))
+        )
+</div>
+
+<div id="advancedSearchWindow"></div>
+
+@section Scripts {
+   <script src="~/Areas/Inventory/Scripts/AdvancedSearch.js"></script>
+
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+   <script src="~/Scripts/Inventory.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function () {
+         InitFilterControls();
+         createAdvancedSearchWithGrid();
+
+         $('#applyFilter').click(function() {
+            var orderStatus = $('#orderStatus').data('kendoDropDownList').value();
+            var grid = $('#grid').data('kendoGrid');
+            var filters = GetFilters(grid);
+            filters = UpdateSearchFilters(filters, "Name", "contains", $('#name').val(), "and");
+            if (orderStatus == '') {
+               filters = RemoveSearchFilter(filters, 'StatusNumber');
+            } else {
+               filters = UpdateSearchFilters(filters, 'StatusNumber', 'eq', orderStatus, "and");
+            }
+            grid.dataSource.filter(filters);
+         });
+
+         $('#clearFilter').click(function() {
+            var grid = $('#grid').data('kendoGrid');
+            $('#ProductId').val('');
+            $('#name').val('');
+            $('#orderStatus').data('kendoDropDownList').select(0);
+            ClearAdvancedSearchControls();
+            ClearFilters(grid);
+         });
+
+         $('#ProductId').change(function(e) {
+            $('#grid').data('kendoGrid').dataSource.read();
+            var productId = $('#ProductId').val();
+            $.ajax({
+               type: 'GET',
+               contentType: 'application/json',
+               url: '@Url.Action("GetDetails", "Products")/' + productId,
+               success: function(data) {
+                  getAlert('info', 'Filtering orders by the product <strong><a href="@Url.Action("Details", "Products")/ ' + data.ProductId + '">' + data.Description + '</a></strong>. Click Clear to view all orders again.');
+               },
+               error: function(data) {
+                  
+               }
+            });
+            
+         });
+
+         @{
+            if (!string.IsNullOrEmpty(ViewBag.ReversedOrder))
+            {
+               <text>
+                  getAlert('success', 'Order <strong>@ViewBag.ReversedOrder</strong> successfully reversed.');
+               </text>
+            }
+         }
+      });
+
+      function orderProductId(e) {
+         return {
+            productId: $('#ProductId').val()
+         }
+      }
+
+      function onAdvancedSearchClick(e) {
+         $('#CategorySelectMode').val('search');
+         openAdvancedSearch();
+      }
+
+      function onDataBound(e) {
+         applyGridTooltips();
+      }
+
+      function onOrderStatusBound() {
+         var orderStatus = $('#orderStatus').data('kendoDropDownList');
+         orderStatus.select(function(dataItem) {
+            return dataItem.Value === '@((int) OrderStatus.Ordered)';
+         });
+      }
+   </script>
+}

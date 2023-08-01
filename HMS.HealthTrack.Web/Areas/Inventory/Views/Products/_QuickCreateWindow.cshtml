@@ -1,0 +1,29 @@
+﻿@model HMS.HealthTrack.Web.Areas.Inventory.Models.Products.QuickCreateProductsViewModel
+
+@using (Ajax.BeginForm("QuickCreate", "Products", new AjaxOptions
+{
+   HttpMethod = "Post",
+   OnFailure = "onCreateProductFailure",
+   Url = @Url.Action("QuickCreate", "Products"),
+   OnSuccess = "onCreateProductSuccess",
+   UpdateTargetId = "createProductForm"
+}))
+{
+   Html.RenderPartial("_QuickCreate", Model);
+}
+@Scripts.Render("~/bundles/jqueryval")
+<script type="text/javascript">
+   function onCreateProductSuccess(data) {
+      if (data.ProductId === undefined) {
+         return;
+      }
+      getAlert('success', 'A new Inventory product <strong>' + data.Description + '</strong> was created.');
+      $('#ProductId').val(data.ProductId);
+      $('#ProductId').trigger('change');
+      $('#CreateProductWindow').data('kendoWindow').close();
+   }
+
+   function onCreateProductFailure(e) {
+      alert('An error occurred while trying to create a product. Please refresh and try again.');
+   }
+</script>

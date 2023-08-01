@@ -1,0 +1,604 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{55687582-4E37-4C02-A2B5-B31C9E05D491}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HMS.HealthTrack.Web.Data</RootNamespace>
+    <AssemblyName>HMS.HealthTrack.Web.Data</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <NuGetPackageImportStamp>bf861479</NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="LinqKit, Version=1.1.2.0, Culture=neutral, PublicKeyToken=bc217f8844052a91, processorArchitecture=MSIL">
+      <HintPath>..\packages\LINQKit.1.1.2\lib\net45\LinqKit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.1.5.14\lib\net45\Serilog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog.FullNetFx, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.1.5.14\lib\net45\Serilog.FullNetFx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Exceptions\AmbiguousStockException.cs" />
+    <Compile Include="Exceptions\OrderExceptions.cs" />
+    <Compile Include="Helpers\ConnectionStringHelper.cs" />
+    <Compile Include="Helpers\EnumHelper.cs" />
+    <Compile Include="Helpers\JavascriptEnumAttribute.cs" />
+    <Compile Include="Helpers\LocationMappers.cs" />
+    <Compile Include="Helpers\PredicateBuilder.cs" />
+    <Compile Include="Helpers\ProductImportHelper.cs" />
+    <Compile Include="Helpers\StockAdjustmentHelper.cs" />
+    <Compile Include="Model\Clinical\Booking.cs">
+      <DependentUpon>Clinical.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Clinical\Clinical.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Clinical.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Clinical\Clinical.context.interface.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Clinical.context.interface.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Clinical\Clinical.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Clinical.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Clinical\Clinical.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Clinical.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Clinical\ClinicalContext.cs" />
+    <Compile Include="Model\Clinical\ContainerPaymentClass.cs">
+      <DependentUpon>Clinical.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Clinical\ExternalFeed.cs">
+      <DependentUpon>Clinical.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Clinical\ExternalPatientIdentifier.cs" />
+    <Compile Include="Model\Clinical\List_Core.cs">
+      <DependentUpon>Clinical.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Clinical\MR_Container.cs">
+      <DependentUpon>Clinical.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Clinical\Patient.cs">
+      <DependentUpon>Clinical.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Clinical\PatientContainerMRN.cs">
+      <DependentUpon>Clinical.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Clinical\PatientDetails.cs" />
+    <Compile Include="Model\Clinical\PatientMapping.cs">
+      <DependentUpon>Clinical.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Configuration\ConfigurationPropertyIdentifier.cs" />
+    <Compile Include="Model\ConsumptionProcessingStatus.cs" />
+    <Compile Include="Model\HealthTrackInventory\ConsumptionDetails.cs" />
+    <Compile Include="Model\HealthTrackInventory\HealthTrackConsumptionUpdate.cs" />
+    <Compile Include="Model\HealthTrackInventory\HealthTrackInventoryContext.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>HealthTrackInventoryContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\HealthTrackInventory\HealthTrackInventoryMeta.cs" />
+    <Compile Include="Model\Inventory\Address.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\AddressCorporate.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\Category.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\CategoryClosure.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\CategoryClosureRoot.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\ClinicalConsumption.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\Company.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\Consumption.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\ConsumptionManagement.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\ConsumptionNotificationManagement.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\ConsumptionReversal.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\DashboardNotification.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\DeductionRequiringPaymentClass.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\Enums\OrderItemAction.cs" />
+    <Compile Include="Model\Inventory\Enums\ProductErrorReason.cs" />
+    <Compile Include="Model\Inventory\Enums\ProductStatus.cs" />
+    <Compile Include="Model\Inventory\Enums\ScanCodeValue.cs" />
+    <Compile Include="Model\Inventory\Enums\StockEvent.cs" />
+    <Compile Include="Model\Inventory\Enums\StockTakeType.cs" />
+    <Compile Include="Model\Inventory\Enums\SubmissionStatus.cs" />
+    <Compile Include="Model\Inventory\ExternalMappedCategory.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\ExternalProductMapping.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\GeneralLedger.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\GeneralLedgerClosure.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\GeneralLedgerClosureRoot.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\GeneralLedgerTier.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\GeneralLedgerType.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\GlcSetting.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\HealthTrackConsumption.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\HealthTrackLocation.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\HealthTrackProductMapping.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\Inventory_Order_Status.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\Manufacturer.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\MedicareCategory.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\MedicareGroup.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\MedicareProduct.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\MedicareProductSponsor.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\MedicareSubGroup.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\NegativeStock.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\NegativeStockModel.cs" />
+    <Compile Include="Model\Inventory\OraclePurchaseOrderError.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\OraclePurchaseOrderReceipt.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\Order.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\OrderChannel.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\OrderChannelLocation.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\OrderChannelProduct.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\OrderItem.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\OrderItemSource.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\OrderSubmissionStatus.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\PaymentClassMapping.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\PriceType.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\Product.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\ProductCategory.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\ProductErrorModel.cs" />
+    <Compile Include="Model\Inventory\ProductForExport.cs" />
+    <Compile Include="Model\Inventory\AdjustmentSource.cs" />
+    <Compile Include="Model\Inventory\Enums\ReorderSettings.cs" />
+    <Compile Include="Model\Inventory\Enums\StockTakeSource.cs" />
+    <Compile Include="Model\Inventory\ProductImport.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\ProductImportData.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\ProductImportGeneralLedgerCode.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\ProductPrice.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\ProductSearchCriteria.cs" />
+    <Compile Include="Model\Inventory\ProductStockRequest.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\ProductsWithConsumptionForExport.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\Property.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\ScanCode.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\Stock.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\StockAdjustment.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\StockAdjustmentReason.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\DashBoardNotificationPartial.cs" />
+    <Compile Include="Model\Inventory\FilterPeriod.cs" />
+    <Compile Include="Model\Inventory\GlcFormat.cs" />
+    <Compile Include="Model\Inventory\InventoryPermissions.cs" />
+    <Compile Include="Model\Inventory\IOrderableItem.cs" />
+    <Compile Include="Model\Inventory\LowStock.cs" />
+    <Compile Include="Model\Inventory\OrderItemStatus.cs" />
+    <Compile Include="Model\Inventory\PostOrderDTO.cs" />
+    <Compile Include="Model\Inventory\ProductImportStatus.cs" />
+    <Compile Include="Model\Inventory\ProductImportValidation.cs" />
+    <Compile Include="Model\Inventory\ProductPartial.cs" />
+    <Compile Include="Model\Inventory\ProcessOrderDTO.cs" />
+    <Compile Include="Model\Inventory\ReportingLevelType.cs" />
+    <Compile Include="Model\Inventory\StockAdjustmentStock.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\StockLocation.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\StockLocationMapping.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\StockLocationModel.cs" />
+    <Compile Include="Model\Inventory\StockSet.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\StockSetItem.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\StockSetting.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\StockTake.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\StockTakeItem.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\StockTakeItemStatus.cs" />
+    <Compile Include="Model\Inventory\StockTakeProductFilter.cs" />
+    <Compile Include="Model\Inventory\StockTakeStatus.cs" />
+    <Compile Include="Model\Inventory\Submission.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\Supplier.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\SupplierModel.cs" />
+    <Compile Include="Model\Inventory\OrderableItem.cs" />
+    <Compile Include="Model\Inventory\OrderableItemSource.cs" />
+    <Compile Include="Model\Inventory\RequestStatus.cs" />
+    <Compile Include="Model\Inventory\SystemPropertyType.cs" />
+    <Compile Include="Model\Inventory\MappingOverview.cs" />
+    <Compile Include="Model\Inventory\TierType.cs" />
+    <Compile Include="Model\Inventory\UnmanagedConsumption.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\UserPreference.cs">
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Repositories\Clinical\MedicalRecordRepository.cs" />
+    <Compile Include="Repositories\HealthTrackInventory\InventoryMasterRepository.cs" />
+    <Compile Include="Repositories\HealthTrackInventory\InventoryUsedRepository.cs" />
+    <Compile Include="Repositories\InventoryUnitOfWork.cs" />
+    <Compile Include="Repositories\Inventory\ConsumptionRepository.cs" />
+    <Compile Include="Repositories\Inventory\DashboardNotificationRepository.cs" />
+    <Compile Include="Repositories\Inventory\ExternalProductMappingRepository.cs" />
+    <Compile Include="Model\Inventory\Inventory.context.interface.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Inventory.context.interface.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\Inventory.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Inventory.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\Inventory.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Inventory.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\Inventory.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Inventory.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Inventory\InventoryContext.cs" />
+    <Compile Include="Model\Inventory\InventoryMeta.cs" />
+    <Compile Include="Model\Inventory\ItemAdjustment.cs" />
+    <Compile Include="Model\Inventory\ProductMappingSource.cs" />
+    <Compile Include="Model\Inventory\StockStatus.cs" />
+    <Compile Include="Model\Inventory\OrderStatus.cs" />
+    <Compile Include="Model\Inventory\StockLevel.cs" />
+    <Compile Include="Repositories\Configuration\ConfigurationRepository.cs" />
+    <Compile Include="Repositories\Inventory\GeneralLedgerRepository.cs" />
+    <Compile Include="Repositories\Inventory\GeneralLedgerTierRepository.cs" />
+    <Compile Include="Repositories\Inventory\HealthTrackConsumptionRepository.cs" />
+    <Compile Include="Repositories\Inventory\HealthTrackLocationRepository.cs" />
+    <Compile Include="Repositories\Inventory\MedicareProductsRepository.cs" />
+    <Compile Include="Repositories\Inventory\OrderChannelRepository.cs" />
+    <Compile Include="Repositories\Inventory\OrderItemRepository.cs" />
+    <Compile Include="Repositories\Inventory\OrderSubmissionRepository.cs" />
+    <Compile Include="Repositories\Inventory\PaymentClassMappingRepository.cs" />
+    <Compile Include="Repositories\Inventory\ProductIdentifierResult.cs" />
+    <Compile Include="Repositories\Inventory\ProductImportRepository.cs" />
+    <Compile Include="Repositories\Inventory\ProductImportDataRepository.cs" />
+    <Compile Include="Repositories\Inventory\ReportingLevelRepository.cs" />
+    <Compile Include="Repositories\Inventory\StockSetItemRepository.cs" />
+    <Compile Include="Repositories\Inventory\StockSettingRepository.cs" />
+    <Compile Include="Repositories\Inventory\StockTakeRepository.cs" />
+    <Compile Include="Repositories\Inventory\SupplierRepository.cs" />
+    <Compile Include="Repositories\Inventory\UnitsOfWork\GeneralLedgerUnitOfWork.cs" />
+    <Compile Include="Repositories\Inventory\UnitsOfWork\ConsumptionUnitOfWork.cs" />
+    <Compile Include="Repositories\Inventory\UnitsOfWork\LocationUnitOfWork.cs" />
+    <Compile Include="Repositories\Inventory\UnitsOfWork\OrderSubmissionUnitOfWork.cs" />
+    <Compile Include="Repositories\Inventory\UnitsOfWork\ProductImportUnitOfWork.cs" />
+    <Compile Include="Repositories\Inventory\UnitsOfWork\ProductUnitOfWork.cs" />
+    <Compile Include="Repositories\Inventory\StockLocationRepository.cs" />
+    <Compile Include="Repositories\Inventory\OraclePurchaseOrderErrorRepository.cs" />
+    <Compile Include="Repositories\Inventory\OraclePurchaseOrderReceiptRepository.cs" />
+    <Compile Include="Repositories\Inventory\UnitsOfWork\OrderableItemsUnitOfWork.cs" />
+    <Compile Include="Repositories\Inventory\UnitsOfWork\ProductMappingUnitOfWork.cs" />
+    <Compile Include="Repositories\Inventory\ProductPriceRepository.cs" />
+    <Compile Include="Repositories\Inventory\StockSetRepository.cs" />
+    <Compile Include="Repositories\Inventory\SystemSettings.cs" />
+    <Compile Include="Repositories\Inventory\PreferenceRepository.cs" />
+    <Compile Include="Repositories\Inventory\UnitsOfWork\ScanCodeRepository.cs" />
+    <Compile Include="Repositories\Inventory\UnitsOfWork\StockAdjustmentUnitOfWork.cs" />
+    <Compile Include="Repositories\Inventory\UnitsOfWork\StockTakeUnitOfWork.cs" />
+    <Compile Include="Repositories\Inventory\UnitsOfWork\SystemNotificationsUnitOfWork.cs" />
+    <Compile Include="Model\Security\HealthTrackAuthorisation.cs">
+      <DependentUpon>Security.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Security\HealthTrackGroup.cs">
+      <DependentUpon>Security.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Security\HealthTrackPermission.cs">
+      <DependentUpon>Security.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Security\HealthTrackUser.cs">
+      <DependentUpon>Security.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Security\Security.context.interface.cs">
+      <DependentUpon>Security.context.interface.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Model\Security\Security.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Security.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Security\Security.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Security.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Security\Security.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Security.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Security\SecurityContext.cs" />
+    <Compile Include="Repositories\Inventory\CategoryRepository.cs" />
+    <Compile Include="Repositories\Inventory\StockAdjustmentRepository.cs" />
+    <Compile Include="Exceptions\StockExceptions.cs" />
+    <Compile Include="Repositories\Inventory\StockRequestRepository.cs" />
+    <Compile Include="Repositories\Inventory\CompanyRepository.cs" />
+    <Compile Include="Repositories\Security\GroupUtils.cs" />
+    <Compile Include="Repositories\Security\ISecurityUnitOfWork.cs" />
+    <Compile Include="Repositories\Inventory\UnitsOfWork\OrderUnitOfWork.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\Infrastructure\IBaseRepository.cs" />
+    <Compile Include="Repositories\Infrastructure\IEntityRepository.cs" />
+    <Compile Include="Repositories\Infrastructure\IUnitOfWork.cs" />
+    <Compile Include="Repositories\Inventory\ProductRepository.cs" />
+    <Compile Include="Repositories\Infrastructure\UnitOfWork.cs" />
+    <Compile Include="Repositories\Infrastructure\BaseRepository.cs" />
+    <Compile Include="Repositories\Inventory\OrderRepository.cs" />
+    <Compile Include="Repositories\Security\IUserRepository.cs" />
+    <Compile Include="Repositories\Security\SecurityUnitOfWork.cs" />
+    <Compile Include="Repositories\Inventory\StockRepository.cs" />
+    <Compile Include="Repositories\Inventory\UnitsOfWork\StockUnitOfWork.cs" />
+    <Compile Include="Repositories\Security\UserPermissions.cs" />
+    <Compile Include="Repositories\Security\UserRepository.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EntityDeploy Include="Model\Inventory\Inventory.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>Inventory.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <EntityDeploy Include="Model\Clinical\Clinical.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>Clinical.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="app.config" />
+    <None Include="Model\Clinical\Clinical.context.interface.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Clinical.context.interface.cs</LastGenOutput>
+    </None>
+    <None Include="Model\Clinical\Clinical.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Clinical.edmx</DependentUpon>
+      <LastGenOutput>Clinical.Context.cs</LastGenOutput>
+    </None>
+    <None Include="Model\Clinical\Clinical.edmx.diagram">
+      <DependentUpon>Clinical.edmx</DependentUpon>
+    </None>
+    <None Include="Model\Clinical\Clinical.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Clinical.edmx</DependentUpon>
+      <LastGenOutput>Clinical.cs</LastGenOutput>
+    </None>
+    <None Include="Model\Inventory\Inventory.context.interface.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Inventory.context.interface.cs</LastGenOutput>
+    </None>
+    <None Include="Model\Inventory\Inventory.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Inventory.edmx</DependentUpon>
+      <LastGenOutput>Inventory.Context.cs</LastGenOutput>
+    </None>
+    <None Include="Model\Inventory\Inventory.edmx.diagram">
+      <DependentUpon>Inventory.edmx</DependentUpon>
+    </None>
+    <None Include="Model\Inventory\Inventory.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Inventory.edmx</DependentUpon>
+      <LastGenOutput>Inventory.cs</LastGenOutput>
+    </None>
+    <EntityDeploy Include="Model\Security\Security.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>Security.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="Model\Security\Security.context.interface.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Security.context.interface.cs</LastGenOutput>
+    </None>
+    <None Include="Model\Security\Security.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Security.edmx</DependentUpon>
+      <LastGenOutput>Security.Context.cs</LastGenOutput>
+    </None>
+    <None Include="Model\Security\Security.edmx.diagram">
+      <DependentUpon>Security.edmx</DependentUpon>
+    </None>
+    <None Include="Model\Security\Security.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Security.edmx</DependentUpon>
+      <LastGenOutput>Security.cs</LastGenOutput>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HMS.HealthTrack.Inventory.Common\HMS.HealthTrack.Inventory.Common.csproj">
+      <Project>{eeab3791-9a8c-48fd-82e4-e4fdf99354e0}</Project>
+      <Name>HMS.HealthTrack.Inventory.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Model\HealthTrackInventory\HealthTrackInventoryContext.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>HealthTrackInventoryContext.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

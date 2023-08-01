@@ -1,0 +1,152 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.Stock
+@using Kendo.Mvc.UI
+@model List<IndexStockViewModel>
+
+@{
+   ViewBag.Title = "Stock";
+}
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Shipping Boxes 1.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Available stock</h2>
+         </div>
+      </div>
+   </div>
+</div>
+<div id="alertPlaceholder"></div>
+<div id="grid-wrapper">
+   @(Html.Kendo().Grid<IndexStockViewModel>()
+        .Name("Stock")
+        .Columns(columns =>
+        {
+           columns.Bound(c => c.SPC).ClientTemplate("<a href='" + @Url.Action("Details", "Products", new {Area = "Inventory"}) + "/#=ProductId#'>#=SPC#</a>");
+           columns.Bound(c => c.Description);
+           columns.Bound(c => c.StockCount).Width(90);
+           columns.Bound(c => c.StorageLocation);
+           columns.Bound(c => c.TotalStock).Width(90);
+           columns.Bound(c => c.LowQuantityThreshold).Width(90); ;
+           columns.Command(command => command.Custom("Deduct").Click("onDeductClick")).HtmlAttributes(new {@class = "button-column"}).Width(90);
+        })
+        .ClientDetailTemplateId("serialNumberStockTemplate")
+        .DataSource(ds => ds.Ajax()
+           .PageSize(20)
+           .Read(read => read.Action("GetStock", "Stock").Data("productsData")))
+        .Events(events => events.DataBound("onDataBound"))
+        .Filterable(filter => filter.Extra(false))
+        .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+        .Resizable(resize => resize.Columns(true))
+        .Sortable()
+        .ToolBar(toolbar => toolbar.Template(@<text>
+                                                 <span class="toolbar">
+                                                    <span class="toolbar-left">
+                                                       @(Html.Kendo().Button().Name("groupByLocation").Content("Group by location"))
+                                                    </span>
+                                                 </span>
+                                                 <span class="toolbar-right">
+                                                    @(Html.Kendo().Button().Name("advancedSearch").Content("Adv. Search"))
+                                                    @(Html.Kendo().Button().Name("clearFilter").Content("Clear"))
+                                                 </span>
+                                              </text>)))
+</div>
+   
+<script id="serialNumberStockTemplate" type="text/kendo-tmpl">
+   @(Html.Kendo().Grid<SerialNumberStock>()
+        .Name("serialNumbersGrid_#=ProductId#_#=LocationId#")
+        .Columns(columns =>
+        {
+           columns.Bound(c => c.StockId).Hidden(true);
+           columns.Bound(c => c.SerialNumber);
+           columns.Bound(c => c.ReceivedBy);
+           columns.Bound(c => c.ReceivedOn).Format("{0:dd/MM/yyyy HH:mm}");
+        })
+        .DataSource(ds => ds.WebApi()
+           .Model(model =>
+           {
+              model.Id(m => m.StockId);
+              model.Field(m => m.ReceivedOn).Editable(false);
+           })
+           .Events(events => events.Error("error_handler"))
+           .Read(read => read.Url(Url.HttpRouteUrl("DefaultApi", new {controller = "StockSerialNumbers", productId = "#=ProductId#", locationId = "#=LocationId#"})))
+           .Update(update => update.Url(Url.HttpRouteUrl("DefaultApi", new {controller = "StockSerialNumbers"})))
+        )
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .ToClientTemplate())
+</script>
+
+<div id="window"></div>
+<div id="advancedSearchWindow"></div>
+
+@section scripts
+{
+   <script src="~/Areas/Inventory/Scripts/AdvancedSearch.js"></script>
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+   <script src="~/Scripts/Inventory.js"></script>
+   <script src="~/Scripts/ConsumeItem.js"></script>
+   @Scripts.Render("~/bundles/jqueryval")
+
+   <script type="text/javascript">
+      var description;
+      $(document).ready(function() {
+         createAdvancedSearch();
+         var grid = $('#Stock').data('kendoGrid');
+
+         var filterProductId = "@ViewBag.ProductId";
+         if (filterProductId != "") {
+            var filters = GetFilters(grid);
+            filters = UpdateSearchFilters(filters, "ProductId", "eq", filterProductId, "and");
+            grid.dataSource.filter(filters);
+            getAlert('warning', 'Viewing available stock for the product <a href=\"@Url.Action("Details", "Products", new {id = @ViewBag.ProductId})\">@ViewBag.ProductName</a>');
+         }
+
+         $('#groupByLocation').click(function() {
+            if ($(this).hasClass('k-primary')) {
+               $(this).removeClass('k-primary');
+               grid.dataSource.group([]);
+            } else {
+               $(this).addClass('k-primary');
+               grid.dataSource.group({ field: "StorageLocation" });
+            }
+         });
+
+         $('#clearFilter').click(function() {
+            ClearAdvancedSearchControls();
+            ClearFilters(grid);
+         });
+
+         $('#advancedSearch').click(function() {
+            $('#CategorySelectMode').val('search');
+            openAdvancedSearch();
+         });
+         bindAdvancedSearchButtonToGrid(grid);
+      });
+
+      function onDataBound() {
+         applyGridTooltips();
+         var dataSource = this.dataSource;
+         this.element.find('tr.k-master-row').each(function() {
+            var row = $(this);
+            var data = dataSource.getByUid(row.data('uid'));
+            if (!data.get('HasSerial')) {
+               row.find('.k-hierarchy-cell a').css({ opacity: 0.3, cursor: 'default' }).click(function(e) {
+                  e.stopImmediatePropagation();
+                  return false;
+               });
+            }
+         });
+      }
+
+      function onDeductClick(e) {
+         var row = $(e.currentTarget).closest('tr');
+         var dataItem = $('#Stock').data('kendoGrid').dataItem(row);
+         window.location.href = '@Url.Action("DeductStock", "StockAdjustments")?productId=' + dataItem.ProductId;
+      }
+
+      function error_handler(e) {
+         getAlert('danger', e.xhr.responseJSON.Message);
+      }
+   </script>
+}

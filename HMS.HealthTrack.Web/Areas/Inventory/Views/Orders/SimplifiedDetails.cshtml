@@ -1,0 +1,8 @@
+﻿@model HMS.HealthTrack.Web.Areas.Inventory.Models.Orders.DetailsOrdersViewModel
+
+@{
+   Layout = null;
+}
+@Html.Partial("_OrderDetails", Model)
+<div class="row" style="height: 10px"></div>
+@Html.Partial("_ReceiveOrderItems", Model)

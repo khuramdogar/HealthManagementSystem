@@ -1,0 +1,741 @@
+@using HMS.HealthTrack.Web.Data.Model.Inventory
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.Orders
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.Products
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.Shared
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.Stock
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.OrderChannels
+@using HMS.HealthTrack.Web.Views
+@using Kendo.Mvc.UI
+@model DetailsProductsViewModel
+
+@{
+   ViewBag.Title = "Details";
+}
+
+<style>
+   .select2-container { width: 179px; }
+
+   .panel-half { width: 60% !important; }
+</style>
+
+<div class="row">
+   <div class="col-md-1">
+      <img src="~/Content/images/Icons/72x72/Scale And Box Information.png" />
+   </div>
+   <div class="col-md-8">
+      <h4 class="well-sm">@Model.Description @if (Model.Deleted)
+                                             {<span style="color:red">(Deleted)</span>
+         }</h4>
+   </div>
+</div>
+<div id="alertPlaceholder"></div>
+<div id="successMessagePlaceholder"></div>
+@(Html.HiddenFor(m => m.InStock))
+@(Html.Kendo().TabStrip()
+     .Name("tabstrip")
+     .Animation(animation => animation.Enable(false))
+     .SelectedIndex(0)
+     .Items(tabstrip =>
+     {
+        tabstrip.Add().Text("Product details")
+           .Content(@<text>
+                        <div class="row details tabHeight">
+                           <div class="col-sm-5">
+                              <div class="row">
+                                 <div class="col-sm-6 text-right">
+                                    <a href="#" title="@Html.DescriptionFor(model => model.ProductStatus)" class="tooltipLink">
+                                       @Html.DisplayNameFor(model => model.ProductStatus)
+                                    </a>
+                                 </div>
+                                 <div class="col-sm-6">
+                                    @Html.DisplayFor(model => model.ProductStatus)
+                                 </div>
+                              </div>
+                              <div class="row">
+                                 <div class="col-sm-6 text-right">
+                                    <a href="#" title="@Html.DescriptionFor(model => model.SPC)" class="tooltipLink">
+                                       @Html.DisplayNameFor(model => model.SPC)
+                                    </a>
+                                 </div>
+                                 <div class="col-sm-6">
+                                    @Html.DisplayFor(model => model.SPC)
+                                 </div>
+                              </div>
+                              <div class="row">
+                                 <div class="col-sm-6 text-right">
+                                    <a href="#" title="@Html.DescriptionFor(model => model.UPN)" class="tooltipLink">
+                                       @Html.DisplayNameFor(model => model.UPN)
+                                    </a>
+                                 </div>
+                                 <div class="col-sm-6">
+                                    @Html.DisplayFor(model => model.UPN)
+                                 </div>
+                              </div>
+                              
+                              <div class="row">
+                                 <div class="col-sm-6 text-right">
+                                    @Html.DisplayNameFor(model => model.Description)
+                                 </div>
+                                 <div class="col-sm-6 ">
+                                    @Html.DisplayFor(model => model.Description)
+                                 </div>
+                              </div>
+                              
+                              <div class="row">
+                                 <div class="col-sm-6 text-right">
+                                    @Html.DisplayNameFor(model => model.Notes)
+                                 </div>
+                                 <div class="col-sm-6 multiline">
+                                    @Html.DisplayFor(model => model.Notes)
+                                 </div>
+                              </div>
+                           </div>
+
+                           <div class="col-sm-7">
+                              <div class="row">
+                                 <div class="col-sm-4 text-right">
+                                    <a href="#" title="@Html.DescriptionFor(model => model.LPC)" class="tooltipLink">
+                                       @Html.DisplayNameFor(model => model.LPC)
+                                    </a>
+                                 </div>
+                                 <div class="col-sm-8">
+                                    @Html.DisplayFor(model => model.LPC)
+                                 </div>
+                              </div>
+                              
+                              <div class="row">
+                                 <div class="col-sm-4 text-right">
+                                    @Html.DisplayNameFor(model => model.UseExpired)
+                                 </div>
+                                 <div class="col-sm-8">
+                                    @Html.DisplayFor(model => model.UseExpired)
+                                 </div>
+                              </div>
+                              
+                              <div class="row">
+                                 <div class="col-sm-4 text-right">
+                                    @Html.DisplayNameFor(model => model.UseSterile)
+                                 </div>
+                                 <div class="col-sm-8">
+                                    @Html.DisplayFor(model => model.UseSterile)
+                                 </div>
+                              </div>
+                              <div class="row">
+                                 <div class="col-sm-4 text-right">
+                                    @Html.DisplayNameFor(model => model.SpecialRequirements)
+                                 </div>
+                                 <div class="col-sm-8 multiline">
+                                    @Html.DisplayFor(model => model.SpecialRequirements)
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </text>);
+
+        tabstrip.Add().Text("Classification")
+           .Content(@<text>
+                        <div class="row tabHeight">
+                           <div class="col-sm-5">
+                              <div class="row">
+                                 <div class="col-sm-6 text-right">
+                                    <a href="#" title="@Html.DescriptionFor(model => model.GLC)" class="tooltipLink">
+                                       @Html.DisplayNameFor(model => model.GLC)
+                                    </a>
+                                 </div>
+                                 <div class="col-sm-6">
+                                    @Html.DisplayFor(model => model.GLC)
+                                 </div>
+                              </div>
+                              <div class="row">
+                                 <div class="col-sm-6 text-right">
+                                    @Html.DisplayNameFor(model => model.SelectedCategories)
+                                 </div>
+                                 <div class="col-sm-6">
+                                    @Html.DisplayFor(model => model.SelectedCategories)
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </text>);
+
+        tabstrip.Add().Text("Companies")
+           .Content(@<text>
+                        <div class="row tabHeight">
+                           <div class="col-sm-5">
+                              <div class="row">
+                                 <div class="col-sm-6 text-right">
+                                    @Html.DisplayNameFor(model => model.PrimarySupplier)
+                                 </div>
+                                 <div class="col-sm-6">
+                                    @Html.DisplayFor(model => model.PrimarySupplier)
+                                 </div>
+                              </div>
+                              
+                              <div class="row">
+                                 <div class="col-sm-6 text-right">
+                                    @Html.DisplayNameFor(model => model.SecondarySupplier)
+                                 </div>
+                                 <div class="col-sm-6">
+                                    @Html.DisplayFor(model => model.SecondarySupplier)
+                                 </div>
+                              </div>
+                              
+                              <div class="row">
+                                 <div class="col-sm-6 text-right">
+                                    @Html.DisplayNameFor(model => model.Manufacturer)
+                                 </div>
+                                 <div class="col-sm-6">
+                                    @Html.DisplayFor(model => model.Manufacturer)
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </text>);
+        tabstrip.Add().Text("Financial")
+           .Content(@<text>
+                        <div class="tabHeight">
+                           <div class="row">
+                              <div class="col-sm-5">
+                                 <div class="row">
+                                    <div class="col-sm-6 text-right">
+                                       @Html.DisplayNameFor(model => model.IsConsignment)
+                                    </div>
+                                    <div class="col-sm-6">
+                                       @Html.DisplayFor(model => model.IsConsignment)
+                                    </div>
+                                 </div>
+
+                                 <div class="row">
+                                    <div class="col-sm-6 text-right">
+                                       @Html.DisplayNameFor(model => model.UsePaymentClassPrice)
+                                    </div>
+                                    <div class="col-sm-6">
+                                       @Html.DisplayFor(model => model.UsePaymentClassPrice)
+                                    </div>
+                                 </div>
+                                 @if (!string.IsNullOrWhiteSpace(Model.RebateCode))
+                                 {
+                                    <div class="row">
+                                       <div class="col-sm-6 text-right">
+                                          <div>Rebate for @Model.RebateCode</div>
+                                       </div>
+                                       <div class="col-sm-6">
+                                          <div id="minBenefit"></div>
+                                       </div>
+                                    </div>
+                                 }
+                              </div>
+                           </div>
+                           <div class ="row">
+                              <div class="col-sm-12">
+                                 <table class="table table-striped table-condensed" id="prices">
+                                    <thead>
+                                       <tr>
+                                          <th>Price Category</th>
+                                          <th>@Html.Label("Buy Price")</th>
+                                          <th>@Html.Label("Buy Currency")</th>
+                                          <th>@Html.Label("Buy Currency Rate")</th>
+                                          <th>@Html.Label("Sell Price")</th>
+                                       </tr>
+                                    </thead>
+                                    <tbody>
+                                       @foreach (var price in Model.Prices)
+                                       {
+                                          <tr>
+                                             <td>
+                                                @Html.DisplayFor(model => price.PriceTypeName)
+                                             </td>
+                                             <td>@Html.DisplayFor(model => price.BuyPrice)</td>
+                                             <td>@Html.DisplayFor(model => price.BuyCurrency)</td>
+                                             <td>@Html.DisplayFor(model => price.BuyCurrencyRate)</td>
+                                             <td>@Html.DisplayFor(model => price.SellPrice)</td>
+                                          </tr>
+                                       }
+                                    </tbody>
+                                 </table>
+                              </div>
+                           </div>
+                        </div>
+
+                     </text>);
+
+        tabstrip.Add().Text("Stock handling")
+           .Content(@<text>
+                        <div class="row tabHeight">
+                           <div class="col-sm-5">
+                              <div class="row">
+                                 <div class="col-sm-6 text-right">
+                                    @Html.DisplayNameFor(model => model.ManageStock)
+                                 </div>
+                                 <div class="col-sm-6">
+                                    @Html.DisplayFor(model => model.ManageStock)
+                                 </div>
+                              </div>
+
+                              <div class="row">
+                                 <div class="col-sm-6 text-right">
+                                    @Html.DisplayNameFor(model => model.AutoReorderSetting)
+                                 </div>
+                                 <div class="col-sm-6">
+                                    @Html.DisplayFor(model => model.AutoReorderSetting)
+                                 </div>
+                              </div>
+                              
+                              <div class="row">
+                                 <div class="col-sm-6 text-right">
+                                    <a href="#" title="@Html.DescriptionFor(model => model.TargetStockLevel)" class="tooltipLink">
+                                       @Html.DisplayNameFor(model => model.TargetStockLevel)
+                                    </a>
+                                 </div>
+                                 <div class="col-sm-6">
+                                    @Html.DisplayFor(model => model.TargetStockLevel)
+                                 </div>
+                              </div>
+                              <div class="row">
+                                 <div class="col-sm-6 text-right">
+                                    <a href="#" title="@Html.DescriptionFor(model => model.ReorderThreshold)" class="tooltipLink">
+                                       @Html.DisplayNameFor(model => model.ReorderThreshold)
+                                    </a>
+                                 </div>
+                                 <div class="col-sm-6">
+                                    @Html.DisplayFor(model => model.ReorderThreshold)
+                                 </div>
+                              </div>
+                              
+                              <div class="row">
+                                 <div class="col-sm-6 text-right">
+                                    <a href="#" title="@Html.DescriptionFor(model => model.MinimumOrder)" class="tooltipLink">
+                                       @Html.DisplayNameFor(model => model.MinimumOrder)
+                                    </a>
+                                 </div>
+                                 <div class="col-sm-6">
+                                    @Html.DisplayFor(model => model.MinimumOrder)
+                                 </div>
+                              </div>
+                              
+                              <div class="row">
+                                 <div class="col-sm-6 text-right">
+                                    <a href="#" title="@Html.DescriptionFor(model => model.OrderMultiple)" class="tooltipLink">
+                                       @Html.DisplayNameFor(model => model.OrderMultiple)
+                                    </a>
+                                 </div>
+                                 <div class="col-sm-6">
+                                    @Html.DisplayFor(model => model.OrderMultiple)
+                                 </div>
+                              </div>
+                              
+                              <div class="row">
+                                 <div class="col-sm-6 text-right">
+                                    <a href="#" title="@Html.DescriptionFor(model => model.LastStockTakeDate)" class="tooltipLink">
+                                       @Html.DisplayNameFor(model => model.LastStockTakeDate)
+                                    </a>
+                                 </div>
+                                 <div class="col-sm-6">
+                                    @if (Model.LastStockTakeDate.HasValue)
+                                    {
+                                       @Html.DisplayFor(model => model.LastStockTakeDate)
+                                    }
+                                    else
+                                    {
+                                       @Html.Display("Never")
+                                    }
+                                 </div>
+                              </div>
+
+                           </div>
+                        </div>
+                     </text>);
+
+        tabstrip.Add().Text("Product settings")
+           .Content(@<text>
+                        <div class="row tabHeight">
+                           <div class="col-sm-12">
+                              @if (Model.Settings.Any())
+                              {
+                                 <table class="table table-striped table-condensed" id="settings">
+                                    <thead>
+                                       <tr>
+                                          <th>
+                                             @if (Model.UseCategorySettings)
+                                             {
+                                                <a href="#" title="This product uses settings inherited from it's categories" class="tooltipLink">
+                                                   @Html.DisplayName("Settings inherited from categories")
+                                                </a>
+                                             }
+                                             else
+                                             {
+                                                @Html.DisplayNameFor(m => m.Settings)
+                                             }
+                                          </th>
+                                       </tr>
+                                    </thead>
+                                    <tbody>
+                                       @foreach (var setting in Model.Settings)
+                                       {
+                                          <tr>
+                                             <td>
+                                                @Html.DisplayFor(model => setting)
+                                             </td>
+                                          </tr>
+                                       }
+                                    </tbody>
+                                 </table>
+                              }
+                              else
+                              {
+                                 <div>There are no settings for this product</div>
+                              }
+                           </div>
+                        </div>
+                     </text>);
+
+        tabstrip.Add().Text("Medicare").Content(@<text>
+                                                    <div class="tabHeight">
+                                                       <div class="row">
+                                                          <div class="col-sm-5">
+                                                             <div class="row">
+                                                                <div class="col-sm-6 text-right">
+                                                                   <a href="#" title="@Html.DescriptionFor(model => model.RebateCode)" class="tooltipLink">
+                                                                      @Html.DisplayNameFor(model => model.RebateCode)
+                                                                   </a>
+                                                                </div>
+                                                                <div class="col-sm-6">
+                                                                   @Html.DisplayFor(model => model.RebateCode)
+                                                                   @Html.HiddenFor(model => model.RebateCode)
+                                                                </div>
+                                                             </div>
+                                                          </div>
+                                                       </div>                                                    
+                                                       <div class="row">
+                                                          <div class="col-sm-12">
+                                                             <div id="medicareProductDetails"></div>
+                                                          </div>
+                                                       </div>
+                                                    </div>
+                                                 </text>);
+        tabstrip.Add().Text("Stock").Content(@<text>
+                                                 <div class="row tabHeight">
+                                                    <div class="col-sm-12">
+                                                       @(Html.Kendo().Grid<IndexStockViewModel>().Name("Stock")
+                                                            .Columns(columns =>
+                                                            {
+                                                               columns.Bound(c => c.StockCount).ClientFooterTemplate("Total stock: #=sum#");
+                                                               columns.Bound(c => c.StorageLocation);
+                                                            })
+                                                            .DataSource(ds => ds.WebApi().PageSize(5)
+                                                               .Aggregates(aggregate => aggregate.Add(s => s.StockCount).Sum())
+                                                               .Filter(filter => filter.Add(f => f.ProductId).IsEqualTo(Model.ProductId))
+                                                               .Read(read => read.Url(@Url.Action("GetStockLevels", "Stock")))
+                                                               .Sort(sort => sort.Add(s => s.StorageLocation)))
+                                                            .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+                                                            .Sortable())
+                                                    </div>
+                                                 </div>
+                                              </text>);
+        tabstrip.Add().Text("Orders").Content(@<text>
+                                                  <div class="row tabHeight">
+                                                     <div class="col-sm-12">
+                                                        @RenderOrderGrid()
+                                                     </div>
+                                                  </div>
+                                               </text>);
+        tabstrip.Add().Text("Stock events").Content(@<text>
+                                                        <div class="row tabHeight">
+                                                           <div class="col-sm-12">
+                                                              @RenderStockEventsGrid()
+                                                           </div>
+                                                        </div>
+                                                     </text>);
+        tabstrip.Add().Text("Order Channels").Content(@<text>
+                                                         <div class="row tabHeight">
+                                                            <div class="col-sm-12">
+                                                               @RenderOrderChannelsGrid()
+                                                            </div>
+                                                         </div>
+                                                      </text>);
+     })
+
+)
+
+@Html.Kendo().Tooltip().For(".details").Filter("a").Position(TooltipPosition.Top)
+
+@helper RenderOrderGrid()
+{
+   @(Html.Kendo().Grid<IndexOrdersViewModel>().Name("Orders")
+        .AutoBind(false)
+        .Columns(columns =>
+        {
+           columns.Bound(c => c.Name);
+           columns.Bound(c => c.DeliveryLocation).Title("Location");
+           columns.Bound(c => c.CreatedBy);
+           columns.Bound(c => c.DateCreated).Format("{0:dd/MM/yyyy HH:mm}").Width(140);
+           columns.Bound(c => c.Status);
+           columns.Bound(c => c.Items).Width(100);
+           columns.Command(c =>
+           {
+              c.Custom("Receive").Click("onOrderRowReceiveClick");
+              c.Custom("Details").Click("onOrderRowDetailsClick");
+           }).Width(160);
+        })
+        .DataSource(ds => ds.Ajax().PageSize(5)
+           .Read(read => read.Action("GetOrdersForProduct", "Orders").Data("getProductId")).Sort(sort => sort.Add(s => s.DateCreated).Descending()))
+        .Events(events => events.DataBound("onOrderGridDataBound"))
+        .Filterable(filterable => filterable.Extra(false))
+        .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+        .Sortable()
+        .ToolBar(toolbar => toolbar.Template(@<text>
+                                                 <span class="toolbar">
+                                                    <span class="toolbar-left"></span>
+                                                    <span class="toolbar-right">
+                                                       @(Html.Kendo().DropDownList()
+                                                            .Name("orderStatus")
+                                                            .AutoBind(true)
+                                                            .DataSource(ds => ds.Read("GetOrderStatuses", "Orders"))
+                                                            .DataTextField("Text")
+                                                            .DataValueField("Value")
+                                                            .Events(e => e.DataBound("onOrderStatusBound").Change("onOrderStatusChange"))
+                                                            .OptionLabel("All")
+                                                            )
+                                                    </span>
+                                                 </span>
+                                              </text>))
+        )
+}
+
+@helper RenderStockEventsGrid()
+{
+   @(Html.Kendo().Grid<ProductStockEventViewModel>().Name("StockEvents")
+        .Columns(columns =>
+        {
+           columns.Bound(c => c.StockEvent);
+           columns.Bound(c => c.EventDate).Format("{0:dd/MM/yyyy HH:mm}").Width(140);
+           columns.Bound(c => c.Creator);
+           columns.Bound(c => c.Location);
+           columns.Bound(c => c.Source);
+           columns.Bound(c => c.Status);
+           columns.Bound(c => c.Quantity);
+           columns.Command(c => c.Custom("View").Click("onViewStockEventClick"));
+        })
+        .DataSource(ds => ds.Ajax().PageSize(5).ServerOperation(true)
+           .Read(read => read.Action("GetStockEvents", "Products").Data("getProductId")).Sort(sort => sort.Add(s => s.EventDate).Descending()))
+        .Events(events => events.DataBound("onStockEventsGridDataBound"))
+        .Filterable(filterable => filterable.Extra(false))
+        .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+        .Sortable())
+}
+
+@helper RenderOrderChannelsGrid()
+{
+   @(Html.Kendo().Grid<ProductChannelsModel>().Name("ProductChannelsGrid")
+        .Columns(columns =>
+        {
+           columns.ForeignKey(p => p.OrderChannelId, (System.Collections.IEnumerable)ViewData["channels"], "OrderChannelId", "Name").Title("Channel");
+           columns.Bound(c => c.Reference);
+           columns.Bound(c => c.AutomaticOrder);
+        })
+        .DataSource(ds => ds.Ajax().PageSize(5).ServerOperation(true)
+           .Read(read => read.Action("GetChannelsForProduct", "OrderChannels", new {productId = Model.ProductId}))
+           .Sort(sort => sort.Add(s => s.Channel.Name)))
+        .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+        .Sortable())
+}
+
+<div>
+   <a class="k-button" href="@Url.Action("Index", "Products")">Back to list</a>
+   @if (Model.Deleted)
+   {
+      <a class="k-button k-primary" id="Delete">Restore</a>
+   }
+   else
+   {
+      <a class="k-button" id="Delete">Delete</a>
+      <a class="k-button" href="@Url.Action("CreateFromExisting", "Products")/@Model.ProductId">Copy to new product</a>
+      <a class="k-button" href="@Url.Action("Merge", "Products", new {id = Model.ProductId})">Merge</a>
+      <a class="k-button k-primary" href="@Url.Action("Edit", "Products", new {id = Model.ProductId})">Edit</a>
+   }
+   
+</div>
+
+@{
+   Html.RenderPartial("_DeletePrompt", new DeletePromptModel
+   {
+      Controller = "Products",
+      Description = Model.Description,
+      Id = Model.ProductId
+   });
+}
+
+@section Scripts {
+   <script src="~/Areas/Inventory/Scripts/KendoGridHelpers.js"></script>
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+   <script src="~/Scripts/Inventory.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+         var rebateCode = $('#RebateCode').val();
+         $('#medicareProductDetails')
+            .load("@Url.Action("Details", "MedicareProducts", new {Area = "Inventory"})?rebateCode=" + rebateCode);
+
+         $('#Delete').unbind('click');
+
+         $('#Delete').click(function () {
+            var inStock = $('#InStock').val();
+            if (inStock == "Yes") {
+               getAlert('danger',
+                  'Unable to delete product with items in stock. <a href=\"@Url.Action("ViewAvailableStock", "Stock", new {productId = @Model.ProductId, name = @Model.SPC + " - " + @Model.Description})\">Please first take care of all available stock for this product.</a>');
+            } else {
+               if ($('#Delete').text() === 'Restore') {
+                  $('#DeletePrompt').data('kendoWindow').title('Restore confirmation');
+                  $('#deletePromptMessage').text($('#deletePromptMessage').text().replace('delete', 'restore'));
+                  var action = $('#DeletePrompt form').attr('action');
+                  action = action.replace('Delete', 'Restore');
+                  $('#DeletePrompt form').attr('action', action);
+                  $('#submitDelete').text('Restore');
+               }
+               $('#DeletePrompt').data('kendoWindow').center().open();
+            }
+         });
+
+         var errorMessage = "@ViewBag.ErrorMessage";
+         if (errorMessage != '') {
+            getAlert('danger', errorMessage);
+         }
+
+         var successMessage = "@ViewBag.SuccessMessage";
+         if (successMessage != '') {
+            getAlertForId('successMessagePlaceholder', 'success', '@Html.Raw(ViewBag.SuccessMessage)');
+         }
+      });
+
+      function getProductId(e) {
+         return {
+            productId: '@Model.ProductId'
+         }
+      }
+
+      function onOrderGridDataBound(e) {
+         applyGridTooltips();
+
+         var actionButtons = $('.k-grid-Receive');
+         var orderStatus = $('#orderStatus').val();
+         if (orderStatus != '@((int) OrderStatus.Ordered)' && orderStatus != '@((int) OrderStatus.PartiallyReceived)') {
+            $.each(actionButtons,
+               function(index, value) {
+                  $(value).hide();
+               });
+         }
+      }
+
+      function onOrderRowDetailsClick(e) {
+         var dataItem = getDataItemFromGrid(e, "Orders");
+         window.location.href = "@Url.Action("Details", "Orders")/" + dataItem.InventoryOrderId;
+      }
+
+      function onOrderRowReceiveClick(e) {
+         var dataItem = getDataItemFromGrid(e, "Orders");
+         window.location.href = "@Url.Action("ReceiveOrder", "Stock")?id=" +
+            dataItem.InventoryOrderId +
+            '&firstProduct=@Model.ProductId';
+      }
+
+      function onOrderStatusBound() {
+         var orderStatus = $('#orderStatus').data('kendoDropDownList');
+         orderStatus.select(function(dataItem) {
+            return dataItem.Value === '@((int) OrderStatus.Ordered)';
+         });
+         orderStatus.trigger('change');
+      }
+
+      function onOrderStatusChange(e) {
+         var orderStatus = $('#orderStatus').data('kendoDropDownList').value();
+         var grid = $('#Orders').data('kendoGrid');
+         var filters = GetFilters(grid);
+         if (orderStatus == '') {
+            filters = RemoveSearchFilter(filters, 'StatusNumber');
+         } else {
+            filters = UpdateSearchFilters(filters, 'StatusNumber', 'eq', orderStatus, "and");
+         }
+         grid.dataSource.filter(filters);
+      }
+
+      function onStockEventsGridDataBound(e) {
+         applyGridTooltips();
+      }
+
+      function onStockEventTypesChange(e) {
+         var eventType = $('#stockEventTypes').data('kendoDropDownList').value();
+         var grid = $('#StockEvents').data('kendoGrid');
+         var filters = GetFilters(grid);
+         if (eventType == '') {
+            filters = RemoveSearchFilter(filters, 'StockEvent');
+         } else {
+            filters = UpdateSearchFilters(filters, 'StockEvent', 'eq', eventType, "and");
+         }
+         grid.dataSource.filter(filters);
+      }
+
+
+      function onViewStockEventClick(e) {
+         var dataItem = getDataItemFromGrid(e, "StockEvents");
+         if (dataItem.StockEvent == "@((int) StockEvent.Deduction)") {
+            window.location.href = '@Url.Action("Details", "StockAdjustments")/' + dataItem.EventId;
+         } else if (dataItem.StockEvent == "@((int) StockEvent.Order)") {
+            return window.location.href = '@Url.Action("Details", "Orders")/' + dataItem.EventId;
+         } else {
+            getAlert('danger', 'Unable to view stock event.');
+         }
+      }
+   </script>
+
+   <script>
+      $(document).ready(function() {
+         var rebateCode = $('#RebateCode').val();
+         $('#minBenefit').load("@Url.Action("MinBenefit", "MedicareProducts", new {Area = "Inventory"})?rebateCode=" + rebateCode);
+      })
+   </script>
+}
+
+<style>
+   .row { padding-top: 1em; }
+
+   .tabHeight { height: 16em; }
+
+   .dl-horizontal dd, .dl-horizontal dt { padding: 0 0 .25em 0; }
+
+   .text-right {
+      font-weight: bold;
+   }
+
+   .multiline {
+      white-space: pre-wrap;
+      top: -15px;
+      bottom: -15px;
+   }
+
+   #prices, #settings, #medicareProductDetails { margin-top: 1em; }
+
+   #medicareProductDetails dl { margin-bottom: 0em; }
+
+   #prices th, #settings th {
+      font-weight: bold;
+   }
+
+   #tabstrip {
+      margin-bottom: 20px;
+      margin-top: 20px;
+   }
+
+   a.tooltipLink {
+      color: #2e2e2e;
+      cursor: default;
+   }
+
+   .fieldlist {
+      margin: 0 0 -1em;
+      padding: 0;
+   }
+
+   .fieldlist li {
+      list-style: none;
+      padding-bottom: 1em;
+   }
+</style>

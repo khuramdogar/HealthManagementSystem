@@ -1,0 +1,137 @@
+﻿@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.Stock.DeductStock
+@using (Ajax.BeginForm("DeductStock", "StockAdjustments", new AjaxOptions
+{
+   HttpMethod = "Post",
+   OnFailure = "onCreateDeductionFailure",
+   OnSuccess = "onCreateDeductionSuccess",
+   Url = @Url.Action("DeductStock", "StockAdjustments")
+}))
+{
+   <div id="deductionForm">
+      @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+      @Html.HiddenFor(m => m.OverrideLocation)
+      @Html.HiddenFor(m => m.ProductId)
+      <div class="form-horizontal">
+         <div class="form-group">
+            <div class="col-md-3 col-lg-4 control-label">
+               @Html.LabelFor(model => model.StockLocationId)
+            </div>
+            <div class="col-md-6 col-lg-7">
+               @(Html.Kendo().DropDownListFor(model => model.StockLocationId)
+                    .AutoBind(true).Filter(FilterType.Contains)
+                    .Events(events => events.Change("onLocationChange").DataBound("onLocationDataBound"))
+                    .DataSource(ds => ds.Read(read => read.Action("GetStockLocations", "StockLocations")).ServerFiltering(true))
+                    .DataTextField("Text").DataValueField("Value")
+                    .HtmlAttributes(new { @class = "page-input", @readonly = "readonly" }))
+               @Html.ValidationMessageFor(model => model.StockLocationId)
+            </div>
+         </div>
+         <div class="form-group">
+            <div class="col-md-3 col-lg-4 control-label">
+               @Html.LabelFor(model => model.SerialNumber)
+            </div>
+            <div class="col-md-6 col-lg-7">
+               @(Html.Kendo().ComboBoxFor(model => model.SerialNumber)
+                    .AutoBind(true)
+                    .DataSource(ds => ds.Read(read => read.Url(@Url.Action("GetSerialNumbers", "Stock")).Data("filterSerialNumbers")).ServerFiltering(true))
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .Events(events => events.Change("onSerialNumberChange"))
+                    .HtmlAttributes(new { @class = "page-input" })
+               )
+               @Html.ValidationMessageFor(model => model.SerialNumber)
+            </div>
+         </div>
+         <div class="form-group">
+            <div class="col-md-3 col-lg-4 control-label">
+               @Html.LabelFor(model => model.BatchNumber)
+            </div>
+            <div class="col-md-6 col-lg-7">
+               @Html.Kendo().TextBoxFor(model => model.BatchNumber).HtmlAttributes(new { @class = "page-input" })
+               @Html.ValidationMessageFor(model => model.BatchNumber)
+            </div>
+         </div>
+         <div class="form-group">
+            <div class="col-md-3 col-lg-4 control-label">
+               @Html.LabelFor(model => model.Quantity)
+            </div>
+            <div class="col-md-6 col-lg-7">
+               @Html.Kendo().TextBoxFor(model => model.Quantity).HtmlAttributes(new { @class = "page-input" })
+               @Html.ValidationMessageFor(model => model.Quantity)
+            </div>
+         </div>
+         <div class="form-group">
+            <div class="col-md-3 col-lg-4 control-label">
+               @Html.LabelFor(model => model.UsedBy)
+            </div>
+            <div class="col-md-6 col-lg-7">
+               @Html.Kendo().TextBoxFor(model => model.UsedBy).HtmlAttributes(new { @class = "page-input" })
+               @Html.ValidationMessageFor(model => model.UsedBy)
+            </div>
+         </div>
+         <div class="form-group">
+            <div class="col-md-3 col-lg-4 control-label">
+               @Html.LabelFor(model => model.UsedOn)
+            </div>
+            <div class="col-md-6 col-lg-7">
+               @(Html.Kendo().DateTimePicker().Name("UsedOn").Value(DateTime.Now).Culture("en-AU").HtmlAttributes(new { @class = "page-input" }))
+               @Html.ValidationMessageFor(model => model.UsedOn)
+            </div>
+         </div>
+         <div class="form-group">
+            <div class="col-md-3 col-lg-4 control-label">
+               @Html.LabelFor(model => model.Reason)
+            </div>
+            <div class="col-md-6 col-lg-7">
+               @(Html.Kendo().DropDownListFor(m => m.Reason).OptionLabel("Select a reason")
+                    .DataTextField("Name")
+                    .DataValueField("StockAdjustmentReasonId")
+                    .DataSource(source => { source.Read(read => { read.Action("GetReasons", "StockAdjustments"); }); })
+                    .HtmlAttributes(new { @class = "page-input" }))
+               @Html.ValidationMessageFor(model => model.Reason)
+            </div>
+         </div>
+
+         <div class="form-group">
+            <div class="col-md-3 col-lg-4 control-label">
+               @Html.LabelFor(model => model.GLC)
+            </div>
+            <div class="col-md-6 col-lg-7">
+               <span class="k-textbox k-space-right page-input">
+                  @(Html.Kendo().TextBoxFor(model => model.GLC).HtmlAttributes(new { @readonly = "readonly" }))
+                  <a href="#" class="k-icon k-i-search" id="BrowseLedgers">&nbsp;</a>
+               </span>
+               @(Html.HiddenFor(model => model.LedgerId))
+               @Html.ValidationMessageFor(model => model.GLC)
+            </div>
+         </div>
+         
+         <div class="form-group">
+            <div class="col-md-3 col-lg-4 control-label">
+               @Html.LabelFor(model => model.Note)
+            </div>
+            <div class="col-md-6 col-lg-7">
+               @Html.TextAreaFor(model => model.Note, new { @class = "k-textbox page-input", rows = "2" })
+               @Html.ValidationMessageFor(model => model.Note)
+            </div>
+         </div>
+      </div>
+      <br />
+      <div class="row">
+         <div class="col-md-4 pull-right text-right">
+            <button type="submit" id="saveConsumption" class="k-button k-primary">Save</button>
+            <a class="k-button" href="@Url.Action("Index", "Stock")" id="closeWindow">Back to list</a>
+         </div>
+      </div>
+   </div>
+}
+<div id="ledgerTreeWindow"></div>
+<script>
+   $(document).ready(function() {
+      createLedgerTreeWindow(@ViewBag.LedgerType);
+      $('#BrowseLedgers').click(function() {
+         $('#ledgerTreeWindow').data('kendoWindow').center().open();
+      });
+   });
+</script>

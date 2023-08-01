@@ -1,0 +1,123 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.StockAdjustmentReasons
+@using Kendo.Mvc.UI
+@model dynamic
+
+@{
+   ViewBag.Title = "Stock adjustment reasons";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Barcode Configuration.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Stock adjustment reasons</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div id="alertPlaceholder"></div>
+<div>
+    @(Html.Kendo().Grid<StockAdjustmentReasonViewModel>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+             columns.Bound(p => p.Name);
+             columns.Bound(p => p.Description);
+             columns.Bound(p => p.Disabled).Width(80).ClientTemplate("<input type='checkbox' #= Disabled ? checked='checked': '' # onclick='return false' />")
+                 .HtmlAttributes(new { style = "text-align: center" });
+             columns.Bound(p => p.IsSystemReason).Width(80).ClientTemplate("<input type='checkbox' #= IsSystemReason ? checked='checked': '' # onclick='return false' />").HtmlAttributes(new { style = "text-align: center" }).Title("System reason");
+             columns.Command(command =>
+             {
+                command.Edit();
+                command.Destroy();
+             }).Width(180).HtmlAttributes(new {@class = "button-column"});
+          })
+          .ToolBar(toolbar => toolbar.Create().Text("Add reason"))
+          .Editable(ed => ed.Mode(GridEditMode.PopUp).TemplateName("StockAdjustmentReason").Window(w =>
+          {
+             w.Width(600);
+             w.Resizable(builder => builder.Enabled(true));
+             w.Scrollable(false);
+          }))
+          .Events(events => events.DataBound("onDataBound").Edit("onMappingEdit"))
+          .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+          .Resizable(resize => resize.Columns(true))
+          .Sortable()
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .PageSize(20)
+              .Sort(s=>s.Add(m=>m.Name))
+              .Events(events => events.Error("error_handler"))
+              .Model(model =>
+              {
+                 model.Id(p => p.StockAdjustmentReasonId);
+                 model.Field(m => m.StockAdjustmentReasonId).Editable(false);
+                 model.Field(m => m.IsSystemReason).Editable(false);
+              })
+              .Create(update => update.Action("EditingPopup_Create", "StockAdjustmentReasons"))
+                            .Read(read => read.Action("EditingPopup_Read", "StockAdjustmentReasons"))
+                     .Update(update => update.Action("EditingPopup_Update", "StockAdjustmentReasons"))
+                     .Destroy(update => update.Action("EditingPopup_Destroy", "StockAdjustmentReasons"))
+          )
+          )
+</div>
+<style>
+    .k-edit-form-container {
+        width: 100%;
+    }
+</style>
+<script src="~/Scripts/Inventory.js"></script>
+   <script type="text/javascript">
+      function error_handler(e) {
+         var errors = '';
+         if (e.errors) {
+            $.each(e.errors, function(key, value) {
+               if ('errors' in value) {
+                  $.each(value.errors, function() {
+                     errors += this + ', ';
+                  });
+               }
+            });
+            getErrorAlert(errors);
+            e.sender.cancelChanges();
+         }
+     } 
+
+   function getErrorAlert(errors) {
+      getAlert('danger', 'Unable to perform action on stock adjustment reason. The following errors were encountered: ' + errors.substr(0, errors.length - 2));
+   }
+
+   function onDataBound(e) {
+      applyGridTooltips();
+      var grid = this;
+      var gridRows = grid.tbody.find('tr');
+      for (var ii = 0; ii < gridRows.length; ii++) {
+         var row = $(gridRows[ii]);
+         var dataItem = grid.dataItem(row);
+         if (dataItem.IsSystemReason) {
+            var editButton = row.find('.k-grid-edit');
+            editButton.prop('disabled', 'disabled').addClass('k-state-disabled');
+            $(editButton).bind('click', function (ee) {
+               ee.preventDefault();
+               return false;
+            });
+
+            var deleteButton = row.find('.k-grid-delete');
+            deleteButton.prop('disabled', 'disabled').addClass('k-state-disabled');
+            $(deleteButton).bind('click', function(ee) {
+               ee.preventDefault();
+               return false;
+            });
+         }
+      }
+   }
+
+    function onMappingEdit(e) {
+       $('#StockAdjustmentReasonId').hide();
+       $("label[for='StockAdjustmentReasonId']").hide();
+    }
+</script>

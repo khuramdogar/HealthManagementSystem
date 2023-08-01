@@ -1,0 +1,156 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.Consumptions
+@using Kendo.Mvc.UI
+@model dynamic
+
+<style>
+   .k-grid {
+      font-size: 12px;
+      height: 800px;
+      width: 1200px;
+   }
+</style>
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Patient Man 2.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Consumption by Patient</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+   <script src="~/Scripts/kendo/2018.2.516/jszip.min.js"></script>
+<script type="text/javascript">
+   $(document).ready(function() {
+      $('#printGrid').click(function() {
+         printGrid();
+      });
+   });
+
+   function printGrid() {
+      var gridElement = $('#grid'),
+         printableContent = '',
+         win = window.open('', ''),
+         doc = win.document.open();
+
+      var htmlStart =
+         '<!DOCTYPE html>' +
+            '<html>' +
+            '<head>' +
+            '<meta charset="utf-8" />' +
+            '<title>Consumption report</title>' +
+               '<link href="~/Content/kendo/2018.2.516/kendo.common.min.css" rel="stylesheet" />' +
+            '<style>' +
+            'html { font: 8pt sans-serif; }' +
+            '.k-grid { border-top-width: 0; }' +
+            '.k-grid, .k-grid-content { height: auto !important; }' +
+            '.k-grid-content { overflow: visible !important; }' +
+            '.k-grid .k-grid-header th { border-top: 1px solid; }' +
+            '.k-grid td { line-height: 2em; }' +
+            '.k-grouping-header { display: none;}' +
+            '.k-grid-toolbar, .k-grid-pager > .k-link { display: none; }' +
+            '</style>' +
+            '</head>' +
+            '<body>';
+
+      var htmlEnd =
+         '</body>' +
+            '</html>';
+
+      var grid = $("#grid").data("kendoGrid");
+      grid.hideColumn("PatientId");
+      
+      var gridHeader = gridElement.children('.k-grid-header');
+      if (gridHeader[0]) {
+         var thead = gridHeader.find('thead').clone().addClass('k-grid-header');
+         printableContent = gridElement
+            .clone()
+            .children('.k-grid-header').remove()
+            .end()
+            .children('.k-grid-content')
+            .find('table')
+            .first()
+            .children('tbody').before(thead)
+            .end()
+            .end()
+            .end()
+            .end()[0].outerHTML;
+      } else {
+         printableContent = gridElement.clone()[0].outerHTML;
+      }
+
+      doc.write(htmlStart + printableContent + htmlEnd);
+      doc.close();
+      win.print();
+   }
+
+</script>
+<br />
+<div>
+   @(Html.Kendo().Grid<StockConsumptionByDoctor>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+           columns.Bound(consumption => consumption.PatientId);
+           columns.Bound(consumption => consumption.PatientSurnameFirst);
+           columns.Bound(consumption => consumption.ExamDate).ClientTemplate("#: kendo.format('{0: dd/MM/yyyy hh:mm}', ExamDate)#").Title("Exam time").Filterable(f => f.UI(GridFilterUIRole.DateTimePicker));
+           columns.Bound(consumption => consumption.ProductName);
+           columns.Bound(consumption => consumption.RebateCode);
+           columns.Bound(consumption => consumption.MinBenefit);//.ClientTemplate("#: kendo.toString(MinBenefit,'n')#");
+           columns.Bound(consumption => consumption.SupplierProductCode);
+           columns.Bound(consumption => consumption.Vendor);
+           columns.Bound(consumption => consumption.DoctorName);
+        })
+        .DataSource(dataSource => dataSource
+           .WebApi()
+           .Model(model => model.Id(consumption => consumption.ConsumptionId))
+           .Read(read => read.Url(Url.HttpRouteUrl("DefaultApi", new {controller = "DoctorConsumptions"}))).Group(g =>
+           {
+              g.Add(d => d.PatientId);
+           }).Filter(filter => filter.Add(f => f.ExamDate).IsGreaterThan(DateTime.Now.AddDays(-1)))
+        )
+        .Filterable()
+        .Groupable()
+        .Sortable()
+        .ToolBar(tools =>
+        {
+           tools.Excel();
+           tools.Custom().Name("Print").HtmlAttributes(new {id = "printGrid"});
+        })
+        .Excel(excel => excel
+           .FileName("Medical consumption.xlsx")
+           .Filterable(true)
+           .AllPages(true)
+           .ProxyURL(Url.Action("Excel_Export_Save", "StockAdjustments"))
+        )
+        .Pdf(pdf => pdf
+           .FileName("Medical consumption.pdf")
+           .PaperSize("A4")
+           .ProxyURL(Url.Action("Excel_Export_Save", "StockAdjustments"))
+        )
+        )
+</div>
+
+@*http://docs.telerik.com/kendo-ui/web/grid/how-to/excel/column-template-export*@
+<script type="text/javascript">
+   $(document).ready(function() {
+      var grid = $('#grid').data('kendoGrid');
+      grid.bind('excelExport', function(e) {
+         var sheet = e.workbook.sheets[0];
+         var template = kendo.template(this.columns[3].template);
+
+         for (var i = 0; i < sheet.rows.length; i++) {
+            var row = sheet.rows[i];
+            if (row.type != "data") {
+               continue;
+            }
+            var dataItem = { ExamDate: row.cells[5].value };
+            row.cells[5].value = template(dataItem);
+         }
+      });
+   });
+</script>

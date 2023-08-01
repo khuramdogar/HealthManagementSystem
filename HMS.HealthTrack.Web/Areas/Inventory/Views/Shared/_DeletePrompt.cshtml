@@ -1,0 +1,45 @@
+﻿@model HMS.HealthTrack.Web.Areas.Inventory.Models.Shared.DeletePromptModel
+<div id="DeletePrompt">
+   @using (Html.BeginForm("Delete", Model.Controller, FormMethod.Post))
+   {
+      @Html.AntiForgeryToken()
+      @Html.HiddenFor(model => model.Id)
+      <div class="windowRow">
+         <p id ="deletePromptMessage">Are you sure you want to delete the following item?</p>
+         <p><strong><span id="itemDescription"></span></strong></p>
+      </div>
+      <div class="form-actions">
+         <button type="submit" id="submitDelete" class="k-button k-primary">Delete</button>
+         <a class="k-button" id="cancelDelete">Cancel</a>
+      </div>
+   }
+</div>
+
+<script src="~/Scripts/Inventory.js"></script>
+<script type="text/javascript">
+   $(document).ready(function() {
+      $('#DeletePrompt').kendoWindow({
+         title: 'Delete confirmation',
+         scrollable: false,
+         visible: false,
+         open: function(e) {
+            var win = this;
+            $('#cancelDelete').on('click', function() {
+               win.close();
+            });
+         }
+      });
+      registerDelete();
+      $('#itemDescription').text("@Model.Description");
+   });
+</script>
+
+<style>
+   .form-actions {
+      float: right;
+   }
+   .windowRow p {
+      padding-top: 5px;
+      padding-bottom: 5px;
+   }
+</style>

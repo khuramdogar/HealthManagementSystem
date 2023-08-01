@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<package>
+	<metadata>
+		<id>HMS.HealthTrack.Web.Migrator</id>
+		<title>Web Database Migrator</title>
+		<version>1.0.0.0</version>
+		<authors>SYSTEM</authors>
+		<owners>SYSTEM</owners>
+		<licenseUrl>http://www.healthtrack.com.au/</licenseUrl>
+		<projectUrl>http://www.healthtrack.com.au/</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>Database deployment scripts for HealthTrack Web</description>
+		<releaseNotes></releaseNotes>
+	</metadata>
+</package>

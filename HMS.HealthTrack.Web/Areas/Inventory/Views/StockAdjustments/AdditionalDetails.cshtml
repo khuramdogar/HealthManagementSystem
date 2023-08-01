@@ -1,0 +1,119 @@
+﻿@model HMS.HealthTrack.Web.Areas.Inventory.Models.StockAdjustment.StockAdjustmentDetailsViewModel
+
+@{
+   Layout = null;
+}
+
+<div>
+   <dl class="dl-horizontal">
+      <dt>
+         @Html.DisplayNameFor(model => model.InventoryStockSerialNumber)
+      </dt>
+      <dd>
+         @Html.DisplayFor(model => model.InventoryStockSerialNumber)
+      </dd>
+
+      <dt>
+         @Html.DisplayNameFor(model => model.InventoryStockBatchNumber)
+      </dt>
+
+      <dd>
+         @Html.DisplayFor(model => model.InventoryStockBatchNumber)
+      </dd>
+
+      <dt>
+         @Html.DisplayNameFor(model => model.AdjustedOn)
+      </dt>
+
+      <dd>
+         @Html.DisplayFor(model => model.AdjustedOn)
+      </dd>
+
+      @if (!string.IsNullOrWhiteSpace(Model.AdjustedBy))
+      {
+         <dt>
+            @Html.DisplayNameFor(model => model.AdjustedBy)
+         </dt>
+
+         <dd>
+            @Html.DisplayFor(model => model.AdjustedBy)
+         </dd>
+      }
+      <dt>
+         @Html.DisplayNameFor(model => model.Location)
+      </dt>
+
+      <dd>
+         @Html.DisplayFor(model => model.Location)
+      </dd>
+   
+      @if (Model.DeletedOn.HasValue)
+      {
+         <dt>
+            @Html.DisplayNameFor(model => model.DeletedOn)
+         </dt>
+
+         <dd>
+            @Html.DisplayFor(model => model.DeletedOn)
+         </dd>
+
+         <dt>
+            @Html.DisplayNameFor(model => model.DeletedBy)
+         </dt>
+
+         <dd>
+            @Html.DisplayFor(model => model.DeletedBy)
+         </dd>
+         
+      }
+      <dt>
+         @Html.DisplayNameFor(model => model.Quantity)
+      </dt>
+
+      <dd>
+         @Html.DisplayFor(model => model.Quantity)
+      </dd>
+      
+      <dt>
+         @Html.DisplayNameFor(model => model.ClinicalRecordId)
+      </dt>
+
+      <dd>
+         @Html.DisplayFor(model => model.ClinicalRecordId)
+      </dd>
+
+      @if (!string.IsNullOrWhiteSpace(Model.Reason))
+      {
+         <dt>
+            @Html.DisplayNameFor(model => model.Reason)
+         </dt>
+
+         <dd>
+            @Html.DisplayFor(model => model.Reason)
+         </dd>
+      }
+
+      @if (!string.IsNullOrWhiteSpace(Model.GeneralLedgerCode))
+      {
+         <dt>
+            @Html.DisplayNameFor(model => model.GeneralLedgerCode)
+         </dt>
+
+         <dd>
+            @Html.DisplayFor(model => model.GeneralLedgerCode)
+         </dd>
+      }
+
+      <dt>
+         @Html.DisplayNameFor(model => model.Status)
+      </dt>
+
+      <dd>
+         @Html.DisplayFor(model => model.Status)
+      </dd>
+    
+      <dt>@Html.DisplayNameFor(model => model.Note)</dt>
+      <dd>@Html.DisplayFor(model => model.Note)</dd>
+   </dl>
+
+</div>

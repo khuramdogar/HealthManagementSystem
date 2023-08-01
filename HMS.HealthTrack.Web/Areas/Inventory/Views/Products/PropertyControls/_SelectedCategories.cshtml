@@ -1,0 +1,21 @@
+﻿@using Kendo.Mvc.UI
+@model dynamic
+<div class="page-input">
+   <span class="k-textbox k-space-right page-input" style="border:none;">
+      @(Html.Kendo().MultiSelect().Name("SelectedCategories")
+           .AutoBind(true)
+           .DataTextField("Text").DataValueField("Value").Placeholder("Search categories...")
+           .Events(e => e.Open("onCategoryMultiOpen"))
+           .HtmlAttributes(new { @class = "page-input window-multiselect", @Model.PropertyName })
+           .DataSource(ds => ds.Read(read => read.Action("GetParents", "Categories")).ServerFiltering(true))
+           )
+      <a href="#" class="k-icon k-i-search" onclick="$('#categoryTreeWindow').data('kendoWindow').center().open();">&nbsp;</a>
+   </span>
+</div>
+
+<style>
+   .window-multiselect.k-multiselect.k-header {
+      padding-right: 25px !important;
+   }
+</style>
+      

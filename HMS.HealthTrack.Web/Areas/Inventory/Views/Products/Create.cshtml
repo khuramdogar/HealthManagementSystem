@@ -1,0 +1,65 @@
+﻿@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.Products.CreateProductsViewModel
+
+@{
+   ViewBag.Title = "Create product";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Scale And Box Add.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Add new product</h2>
+         </div>
+      </div>
+   </div>
+</div>
+<div id="alertPlaceholder"></div>
+@using (Html.BeginForm("Create", "Products"))
+{
+   @Html.ValidationSummary(true)
+
+   @Html.Partial("_ProductForm", Model)
+
+   <div class="form-group">
+      <a class="k-button" href="@Url.Action("Index", "Products")">Back to list</a>
+      @Html.Kendo().Button().Name("FromExisting").Content("Fill from existing").Events(events => events.Click("onFromExistingClick"))
+      <button type="submit" class="k-button k-primary" value="Create">Create</button>
+   </div>
+}
+
+@Html.Hidden("ProductId")
+<div id="advancedSearchWindow"></div>
+
+@section Scripts {
+   @Scripts.Render("~/bundles/jqueryval")
+   <script src="~/Areas/Inventory/Scripts/AdvancedSearch.js"></script>
+   <script src="~/Areas/Inventory/Scripts/ScanCode.js"></script>
+   <script src="~/Scripts/Inventory.js"></script>
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+
+   <script type="text/javascript">
+      $(document).ready(function() {
+         createAdvancedSearchWithGrid();
+
+         if ("@ViewBag.ErrorMessage" != "") {
+            getAlert('danger', '@Html.Raw(ViewBag.ErrorMessage)');
+         }
+
+         $('#ProductId').change(function(e) {
+            window.location.href = "@Url.Action("CreateFromExisting", "Products")/" + $('#ProductId').val();
+         });
+      });
+
+      function onFromExistingClick(e) {
+         e.preventDefault();
+         openAdvancedSearch();
+      }
+   </script>
+}
+<style>
+   .form-control[disabled] { background-color: white !important; }
+</style>

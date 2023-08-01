@@ -1,0 +1,96 @@
+﻿@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.Consumptions.ConsumptionDetailsViewModel
+
+@{
+   ViewBag.Title = "Edit";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Barcode Progress.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Edit consumption notification</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div class="h4" style="color:#b94a48;">@ViewBag.ConsumptionErrors</div>
+@using (Html.BeginForm())
+{
+   @Html.AntiForgeryToken()
+
+   <div class="form-horizontal">
+      @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+      @Html.HiddenFor(model => model.UsedId)
+      @Html.HiddenFor(model => model.ProductId)
+      <div class="form-group">
+         @Html.LabelFor(model => model.ContainerId, htmlAttributes: new {@class = "control-label col-md-2"})
+         <div class="col-md-10">
+            @Html.Kendo().IntegerTextBoxFor(model => model.ContainerId).Format("#.##")
+            @Html.ValidationMessageFor(model => model.ContainerId, "", new {@class = "text-danger"})
+         </div>
+      </div>
+
+      <div class="form-group">
+         @Html.LabelFor(model => model.PatientId, htmlAttributes: new {@class = "control-label col-md-2"})
+         <div class="col-md-10">
+            @Html.Kendo().IntegerTextBoxFor(model => model.PatientId).Format("#.##")
+            @Html.ValidationMessageFor(model => model.PatientId, "", new {@class = "text-danger"})
+         </div>
+      </div>
+
+      <div class="form-group">
+         @Html.LabelFor(model => model.SerialNumber, htmlAttributes: new {@class = "control-label col-md-2"})
+         <div class="col-md-10">
+            @Html.Kendo().TextBoxFor(model => model.SerialNumber)
+            @Html.ValidationMessageFor(model => model.SerialNumber, "", new { @class = "text-danger" })
+         </div>
+      </div>
+      
+      <div class="form-group">
+         @Html.LabelFor(model => model.LotNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+         <div class="col-md-10">
+            @Html.Kendo().TextBoxFor(model => model.LotNumber)
+            @Html.ValidationMessageFor(model => model.LotNumber, "", new { @class = "text-danger" })
+         </div>
+      </div>
+
+      <div class="form-group">
+         @Html.LabelFor(model => model.Quantity, htmlAttributes: new {@class = "control-label col-md-2"})
+         <div class="col-md-10">
+            @Html.Kendo().IntegerTextBoxFor(model => model.Quantity).Format("#.##")
+            @Html.ValidationMessageFor(model => model.Quantity, "", new {@class = "text-danger"})
+         </div>
+      </div>
+
+      <div class="form-group">
+         @Html.LabelFor(model => model.Location, htmlAttributes: new {@class = "control-label col-md-2"})
+         <div class="col-md-10">
+            @(Html.Kendo().DropDownListFor(model => model.Location)
+            .DataSource(ds => ds.Read("GetAll", "HealthTrackLocation"))
+            .DataTextField("Text").DataValueField("Value").OptionLabel(" "))
+            @Html.ValidationMessageFor(model => model.Location, "", new { @class = "text-danger" })
+         </div>
+      </div>
+
+      <div class="form-group">
+         @Html.LabelFor(model => model.Name, htmlAttributes: new {@class = "control-label col-md-2"})
+         <div class="col-md-10">
+            @Html.Kendo().TextBoxFor(model => model.Name)
+            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+         </div>
+      </div>
+
+      <br/>
+      <div class="form-group">
+         <div class="col-md-10">
+            <a class="k-button" href="@Url.Action("Details", new {id = Model.UsedId})">Cancel</a>
+            <input type="submit" value="Save" class="k-button k-primary" />
+         </div>
+      </div>
+   </div>
+}

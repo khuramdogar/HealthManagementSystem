@@ -1,0 +1,13 @@
+﻿@model dynamic
+
+@{
+   ViewBag.Title = "Processing consumption records";
+}
+
+<h2>Processing consumption records</h2>
+<p>Your records are being processed. Please check again later</p>
+
+@if (!String.IsNullOrWhiteSpace(ViewBag.JobToken))
+{
+   <p>If you need to see specific details of the task's process you can check <a href="~/Hangfire/Job/@ViewBag.JobToken">here</a></p>
+}

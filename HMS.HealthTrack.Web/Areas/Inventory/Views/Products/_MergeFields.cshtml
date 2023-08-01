@@ -1,0 +1,31 @@
+﻿@using HMS.HealthTrack.Web.Views
+@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.Products.MergeProductsModel
+
+@Html.MergeProductTableRow(m => m.ToKeep.Description, m => m.ToDelete.Description)
+@Html.MergeProductTableRow(m => m.ToKeep.SPC, m => m.ToDelete.SPC)
+@Html.MergeProductTableRow(m => m.ToKeep.LPC, m => m.ToDelete.LPC)
+@Html.MergeProductTableRow(m => m.ToKeep.UPN, m => m.ToDelete.UPN)
+@Html.MergeProductTableRow(m => m.ToKeep.GLC, m => m.ToDelete.GLC)
+@Html.MergeProductTableRow(m => m.ToKeep.Manufacturer, m => m.ToDelete.Manufacturer)
+@Html.MergeProductTableRow(m => m.ToKeep.UseExpired, m => m.ToDelete.UseExpired)
+@Html.MergeProductTableRow(m => m.ToKeep.UseSterile, m => m.ToDelete.UseSterile)
+@Html.MergeProductTableRow(m => m.ToKeep.Notes, m => m.ToDelete.Notes)
+@Html.MergeProductTableRow(m => m.ToKeep.MaxUses, m => m.ToDelete.MaxUses)
+@Html.MergeProductTableRow(m => m.ToKeep.PrimarySupplier, m => m.ToDelete.PrimarySupplier)
+@Html.MergeProductTableRow(m => m.ToKeep.SecondarySupplier, m => m.ToDelete.SecondarySupplier)
+@Html.MergeProductTableRow(m => m.ToKeep.IsConsignment, m => m.ToDelete.IsConsignment)
+@Html.MergeProductTableRow(m => m.ToKeep.RebateCode, m => m.ToDelete.RebateCode)
+@Html.MergeProductTableRow(m => m.ToKeep.MinimumOrder, m => m.ToDelete.MinimumOrder)
+@Html.MergeProductTableRow(m => m.ToKeep.OrderMultiple, m => m.ToDelete.OrderMultiple)
+@Html.MergeProductTableRow(m => m.ToKeep.ManageStock, m => m.ToDelete.ManageStock)
+@Html.MergeProductTableRow(m => m.ToKeep.ReorderThreshold, m => m.ToDelete.ReorderThreshold)
+@Html.MergeProductTableRow(m => m.ToKeep.AutoReorderSetting, m => m.ToDelete.AutoReorderSetting)
+@Html.MergeProductTableRow(m => m.ToKeep.TargetStockLevel, m => m.ToDelete.TargetStockLevel)
+@Html.MergeProductTableRow(m => m.ToKeep.UseCategorySettings, m => m.ToDelete.UseCategorySettings)
+@Html.MergeProductTableRow(m => m.ToKeep.UsePaymentClassPrice, m => m.ToDelete.UsePaymentClassPrice)
+@Html.MergeProductTableRow(m => m.ToKeep.SpecialRequirements, m => m.ToDelete.SpecialRequirements)
+@Html.MergeProductTableRow(m => m.ToKeep.ProductStatus, m => m.ToDelete.ProductStatus)
+@Html.MergeProductTableRow(m => m.ToKeep.SelectedCategories, m => m.ToDelete.SelectedCategories)
+
+@Html.MergeProductPriceTableRows(m => m.ToKeep.Prices, m => m.ToDelete.Prices)

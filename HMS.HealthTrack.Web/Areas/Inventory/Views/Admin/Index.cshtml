@@ -1,0 +1,45 @@
+﻿@{
+   ViewBag.Title = "Inventory Admin";
+}
+
+<div class="content-title-area">
+   <div class="row">
+      <div class="col-xs-2 col-md-2 logo-big">
+         <img src="@Url.Content("~/Content/images/Icons/72x72/Shipping Boxes 2.png")" class="img-responsive" />
+      </div>
+      <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+         <div class="row">
+            <div class="col-sm-12">
+               <h2>HealthTrack Inventory Admin</h2>
+            </div>
+         </div>
+         <div class="row">
+            <div class="col-lg-12" id="subtitle">
+               Welcome to the administration area for HealthTrack's Inventory system.
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+<br />
+<br />
+<div class="row row-top-padding text-center">
+   <div class="col-md-4">
+      <img src="~/Content/images/Icons/72x72/Shopping Center.png" alt="Inventory Products" class="img-responsive center-block">
+      <h4>Locations</h4>
+      <p>Delivery Locations and Stock Locations can be managed here.</p>
+      <p><a class="btn btn-default" href="@Url.Action("Index", "StockLocations", new { Area = "Inventory" })">Locations &raquo;</a></p>
+   </div>
+   <div class="col-md-4">
+      <img src="~/Content/images/Icons/72x72/Cargo 2 Help.png" alt="Stock" class="img-responsive center-block">
+      <h4>External Product Mappings</h4>
+      <p>Products used in HealthTrack can be mapped to Products present in the HealthTrack Inventory system. </p>
+      <p><a class="btn btn-default" href="@Url.Action("Index", "ProductMappings", new { Area = "Inventory" })">Product Mappings&raquo;</a></p>
+   </div>
+   <div class="col-md-4">
+      <img src="~/Content/images/Icons/72x72/Barcode Progress.png" alt="Orders" class="img-responsive center-block">
+      <h4>Unprocessed Used Inventory</h4>
+      <p>From here you can view inventory items used in the HealthTrack client that are yet to be processed in the Inventory system.</p>
+      <p><a class="btn btn-default" href="@Url.Action("Unprocessed", "Consumptions", new { Area = "Inventory" })">Unprocessed Used Inventory &raquo;</a></p>
+   </div>
+</div>

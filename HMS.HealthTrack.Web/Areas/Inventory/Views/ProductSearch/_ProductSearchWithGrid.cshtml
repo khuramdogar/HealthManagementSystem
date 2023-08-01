@@ -1,0 +1,45 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.Products
+@using Kendo.Mvc.UI
+
+@Html.Partial("_ProductSearch")
+
+<div id="searchResults">
+   @(Html.Kendo().Grid<IndexProductsViewModel>()
+        .Name("Results")
+        .AutoBind(false)
+        .Columns(columns =>
+        {
+           columns.Bound(c => c.Description);
+           columns.Bound(c => c.UPN);
+           columns.Bound(c => c.Manufacturer);
+           columns.Bound(c => c.Supplier);
+        })
+        .DataSource(ds => ds.Ajax()
+           .Model(model => model.Id(m => m.ProductId))
+           .Read(model => model.Action("Get", "Products").Data("productsData"))
+           .PageSize(5))
+        .Events(events => events.DataBound("resultGridDataBound"))
+        .Filterable()
+        .Selectable()
+        .Sortable()
+        .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+        )
+</div>
+<br />
+<div id="searchResultActions">
+   <button id="selectProductSearch" class="k-button k-primary">Select</button>
+   <button id="cancelProductSearch" class="k-button">Cancel</button>
+</div>
+<script type="text/javascript">
+   $(document).ready(function() {
+      $('#search').click(function() {
+         var grid = $('#Results').data('kendoGrid');
+         filterGridWithAdvancedSearch(grid);
+      });
+   });
+</script>
+<style>
+   #searchResults {
+      margin-top: 1em;
+   }
+</style>

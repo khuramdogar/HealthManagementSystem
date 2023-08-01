@@ -1,0 +1,236 @@
+﻿@using HMS.HealthTrack.Web.Data.Model.Inventory
+@using HMS.HealthTrack.Web.Areas.Inventory
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.Products
+@using HMS.HealthTrack.Web.Views
+@using Kendo.Mvc.UI
+@model ExportProductsViewModel
+          
+@{
+   ViewBag.Title = "Export products";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Spreadsheet 1 Progress.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Export products</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div id="alertPlaceholder"></div>
+<div>
+   @(Html.Kendo().Grid<ExportProductsViewModel>()
+        .Name("Products")
+        .Columns(columns =>
+        {
+           columns.Bound(p => p.Description).Title("Description");
+           columns.Bound(p => p.SPC).Title(ProductImportColumnNames.Spc);
+           columns.Bound(p => p.PrimarySupplier).Title(ProductImportColumnNames.Supplier);
+           columns.Bound(p => p.ConsumptionCount).Title("Consumed").Width(140);
+           columns.Bound(p => p.MostRecentConsumption).ClientTemplate("#if (MostRecentConsumption != null) {#" +
+                                                                      "#: kendo.format('{0: dd/MM/yyyy HH:mm}', MostRecentConsumption)#" +
+                                                                      "#}#").Title("Recent consumption");
+        })
+        .DataSource(dataSource => dataSource
+           .Ajax()
+           .PageSize(20)
+           .Read(read => read.Action("GetProductsForExport", "Products").Data("exportProductsData")).Sort(sort => sort.Add(s => s.ConsumptionCount).Descending())
+        )
+        .Events(events => events.DataBound("onDataBound"))
+        .Filterable(filterable => filterable.Extra(true))
+        .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+        .Sortable()
+        .ToolBar(toolbar =>
+        {
+           toolbar.Template(@<text>
+                                <span class="toolbar-left">
+                                   <a class="export k-button k-button-icontext" href="@Url.Action("ExportToExcel", "Products", new {filterPeriod = 0, filter = "~", sort = "~", categoryIds = "~", statuses = "~"})">
+                                      Export to Excel
+                                   </a>
+                                </span>
+                                <span class="toolbar-right">
+                                   <label for="filter">Consumption period:</label>
+                                   @(Html.Kendo().DropDownList()
+                                        .BindTo(new List<string>()
+                                        {
+                                           "",
+                                           "Yesterday",
+                                           "Last week",
+                                           "Last month",
+                                           "Last year"
+                                        })
+                                        .Events(e => e.Change("onChange"))
+                                        .Name("Period")
+                                        )
+                                   @(Html.Separator())
+                                   <label class="toolbar-label" for="stockControl">Stock take done:</label>
+                                   @(Html.Kendo().DropDownList()
+                                        .BindTo(new List<string>()
+                                        {
+                                           "All",
+                                           "Yes",
+                                           "No"
+                                        })
+                                        .Events(e => e.Select("onStockControlSelect"))
+                                        .Name("StockControl")
+                                        .HtmlAttributes(new {@class = "filter", style = "width: 80px;"})
+                                        )
+                                   @(Html.Separator())
+                                   @(Html.Kendo().Button().Name("advancedSearch").Content("Adv. Search").Events(events => events.Click("onAdvancedSearchClick")))
+                                </span>
+                             </text>);
+        })
+        )
+</div>
+<div id="advancedSearchWindow"></div>
+@section Scripts{
+   <script src="~/Areas/Inventory/Scripts/AdvancedSearch.js"></script>
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+   <script src="~/Scripts/Inventory.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+         createAdvancedSearch();
+         var grid = $('#Products').data('kendoGrid');
+         bindAdvancedSearchButtonToGrid(grid);
+      });
+
+      function onAdvancedSearchClick(e) {
+         openAdvancedSearch();
+      }
+
+      function exportProductsData() {
+         var data = productsData();
+         var filterPeriodValue = $('#Period').data('kendoDropDownList').value();
+         var filterPeriod;
+         switch (filterPeriodValue ) {
+            case "Yesterday":
+               filterPeriod = @((int) FilterPeriod.Day);
+               break;
+            case "Last week":
+               filterPeriod = @((int) FilterPeriod.Week);
+               break;
+            case "Last month":
+               filterPeriod = @((int) FilterPeriod.Month);
+               break;
+            case "Last year":
+               filterPeriod = @((int) FilterPeriod.Year);
+               break;
+            default:
+               filterPeriod = @((int) FilterPeriod.None);
+               break;
+         }
+
+         return {
+            categoryIds: data.categoryIds,
+            statuses: data.statuses,
+            filterPeriod: filterPeriod
+         };
+      }
+
+      function onChange(e) {
+         var grid = $('#Products').data('kendoGrid');
+         grid.dataSource.read();
+
+         var filterPeriodValue = e.sender.value();
+
+         var filterPeriod;
+         switch (filterPeriodValue ) {
+            case "Yesterday":
+               filterPeriod = @((int) FilterPeriod.Day);
+               break;
+            case "Last week":
+               filterPeriod = @((int) FilterPeriod.Week);
+               break;
+            case "Last month":
+               filterPeriod = @((int) FilterPeriod.Month);
+               break;
+            case "Last year":
+               filterPeriod = @((int) FilterPeriod.Year);
+               break;
+            default:
+               filterPeriod = @((int) FilterPeriod.None);
+               break;
+         }
+
+         var exportLink = grid.element.find('.export');
+         var href = $(exportLink).attr('href');
+         href = href.replace(/filterPeriod=([^&]*)/, 'filterPeriod=' + filterPeriod);
+         exportLink.attr('href', href);
+      }
+
+      function onStockControlSelect(e) {
+         var dataItem = this.dataItem(e.item);
+         if (dataItem == "Yes") {
+            $('#Products').data('kendoGrid').dataSource.filter({
+               field: "HadStockTake",
+               operator: "eq",
+               value: true
+            });
+         } else if (dataItem == "No") {
+            $('#Products').data('kendoGrid').dataSource.filter({
+               field: "HadStockTake",
+               operator: "eq",
+               value: false
+            });
+         } else {
+            $('#Products').data('kendoGrid').dataSource.filter({});
+         }
+      }
+
+      function onDataBound(e) {
+         applyGridTooltips();
+         var grid = this;
+
+         // ask the parameterMap to create the request object for you
+         var requestObject = (new kendo.data.transports["aspnetmvc-server"]({ prefix: "" }))
+            .options.parameterMap({
+               page: grid.dataSource.page(),
+               sort: grid.dataSource.sort(),
+               filter: grid.dataSource.filter()
+            });
+
+         // Get the export link as jQuery object
+         var $exportLink = grid.element.find('.export');
+
+         // Get its 'href' attribute - the URL where it would navigate to
+         var href = $exportLink.attr('href');
+
+         // Update the 'page' parameter with the grid's current page
+         //href = href.replace(/page=([^&]*)/, 'page=' + requestObject.page || '~');
+
+         // Update the 'sort' parameter with the grid's current sort descriptor
+         href = href.replace(/sort=([^&]*)/, 'sort=' + requestObject.sort || '~');
+
+         // Update the 'pageSize' parameter with the grid's current pageSize
+         //href = href.replace(/pageSize=([^&]*)/, 'pageSize=' + grid.dataSource._pageSize);
+
+         //update filter descriptor with the filters applied
+
+         href = href.replace(/filter=([^&]*)/, 'filter=' + (requestObject.filter || '~'));
+
+         var statusSelector = $('#psStatus').data('kendoMultiSelect');
+         if ($('#psStatus') != '' && statusSelector != undefined) {
+            var statusValues = statusSelector.value();
+            href = href.replace(/statuses=([^&]*)/, 'statuses=' + statusValues);
+         }
+
+         var categorySelector = $('#psSelectedCategories').data('kendoMultiSelect');
+         if ($('#psSelectedCategories') != '' && categorySelector != undefined) {
+            var categories = categorySelector.value();
+            href = href.replace(/categoryIds=([^&]*)/, 'categoryIds=' + categories);
+         }
+
+         // Update the 'href' attribute
+         $exportLink.attr('href', href);
+      }
+   </script>
+}
+
+<style>
+   .toolbar-right { float: right; }
+</style>

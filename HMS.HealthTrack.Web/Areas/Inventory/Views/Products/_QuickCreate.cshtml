@@ -1,0 +1,101 @@
+﻿@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.Products.QuickCreateProductsViewModel
+
+<div class="container-fluid">
+   <div class="row">
+      <div id="createProductMessagePlaceholder">
+         <p><span id="createProductMessage"></span></p>
+      </div>
+   </div>
+   <div id="createProductForm">
+      <div class="row">
+      @Html.ValidationSummary(true)
+      @(Html.Kendo().TabStrip()
+           .Name("tabstrip")
+           .SelectedIndex(0)
+           .Items(items =>
+           {
+              items.Add().Text("Product Details").Content(@<text>
+                                                              <div class="row" style="padding-top: 1em;">
+                                                                 <div class="form-horizontal">
+                                                                    <div class="form-group">
+                                                                       <div class="col-md-4 control-label">
+                                                                          @Html.LabelFor(m => m.QuickCreateDescription)
+                                                                       </div>
+                                                                       <div class="col-md-8">
+                                                                          @Html.Kendo().TextBoxFor(m => m.QuickCreateDescription)
+                                                                          @Html.ValidationMessageFor(m => m.QuickCreateDescription)
+                                                                       </div>
+                                                                    </div>
+
+                                                                    <div class="form-group">
+                                                                       <div class="col-md-4 control-label">
+                                                                          @Html.LabelFor(m => m.QuickCreateSpc)
+                                                                       </div>
+                                                                       <div class="col-md-8">
+                                                                          @Html.Kendo().TextBoxFor(m => m.QuickCreateSpc)
+                                                                          @Html.ValidationMessageFor(m => m.QuickCreateSpc)
+                                                                       </div>
+                                                                    </div>
+
+                                                                    <div class="form-group">
+                                                                       <div class="col-md-4 control-label">
+                                                                          @Html.LabelFor(m => m.QuickCreateUpn)
+                                                                       </div>
+                                                                       <div class="col-md-8">
+                                                                          @Html.Kendo().TextBoxFor(m => m.QuickCreateUpn)
+                                                                          @Html.ValidationMessageFor(m => m.QuickCreateUpn)
+                                                                       </div>
+                                                                    </div>
+                                                                 </div>
+                                                              </div>
+                                                           </text>);
+              items.Add().Text("Stock levels").Content(@<text>
+                                                           <table class="table table-striped table-condensed" id="initialStock">
+                                                              <thead>
+                                                                 <tr>
+                                                                    <th>@Html.Label("Location")</th>
+                                                                    <th>@Html.Label("Quantity")</th>
+                                                                 </tr>
+                                                              </thead>
+                                                              <tbody>
+                                                                 @if (Model.InitialStock != null)
+                                                                 {
+                                                                    foreach (var initialStock in Model.InitialStock)
+                                                                    {
+                                                                       <tr>
+                                                                          <td>
+                                                                             <input type="hidden" value=@initialStock.LocationId name="initialStock.Index" />
+                                                                             <input type="hidden" value=@initialStock.LocationId name=@string.Format("initialStock[{0}].LocationId", initialStock.LocationId) />
+                                                                             @Html.Kendo().TextBoxFor(model => initialStock.Location).Name("initialStock[" + @initialStock.LocationId + "].Location").HtmlAttributes(new {@readonly = "readonly"})
+                                                                          </td>
+                                                                          <td>
+                                                                             @Html.Kendo().NumericTextBoxFor(model => initialStock.Quantity).Name("initialStock[" + @initialStock.LocationId + "].Quantity").Format("#.##")
+                                                                          </td>
+                                                                       </tr>
+                                                                    }
+                                                                 }
+                                                              </tbody>
+                                                           </table>
+                                                        </text>);
+           }))
+   </div>
+      <br />
+      <div class="row">
+         <div class="pull-right text-right">
+            @Html.Kendo().Button().Name("submitCreateProductWindow").Content("Create").HtmlAttributes(new { @class = "k-primary" })
+            @Html.Kendo().Button().Name("cancelCreateProductWindow").Content("Cancel")
+         </div>
+      </div>
+   </div>
+</div>
+
+
+<style>
+   #createProductMessage {
+      padding-left: 10px;
+      padding-right: 10px;
+      text-align: center;
+   }
+
+</style>

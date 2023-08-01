@@ -1,0 +1,9 @@
+﻿@using Kendo.Mvc.UI
+@model dynamic
+          
+@{
+   @(Html.Kendo().DropDownList().Name("PriceCategory")
+        .DataSource(ds => ds.Read("GetPriceTypes", "PriceTypes"))
+        .DataTextField("Text").DataValueField("Value")
+        .HtmlAttributes(new {@class = "page-input", @Model.PropertyName}))
+}

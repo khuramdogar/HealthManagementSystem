@@ -1,0 +1,312 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Utils
+@using Kendo.Mvc.UI
+@using MvcSiteMapProvider.Web.Html
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=11">
+      <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+      <title>@ViewBag.Title</title>
+      
+      @Scripts.Render("~/bundles/jquery")
+      @Scripts.Render("~/bundles/kendo")
+      @Scripts.Render("~/bundles/bootstrap")
+      <script src="~/Scripts/kendo/2018.2.516/kendo.aspnetmvc.min.js"></script>
+      <script type="text/javascript">
+         kendo.culture("en-AU");
+      </script>
+
+      @Styles.Render("~/Content/kendo")
+      @Styles.Render("~/Content/css")
+      @Html.DevExpress().GetScripts(
+         new Script {ExtensionSuite = ExtensionSuite.HtmlEditor},
+         new Script {ExtensionSuite = ExtensionSuite.Report})
+   </head>
+   <body ng-app="inventoryApp">
+      @Html.DevExpress().GetStyleSheets(
+         new StyleSheet {ExtensionSuite = ExtensionSuite.HtmlEditor},
+         new StyleSheet {ExtensionSuite = ExtensionSuite.Report})
+      <div class="navbar navbar-fixed-top">
+         <div class="container">
+            <div id="menuPanelButton">
+               <div class="k-rpanel-toggle" id="menu-panel-toggled">
+                  @(Html.Kendo().Menu()
+                       .Name("OtherMenu")
+                       .Items(items =>
+                       {
+                          items.Add().Text("Inventory").ImageUrl(Url.Content("~/Content/images/Icons/32x32/Shipping Boxes 2.png")).Url(Url.Action("Index", "Inventory")).HtmlAttributes(new {@id = "inventory-home-button-toggled"});
+                          items.Add().Text("<button id=\"hamburger-button\" class=\"form-control\"><span class=\"k-icon k-i-hbars\"></span></button>").Encoded(false).HtmlAttributes(new {@id = "hamburger-menu-button"});
+                          items.Add().Text("HealthTrack Web").ImageUrl("~/Content/images/HT-ICONS-PROD32.png").Url(Url.Action("Index", "Home", new {Area = ""})).HtmlAttributes(new {@class = "menu-bar-right"});
+                          if (User.Identity.IsAuthenticated)
+                          {
+                             items.Add().Text(@User.Identity.Name).ImageUrl("~/Content/images/Icons/32x32/Chief of Staff.png").Items(children =>
+                             {
+                                //children.Add().Text("Permissions").ImageUrl("~/Content/images/Icons/32x32/Chief of Staff Information.png").Url(Url.HttpRouteUrl("DefaultWeb", new {controller = "Security", action = "Permissions", area = "" }));
+                                children.Add().Text("Preferences").ImageUrl("~/Content/images/Icons/32x32/Chief of Staff Edit 2.png").Url(@Url.Action("Preferences", "Security"));
+                                children.Add().Text("Logout").ImageUrl("~/Content/images/Icons/32x32/Chief of Staff Delete.png").Url(Url.HttpRouteUrl("DefaultWeb", new {controller = "Account", action = "Logout", area = ""}));
+                             }).HtmlAttributes(new {@class = "menu-bar-right"});
+                          }
+                          else
+                          {
+                             items.Add().Text("Login").ImageUrl("~/Content/images/Icons/32x32/Chief of Staff.png").Url(Url.HttpRouteUrl("DefaultWeb", new {controller = "Account", action = "Login", area = ""})).HtmlAttributes(new {@class = "menu-bar-right"});
+                          }
+                       }))
+               </div>
+            </div>
+            <div class="panel-wrap" id="menuPanel">
+               @(Html.Kendo().ResponsivePanel().Name("MenuPanel").Breakpoint(1200).Orientation("top").Events(events => events.Open("onMenuPanelOpen").Close("onMenuPanelClose"))
+                    .Content(@<text>
+                                 @(Html.Kendo().Menu()
+                                      .Name("Menu")
+                                      .Items(items =>
+                                      {
+                                         items.Add().Text("Inventory").ImageUrl(Url.Content("~/Content/images/Icons/32x32/Shipping Boxes 2.png")).Url(Url.Action("Index", "Inventory")).HtmlAttributes(new {@id = "inventory-home-button"});
+                                         items.Add()
+                                            .Text("Stock").ImageUrl(Url.Content("~/Content/images/Icons/32x32/Shipping Box 1.png"))
+                                            .Items(children =>
+                                            {
+                                               children.Add().Text("Available stock").ImageUrl("~/Content/images/Icons/32x32/Shipping Box 1.png").Url(@Url.Action("Index", "Stock"));
+                                               children.Add().Text("Receive stock").ImageUrl("~/Content/images/Icons/32x32/Dolly.png")
+                                                  .Items(innerChildren =>
+                                                  {
+                                                     innerChildren.Add().Text("Receive item").ImageUrl("~/Content/images/Icons/32x32/Surgery Tool.png").Url(@Url.Action("ReceiveProduct", "Stock"));
+                                                     innerChildren.Add().Text("View received stock").ImageUrl("~/Content/images/Icons/32x32/Shipping Box 1 Edit.png").Url(@Url.Action("ReceivedStock", "Stock"));
+                                                  });
+                                               children.Add().Text("Stock take").ImageUrl("~/Content/images/Icons/32x32/Bar Scanner.png")
+                                                  .Items(innerChildren =>
+                                                  {
+                                                     innerChildren.Add().Text("View stock takes").ImageUrl("~/Content/images/Icons/32x32/Bar Scanner Check.png").Url(@Url.Action("Index", "StockTakes"));
+                                                     innerChildren.Add().Text("Perform new stock take").ImageUrl("~/Content/images/Icons/32x32/Bar Scanner Add.png").Url(@Url.Action("New", "StockTakes"));
+                                                     innerChildren.Add().Text("Create stock take check list").ImageUrl("~/Content/images/Icons/32x32/Bar Scanner Search.png").Url(@Url.Action("CreateList", "StockTakes"));
+                                                  });
+                                               children.Add().Text("Stock deductions").ImageUrl("~/Content/images/Icons/32x32/Barcode.png")
+                                                  .Items(innerChildren =>
+                                                  {
+                                                     innerChildren.Add().Text("Deduct stock").ImageUrl("~/Content/images/Icons/32x32/Barcode Add.png").Url(@Url.Action("DeductStock", "StockAdjustments"));
+                                                     innerChildren.Add().Text("View stock deductions").ImageUrl("~/Content/images/Icons/32x32/Barcode Search.png").Url(@Url.Action("Deductions", "StockAdjustments"));
+                                                  });
+                                            });
+                                         items.Add()
+                                            .Text("Request items").ImageUrl(Url.Content("~/Content/images/Icons/32x32/Basket 2.png"))
+                                            .Items(children =>
+                                            {
+                                               children.Add().Text("From stock set").ImageUrl(Url.Content("~/Content/images/Icons/32x32/Shipping Box 2 Note.png")).Url(@Url.Action("RequestStockSet", "StockRequests"));
+                                               children.Add().Text("A specific product").ImageUrl(Url.Content("~/Content/images/Icons/32x32/Surgery Tool.png")).Url(@Url.Action("RequestProduct", "StockRequests"));
+                                               children.Add().Text("View outstanding requests").ImageUrl("~/Content/images/Icons/32x32/Basket 2.png").Url(@Url.Action("Index", "StockRequests"));
+                                            });
+
+                                         items.Add()
+                                            .Text("Orders").ImageUrl(Url.Content("~/Content/images/Icons/32x32/Delivery Truck 2.png"))
+                                            .Items(children =>
+                                            {
+                                               children.Add().Text("Items for approval").ImageUrl("~/Content/images/Icons/32x32/Delivery Truck 1 Check.png").Url(@Url.Action("Approve", "Orders"));
+                                               ;
+                                               children.Add().Text("All orders").ImageUrl("~/Content/images/Icons/32x32/Delivery Truck 2 Search.png").Url(@Url.Action("Index", "Orders"));
+                                            });
+                                         items.Add()
+                                            .Text("Reports").ImageUrl(Url.Content("~/Content/images/Icons/32x32/Spreadsheet 2 Information.png"))
+                                            .Items(children =>
+                                            {
+                                               children.Add().Text("Consumption").ImageUrl("~/Content/images/Icons/32x32/Barcode.png")
+                                                  .Items(innerChildren =>
+                                                  {
+                                                     innerChildren.Add().Text("Consumed items").ImageUrl("~/Content/images/Icons/32x32/Treatment plan.png").Url(@Url.Action("Index", "Consumptions"));
+                                                     innerChildren.Add().Text("By category").ImageUrl("~/Content/images/Icons/32x32/Scale And Box Information.png").Url(@Url.Action("ConsumptionByCategory", "Consumptions"));
+                                                     innerChildren.Add().Text("Consumption report").ImageUrl("~/Content/images/Icons/32x32/Barcode Doctor.png").Url(@Url.Action("ConsumptionReports", "Consumptions"));
+                                                  });
+                                               children.Add().Text("Deduction issues").ImageUrl("~/Content/Images/Icons/32x32/Shipping Box 1 Warning.png")
+                                                  .Items(innerChildren =>
+                                                  {
+                                                     innerChildren.Add().Text("Deductions missing payment class").ImageUrl("~/content/images/Icons/32x32/Barcode Warning.png").Url(@Url.Action("RequirePaymentClass", "StockAdjustments"));
+                                                     innerChildren.Add().Text("Deductions missing patient information").ImageUrl("~/Content/images/Icons/32x32/Patient Man 2 Help.png").Url(@Url.Action("MissingPatients", "StockAdjustments"));
+                                                  });
+                                            });
+                                         items.Add().Text("Admin").ImageUrl("~/Content/images/Icons/32x32/Cargo 1 Configuration.png").Items(children =>
+                                         {
+                                            children.Add().Text("Manage products").ImageUrl(Url.Content("~/Content/images/Icons/32x32/Scale And Box Configuration.png")).Items(innerChildren =>
+                                            {
+                                               innerChildren.Add().Text("All products").ImageUrl("~/Content/images/Icons/32x32/Scale And Box.png").Url(@Url.Action("Index", "Products"));
+                                               innerChildren.Add().Text("Add new product").ImageUrl("~/Content/images/Icons/32x32/Scale And Box Add.png").Url(@Url.Action("Create", "Products"));
+                                               innerChildren.Add().Text("Stock sets").ImageUrl("~/Content/images/Icons/32x32/Shipping Box 2 Configuration.png").Url(@Url.Action("Index", "StockSets"));
+                                               innerChildren.Add().Text("Product categories").ImageUrl("~/Content/images/Icons/32x32/Scale And Box Information.png").Url(@Url.Action("Index", "Categories"));
+                                               innerChildren.Add().Text("Export products").ImageUrl("~/Content/images/Icons/32x32/Spreadsheet 1 Progress.png").Url(@Url.Action("Export", "Products"));
+                                               innerChildren.Add().Text("Import products").ImageUrl("~/Content/images/Icons/32x32/Spreadsheet 1 Add.png").Url(@Url.Action("Index", "ProductImport"));
+                                            });
+                                            children.Add().Text("General ledgers").ImageUrl("~/Content/images/Icons/32x32/Records 2.png").Url(@Url.Action("Index", "GeneralLedger"));
+                                            children.Add().Text("Stock locations").ImageUrl("~/Content/images/Icons/32x32/Shopping Center.png").Url(@Url.Action("Index", "StockLocations"));
+                                            children.Add().Text("Suppliers").ImageUrl("~/Content/images/Icons/32x32/Delivery Man.png").Url(@Url.Action("Index", "Suppliers"));
+                                            children.Add().Text("Product issues").ImageUrl("~/Content/Images/Icons/32x32/Scale And Box Warning.png")
+                                               .Items(innerChildren =>
+                                               {
+                                                  innerChildren.Add().Text("Unclassified products").ImageUrl("~/Content/images/Icons/32x32/Scale And Box Help.png").Url(@Url.Action("Unclassified", "Products"));
+                                                  innerChildren.Add().Text("Negative stock").ImageUrl("~/Content/images/Icons/32x32/Shipping Box 1 Error.png").Url(@Url.Action("NegativeStock", "Stock"));
+                                               });
+                                            children.Add().Text("Automatic consumption processing").ImageUrl("~/Content/images/Icons/32x32/Barcode Progress.png").Items(innerChildren =>
+                                            {
+                                               innerChildren.Add().Text("Unprocessed consumption").ImageUrl("~/Content/images/Icons/32x32/Barcode Progress.png").Url(@Url.Action("Unprocessed", "Consumptions"));
+                                               ;
+                                               innerChildren.Add().Text("Processing errors").ImageUrl("~/Content/images/Icons/32x32/Barcode Error.png").Url(@Url.Action("Errors", "Consumptions"));
+                                               innerChildren.Add().Text("External product mapping").ImageUrl("~/Content/images/Icons/32x32/Cargo 2 Help.png").Url(@Url.Action("Index", "ProductMappings"));
+                                            });
+                                            children.Add().Text("System settings").ImageUrl("~/Content/images/Icons/32x32/Gauge Configuration.png").Url(@Url.Action("Settings", "Admin"));
+                                            children.Add().Text("Payment class mappings").ImageUrl("~/Content/images/Icons/32x32/Savings Account.png").Url(@Url.Action("Index", "PaymentClassMapping"));
+                                            children.Add().Text("Stock adjustment reasons").ImageUrl("~/Content/images/Icons/32x32/Barcode Configuration.png").Url(@Url.Action("Index", "StockAdjustmentReasons"));
+                                         });
+
+                                         // items after this point to be in reverse order and float right applied
+
+                                         items.Add().Text("HealthTrack Web").ImageUrl("~/Content/images/HT-ICONS-PROD32.png").Url(Url.Action("Index", "Home", new {Area = ""})).HtmlAttributes(new {@class = "menu-bar-right"});
+                                         if (User.Identity.IsAuthenticated)
+                                         {
+                                            items.Add().Text(@User.Identity.Name).ImageUrl("~/Content/images/Icons/32x32/Chief of Staff.png").Items(children =>
+                                            {
+                                               //children.Add().Text("Permissions").ImageUrl("~/Content/images/Icons/32x32/Chief of Staff Information.png").Url(Url.HttpRouteUrl("DefaultWeb", new {controller = "Security", action = "Permissions", area = "" }));
+                                               children.Add().Text("Preferences").ImageUrl("~/Content/images/Icons/32x32/Chief of Staff Edit 2.png").Url(@Url.Action("Preferences", "Security"));
+                                               children.Add().Text("Logout").ImageUrl("~/Content/images/Icons/32x32/Chief of Staff Delete.png").Url(Url.HttpRouteUrl("DefaultWeb", new {controller = "Account", action = "Logout", area = ""}));
+                                            }).HtmlAttributes(new {@class = "menu-bar-right"});
+                                         }
+                                         else
+                                         {
+                                            items.Add().Text("Login").ImageUrl("~/Content/images/Icons/32x32/Chief of Staff.png").Url(Url.HttpRouteUrl("DefaultWeb", new {controller = "Account", action = "Login", area = ""})).HtmlAttributes(new {@style = "float:right;"});
+                                         }
+                                      })
+                                      )
+                              </text>)
+                    )
+            </div>
+         </div>
+      </div>
+      <div class="container fill">
+         <div class="body-content">
+            <div class="well-sm">@Html.MvcSiteMap().SiteMapPath()</div>
+            <div id="preferenceAlert"></div>
+            @RenderBody()
+            <hr />
+            <footer>
+               <p>&copy; @DateTime.Now.Year - HealthTrack</p>
+            </footer>
+         </div>
+      </div>
+      @RenderSection("scripts", required: false)
+   </body>
+
+</html>
+<style scoped="scoped">
+   .glyphicon { width: 30px; }
+
+   a.delete { cursor: pointer; }
+
+   .separator {
+      border-width: 0 0 0 1px;
+      border-style: solid;
+      width: 1px;
+      margin: 0 .2em;
+      line-height: 2em !important;
+      vertical-align: middle;
+      /*background-color: #f5f5f5;*/
+      border-color: #c5c5c5;
+      height: 28px;
+   }
+
+   #menuPanel {
+      width: 100%;
+      border-top: none;
+   }
+
+   #menuPanelButton {
+      background-color: #fff !important;
+      color: #fff !important;
+   }
+
+   .k-rpanel-top.k-rpanel-expanded { width: 25%; }
+
+   .k-menu-horizontal .menu-bar-right {
+      float: right !important;
+      display: block;
+   }
+
+   .k-menu-vertical .menu-bar-right { float: none !important; }
+
+   #hamburger-menu-button .k-link { padding: 0; }
+
+   #hamburger-button {
+      display: block;
+      width: 100%;
+      height: 3em;
+      border: none;
+      box-shadow: none;
+      background-color: #eae8e8;
+      border-radius: 0;
+   }
+
+   .hide-me { display: none; }
+
+</style>
+
+<script type="text/javascript">
+   $(document).ready(function() {
+      if ('@Session[@UserUtils.GetUnconfiguredInventoryPreferencesHandle(User)]' != '') {
+         $('#preferenceAlert').empty();
+         $('#preferenceAlert').append('<div id="alertdiv" class="alert alert-warning"><a class="close" data-dismiss="alert">&times;</a>' +
+            'You have unconfigured preferences. Would you like to <a href="/Inventory/Security/EditPreferences">configure</a> them now?' +
+            '</div>');
+      }
+
+      $('#OtherMenu').bind('click', function(e) {
+         if ($(e.target).is('a')) {
+            window.location.href = $(e.target).attr('href');
+            e.preventDefault();
+            return false;
+         }
+         e.preventDefault();
+         return false;
+      });
+
+      $('#hamburger-button').click(function(e) {
+         $('#Menu').kendoMenu({
+            direction: 'right',
+         });
+         $('#inventory-home-button').hide();
+         $('#Menu .menu-bar-right').hide();
+         $('.k-rpanel-toggle').trigger('click');
+         $.each($('#Menu .k-i-arrow-s'), function(index, value) {
+            $(value).addClass('k-i-arrow-e');
+            if (!$(value).hasClass('direction-arrow')) {
+               $(value).addClass('direction-arrow');
+            }
+            $(value).removeClass('k-i-arrow-s');
+         });
+      });
+
+      $('#inventory-home-button-toggled').click(function(e) {
+         window.location.href = $(e.currentTarget).children().attr('href');
+      });
+
+   });
+
+   function onMenuPanelOpen(e) {
+      $('#Menu').removeClass('k-menu-horizontal');
+      $('#Menu').addClass('k-menu-vertical');
+   }
+
+   function onMenuPanelClose(e) {
+      $('#Menu').removeClass('k-menu-vertical');
+      $('#Menu').addClass('k-menu-horizontal');
+      $('#Menu').addClass('hidden');
+      $('#inventory-home-button').show();
+      $('#Menu .menu-bar-right').show();
+      $('#Menu').kendoMenu({
+         direction: 'default',
+      });
+      setTimeout(function() {
+         $.each($('.direction-arrow'), function(index, value) {
+            $(value).addClass('k-i-arrow-s');
+            $(value).removeClass('k-i-arrow-e');
+         });
+         $('#Menu').removeClass('hidden');
+      }, 200);
+   }
+
+
+</script>

@@ -1,0 +1,822 @@
+﻿@using HMS.HealthTrack.Web.Data.Model.Inventory
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.OrderChannels
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.ScanCode
+@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.Products.IProductsViewModel
+
+@(Html.Kendo().TabStrip()
+     .Name("tabstrip")
+     .SelectedIndex(0)
+     .Animation(animation => animation.Enable(false))
+     .Scrollable(true)
+     .Items(tabstrip =>
+     {
+        tabstrip.Add().Text("Product details")
+           .Content(@<text>
+         <div class="row tab-row">
+            <div class="col-lg-6">
+               <div class="form-horizontal">
+                  <div class="form-group">
+                     <div class="col-sm-3 control-label">
+                        @Html.LabelFor(model => model.ProductStatus)
+                     </div>
+                     <div class="col-sm-7">
+                        @{
+                           @(Html.Kendo().DropDownListFor(m => m.ProductStatus)
+                                               .BindTo(EnumHelper.GetSelectList(typeof(ProductStatus)).OrderBy(e => e.Text))
+                                               .DataTextField("Text").DataValueField("Value")
+                                               .Events(events => events.Change("onProductStatusChange"))
+                                               .HtmlAttributes(new { @class = "page-input" })
+                                               .Value(Model.ProductStatus.ToString())
+                           )
+                        }
+                     </div>
+                  </div>
+                  <div class="form-group">
+                     <div class="col-sm-3 control-label">
+                        @Html.LabelFor(model => model.SPC)
+                     </div>
+                     <div class="col-sm-7">
+                        @Html.Kendo().TextBoxFor(model => model.SPC).HtmlAttributes(new { @class = "page-input" })
+                        @Html.ValidationMessageFor(model => model.SPC)
+                     </div>
+                     <div class="col-sm-2 no-padding-left">
+                        <a id="scanSpc" class="k-button">Scan</a>
+                     </div>
+                  </div>
+
+                  <div class="form-group">
+                     <div class="col-sm-3 control-label">
+                        @Html.Label("UPN")
+                     </div>
+                     <div class="col-sm-7">
+                        @if (Model.ProductId.HasValue)
+                        {
+                           @(Html.Kendo().Grid<ScanCodeModel>()
+                                               .Name("scanCodeGrid")
+                                               .Columns(columns =>
+                                               {
+                                                  columns.Bound(p => p.Value).Title("Scan code");
+                                                  columns.Command(command => command.Destroy()).Width(100);
+                                               })
+                                               .ToolBar(toolbar =>
+                                               {
+                                                  toolbar.Create().Text("Add");
+                                               })
+                                               .Editable(editable => editable.Mode(GridEditMode.InCell))
+                                               .Sortable()
+                                               .Scrollable()
+                                               .DataSource(dataSource => dataSource
+                                                  .Ajax()
+                                                  .Batch(true)
+                                                  .ServerOperation(false)
+                                                  .Model(model =>
+                                                  {
+                                                     model.Id(p => p.ScanCodeId);
+                                                     model.Field(p => p.ProductId).DefaultValue(Model.ProductId);
+                                                     model.Field(p => p.Value);
+                                                  })
+                                                  .Create("AddOrUpdateScanCodeForProduct", "ScanCode")
+                                                  .Read("GetScanCodesForProduct", "ScanCode", new { productId = Model.ProductId })
+                                                  .Update("AddOrUpdateScanCodeForProduct", "ScanCode")
+                                                  .Destroy("RemoveScanCodeFromProduct", "ScanCode")
+                                               )
+                           )
+                        }
+                        else
+                        {
+                           @Html.Kendo().TextBoxFor(p => p.UPN).HtmlAttributes(new { @class = "page-input" })
+                        }
+                     </div>
+                     <div class="col-sm-2 no-padding-left">
+                        <a id="scanUpc" class="k-button">Scan</a>
+                     </div>
+                  </div>
+
+                  <div class="form-group">
+                     <div class="col-sm-3 control-label">
+                        @Html.LabelFor(model => model.Description)
+                     </div>
+                     <div class="col-sm-7">
+                        @Html.TextAreaFor(model => model.Description, new { @class = "k-textbox page-input", rows = "5" })
+                        @Html.ValidationMessageFor(model => model.Description)
+                     </div>
+                  </div>
+
+                  <div class="form-group">
+                     <div class="col-sm-3 control-label">
+                        @Html.LabelFor(model => model.Notes)
+                     </div>
+                     <div class="col-sm-7">
+                        @Html.TextAreaFor(model => model.Notes, new { @class = "k-textbox page-input", rows = "5" })
+                        @Html.ValidationMessageFor(model => model.Notes)
+                     </div>
+                  </div>
+
+               </div>
+            </div>
+
+            <div class="col-lg-6">
+               <div class="form-horizontal">
+                  <div class="form-group">
+                     <div class="col-sm-3 control-label">
+                        @Html.LabelFor(model => model.LPC)
+                     </div>
+                     <div class="col-sm-7">
+                        @Html.Kendo().TextBoxFor(model => model.LPC).HtmlAttributes(new { @class = "page-input" })
+                        @Html.ValidationMessageFor(model => model.LPC)
+                     </div>
+                  </div>
+
+                  <div class="form-group">
+                     <div class="col-sm-3 control-label">
+                        @Html.LabelFor(model => model.UseSterile)
+                     </div>
+                     <div class="col-sm-7">
+                        @(Html.Kendo().DropDownListFor(model => model.UseSterile)
+                                            .BindTo(@Model.NullableBoolValues)
+                                            .HtmlAttributes(new { @class = "page-input" })
+                                            .OptionLabel("Not set"))
+                        @Html.ValidationMessageFor(model => model.UseSterile)
+                     </div>
+                  </div>
+
+                  <div class="form-group">
+                     <div class="col-sm-3 control-label">
+                        @Html.LabelFor(model => model.UseExpired)
+                     </div>
+                     <div class="col-sm-7">
+                        @(Html.Kendo().DropDownListFor(model => model.UseExpired)
+                                            .BindTo(@Model.NullableBoolValues)
+                                            .HtmlAttributes(new { @class = "page-input" })
+                                            .OptionLabel("Not set"))
+                        @Html.ValidationMessageFor(model => model.UseExpired)
+                     </div>
+                  </div>
+
+                  <div class="form-group">
+                     <div class="col-sm-3 control-label">
+                        @Html.LabelFor(model => model.SpecialRequirements)
+                     </div>
+                     <div class="col-sm-7">
+                        @Html.TextAreaFor(model => model.SpecialRequirements, new { @class = "k-textbox page-input", rows = "5" })
+                        @Html.ValidationMessageFor(model => model.SpecialRequirements)
+                     </div>
+                  </div>
+
+               </div>
+            </div>
+         </div>
+         </text>);
+
+        tabstrip.Add().Text("Classification")
+           .Content(@<text>
+                                 <div class="row tab-row">
+                                    <div class="col-lg-12">
+                                       <div class="form-horizontal">
+                                          <div class="form-group">
+                                             <div class="col-sm-3 control-label">
+                                                @(Html.LabelFor(model => model.GLC))
+                                             </div>
+                                             <div class="col-sm-4">
+                                                @(Html.HiddenFor(model => model.LedgerId))
+                                                <span class="k-textbox k-space-right page-input">
+                                                   @(Html.Kendo().TextBoxFor(model => model.GLC).HtmlAttributes(new { @readonly = "readonly" }))
+                                                   <a href="#" class="k-icon k-i-search" id="BrowseLedgers">&nbsp;</a>
+                                                </span>
+                                             </div>
+                                          </div>
+
+                                          <div class="form-group">
+                                             <div class="col-sm-3 control-label">
+                                                @Html.LabelFor(model => model.SelectedCategories)
+                                             </div>
+                                             <div class="col-sm-4">
+                                                <span class="k-textbox k-space-right page-input" style="border: none;">
+                                                   @(Html.Kendo().MultiSelectFor(model => model.SelectedCategories).AutoBind(true)
+                                               .DataTextField("Text").DataValueField("Value").Placeholder("Search categories...")
+                                               .Events(e => e.Open("onCategoryMultiOpen"))
+                                               .HtmlAttributes(new { @class = "page-input window-multiselect" })
+                                               .DataSource(ds => ds.Read(read => read.Action("GetParents", "Categories")).ServerFiltering(true))
+                                                   )
+                                                   <a href="#" class="k-icon k-i-search" id="BrowseCategories">&nbsp;</a>
+                                                </span>
+                                             </div>
+                                          </div>
+
+                                       </div>
+                                    </div>
+                                    <div class="col-lg-5">
+
+                                    </div>
+                                 </div>
+         </text>);
+
+        tabstrip.Add().Text("Companies")
+           .Content(@<text>
+                                 <div class="row tab-row">
+                                    <div class="col-lg-12">
+                                       <div class="form-horizontal">
+                                          <div class="form-group">
+                                             <div class="col-sm-3 control-label">
+                                                @Html.LabelFor(model => model.PrimarySupplier)
+                                             </div>
+                                             <div class="col-sm-4">
+                                                @(Html.Kendo().DropDownListFor(model => model.PrimarySupplier)
+                                            .AutoBind(true).DataTextField("Text").DataValueField("Value")
+                                            .DataSource(ds => ds.Read(read => read.Action("GetSuppliers", "Suppliers")).ServerFiltering(true))
+                                            .Filter(FilterType.Contains).OptionLabel(" ")
+                                            .HtmlAttributes(new { @class = "page-input" })
+                                            .Value(Model.PrimarySupplier)
+                                                )
+                                                @Html.ValidationMessageFor(model => model.PrimarySupplier)
+                                             </div>
+                                          </div>
+                                          <div class="form-group">
+                                             <div class="col-sm-3 control-label">
+                                                @Html.LabelFor(model => model.SecondarySupplier)
+                                             </div>
+                                             <div class="col-sm-4">
+                                                @(Html.Kendo().DropDownListFor(model => model.SecondarySupplier)
+                                            .AutoBind(false).DataTextField("Text").DataValueField("Value")
+                                            .DataSource(ds => ds.Read(read => read.Action("GetSuppliers", "Suppliers")).ServerFiltering(true))
+                                            .Filter(FilterType.Contains).OptionLabel(" ")
+                                            .HtmlAttributes(new { @class = "page-input" }))
+                                                @Html.ValidationMessageFor(model => model.SecondarySupplier)
+                                             </div>
+                                          </div>
+
+                                          <div class="form-group">
+                                             <div class="col-sm-3 control-label">
+                                                @Html.LabelFor(model => model.Manufacturer)
+                                             </div>
+                                             <div class="col-sm-4">
+                                                @Html.Kendo().TextBoxFor(model => model.Manufacturer).HtmlAttributes(new { @class = "page-input" })
+                                                @Html.ValidationMessageFor(model => model.Manufacturer)
+                                             </div>
+                                          </div>
+                                       </div>
+                                    </div>
+                                 </div>
+         </text>);
+        tabstrip.Add().Text("Financial")
+           .Content(@<text>
+                                 <div class="row tab-row">
+                                    <div class="col-lg-12">
+                                       <div class="form-horizontal">
+                                          <div class="form-group">
+                                             <div class="col-sm-3">
+                                             </div>
+                                             <div class="col-sm-4">
+                                                @Html.Kendo().CheckBoxFor(model => model.IsConsignment)
+                                             </div>
+                                          </div>
+
+                                          <div class="form-group">
+                                             <div class="col-sm-3">
+                                             </div>
+                                             <div class="col-sm-4">
+                                                @Html.Kendo().CheckBoxFor(model => model.UsePaymentClassPrice)
+                                             </div>
+                                          </div>
+                                       </div>
+                                       <div class="row">
+                                          <div class="col-lg-12">
+                                             <div id="financialPrices">
+                                                <table class="table table-striped table-condensed" id="prices">
+                                                   <thead>
+                                                      <tr>
+                                                         <th class="col-sm-4">@Html.Label("Price Category")</th>
+                                                         <th class="col-sm-2">@Html.Label("Buy Price")</th>
+                                                         <th class="col-sm-2">@Html.Label("Buy Currency")</th>
+                                                         <th class="col-sm-2">@Html.Label("Buy Currency Rate")</th>
+                                                         <th class="col-sm-2">@Html.Label("Sell Price")</th>
+                                                      </tr>
+                                                   </thead>
+                                                   <tbody>
+                                                      @foreach (var price in Model.Prices)
+                                                      {
+                                                         <tr>
+                                                            <td>
+                                                               <input type="hidden" value=@price.PriceTypeId name="prices.Index" />
+
+                                                               <input type="hidden" value=@price.PriceTypeId name=@string.Format("prices[{0}].PriceTypeId", price.PriceTypeId) />
+                                                               @Html.Kendo().TextBoxFor(model => price.PriceTypeName).Name("prices[" + @price.PriceTypeId + "].PriceTypeName").HtmlAttributes(new { @readonly = true, @class = "page-input" })
+                                                            </td>
+                                                            <td>@Html.Kendo().CurrencyTextBoxFor(model => price.BuyPrice).Name("prices[" + @price.PriceTypeId + "].BuyPrice").HtmlAttributes(new { @class = "page-input" })</td>
+                                                            <td>@Html.Kendo().DropDownListFor(model => price.BuyCurrency).BindTo(Model.CurrencyTypes).Name("prices[" + @price.PriceTypeId + "].BuyCurrency").HtmlAttributes(new { @class = "page-input" })</td>
+                                                            <td>@Html.Kendo().TextBoxFor(model => price.BuyCurrencyRate).Name("prices[" + @price.PriceTypeId + "].BuyCurrencyRate").HtmlAttributes(new { @class = "page-input" })</td>
+                                                            <td>@Html.Kendo().CurrencyTextBoxFor(model => price.SellPrice).Name("prices[" + @price.PriceTypeId + "].SellPrice").HtmlAttributes(new { @class = "page-input" })</td>
+                                                         </tr>
+                                                      }
+                                                   </tbody>
+                                                </table>
+                                             </div>
+                                          </div>
+                                       </div>
+                                    </div>
+                                 </div>
+         </text>);
+        tabstrip.Add().Text("Stock handling")
+           .Content(@<text>
+                                 @Html.HiddenFor(model => model.LastStockTakeId)
+
+                                 <div class="row tab-row">
+                                    <div class="col-lg-12">
+                                       <div class="form-horizontal">
+                                          <div class="form-group">
+                                             <div class="col-sm-3 control-label">
+                                             </div>
+                                             <div class="col-sm-4">
+                                                @Html.Kendo().CheckBoxFor(p => p.ManageStock).Label("Manage stock")
+                                             </div>
+                                          </div>
+                                          <br />
+                                          <div class="form-group">
+                                             <div class="col-sm-3 control-label">
+                                                @Html.LabelFor(model => model.AutoReorderSetting)
+                                             </div>
+                                             <div class="col-sm-4">
+                                                <ul class="fieldlist" id="AutoReorderSettings">
+                                                   @{
+                                                      foreach (var setting in EnumHelper.GetSelectList(typeof(ReorderSettings)))
+                                                      {
+                                                         <li>
+                                                            @(Html.Kendo().RadioButtonFor(m => m.AutoReorderSetting).Name("AutoReorderSetting")
+                                                .Checked(@Model.AutoReorderSetting == int.Parse(setting.Value))
+                                                .Label(setting.Text).Value(setting.Value))
+                                                      </li>
+                                                      }
+                                                   }
+                                                </ul>
+                                                @Html.ValidationMessageFor(model => model.AutoReorderSetting)
+                                             </div>
+                                          </div>
+                                          <div id="StockHandlingFields">
+                                             <div class="form-group">
+                                                <div class="col-sm-3 control-label">
+                                                   @Html.LabelFor(model => model.TargetStockLevel)
+                                                </div>
+                                                <div class="col-sm-4">
+                                                   @(Html.Kendo().NumericTextBoxFor(model => model.TargetStockLevel).Format("#.##").HtmlAttributes(new { @class = "page-input" })
+                                            .Events(events => events.Change("onTargetStockLevelChange")))
+                                                   @Html.ValidationMessageFor(model => model.TargetStockLevel)
+                                                </div>
+                                             </div>
+
+                                             <div class="form-group">
+                                                <div class="col-sm-3 control-label">
+                                                   @Html.LabelFor(model => model.ReorderThreshold)
+                                                </div>
+                                                <div class="col-sm-4">
+                                                   @Html.Kendo().NumericTextBoxFor(model => model.ReorderThreshold).Format("#.##").HtmlAttributes(new { @class = "page-input" })
+                                                   @Html.ValidationMessageFor(model => model.ReorderThreshold)
+                                                </div>
+                                             </div>
+
+                                             <div class="form-group">
+                                                <div class="col-sm-3 control-label">
+                                                   @Html.LabelFor(model => model.MinimumOrder)
+                                                </div>
+                                                <div class="col-sm-4">
+                                                   @Html.Kendo().NumericTextBoxFor(model => model.MinimumOrder).Format("#.##").HtmlAttributes(new { @class = "page-input" })
+                                                   @Html.ValidationMessageFor(model => model.MinimumOrder)
+                                                </div>
+                                             </div>
+
+                                             <div class="form-group">
+                                                <div class="col-sm-3 control-label">
+                                                   @Html.LabelFor(model => model.OrderMultiple)
+                                                </div>
+                                                <div class="col-sm-4">
+                                                   @Html.Kendo().NumericTextBoxFor(model => model.OrderMultiple).Format("#.##").HtmlAttributes(new { @class = "page-input" })
+                                                   @Html.ValidationMessageFor(model => model.OrderMultiple)
+                                                </div>
+                                             </div>
+                                          </div>
+                                       </div>
+                                    </div>
+                                 </div>
+         </text>);
+        tabstrip.Add().Text("Product settings").Content(@<text>
+            <div class="row tab-row">
+               <div class="col-lg-12">
+                  <div class="form-horizontal">
+                     <div class="form-group">
+                        <div class="col-sm-3 control-label">
+                        </div>
+                        <div class="col-sm-4">
+                           @Html.Kendo().CheckBoxFor(p => p.UseCategorySettings).Label("Use category settings")
+                        </div>
+                     </div>
+
+                     <div class="form-group">
+                        <div class="col-sm-3 control-label">
+                           <label>Product settings</label>
+                        </div>
+                        <div class="col-sm-4">
+                           @(Html.Kendo().MultiSelectFor(model => model.SelectedSettings)
+                                                                                .Name("SelectedSettings")
+                                                                                .DataTextField("Text")
+                                                                                .DataValueField("SettingId")
+                                                                                .HtmlAttributes(new { @class = "page-input" })
+                                                                                .Placeholder("Select settings...")
+                                                                                .Value(Model.SelectedSettings)
+                                                                                .DataSource(source => source.Read(read => read.Action("GetAll", "ProductSettings")).ServerFiltering(true)))
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+      </text>);
+        tabstrip.Add().Text("Medicare").Content(@<text>
+         <div class="row tab-row">
+            <div class="col-lg-12">
+               <div class="form-horizontal">
+                  <div class="form-group">
+                     <div class="col-sm-3 control-label">
+                        @Html.LabelFor(model => model.RebateCode)
+                     </div>
+                     <div class="col-sm-4">
+                        @(Html.Kendo().ComboBoxFor(model => model.RebateCode)
+                                                                        .AutoBind(true)
+                                                                        .DataTextField("Text").DataValueField("Value")
+                                                                        .DataSource(ds => ds.Read(read => read.Action("GetAll", "MedicareProducts")).ServerFiltering(true))
+                                                                        .Filter(FilterType.Contains).HtmlAttributes(new { @class = "page-input" })
+                                                                        .Events(e => e.Cascade("onRebateCodeChange")))
+                     </div>
+                  </div>
+               </div>
+               <div id="medicareProductDetails"></div>
+            </div>
+         </div>
+      </text>);
+                                                      tabstrip.Add().Text("Current stock").HtmlAttributes(new { id = "stockTab" }).Content(@<text>
+         <div class="row tab-row">
+            <div class="col-lg-12">
+               <table class="table table-striped table-condensed" id="initialStock">
+                  <thead>
+                     <tr>
+                        <th class="control-label col-sm-6">@Html.Label("Location")</th>
+                        <th class="control-label col-sm-6">@Html.Label("Quantity")</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     @if (Model.InitialStock != null)
+                                                                                                           {
+                                                                                                              foreach (var initialStock in Model.InitialStock)
+                                                                                                              {
+                                                                                                         <tr>
+                                                                                                            <td>
+                                                                                                               <input type="hidden" value=@initialStock.LocationId name="initialStock.Index" />
+                                                                                                               <input type="hidden" value=@initialStock.LocationId name=@string.Format("initialStock[{0}].LocationId", initialStock.LocationId) />
+                                                                                                               @Html.Kendo().TextBoxFor(model => initialStock.Location).Name("initialStock[" + @initialStock.LocationId + "].Location").HtmlAttributes(new {@readonly = "readonly", @class = "page-input"})
+                                                                                                            </td>
+                                                                                                            <td>
+                                                                                                               @Html.Kendo().NumericTextBoxFor(model => initialStock.Quantity).Name("initialStock[" + @initialStock.LocationId + "].Quantity").Format("#.##").HtmlAttributes(new {@class = "page-input"})
+                                                                                                            </td>
+                                                                                                         </tr>
+                                                                                                              }
+                                                                                                           }
+                  </tbody>
+               </table>
+            </div>
+         </div>
+
+
+
+                                                      </text>);
+        if (Model.ProductId.HasValue) //Don't show if it's a new product
+        {
+           tabstrip.Add().Text("Order Channels")
+              .HtmlAttributes(new {id = "orderChannels"})
+              .Content(@<text>
+                          <div class="row tab-row">
+                             <div class="col-lg-12">
+                                @RenderOrderChannelsGrid()
+                             </div>
+                          </div>
+                        </text>);
+        }
+     })
+)
+
+@Html.HiddenFor(m => m.ExternalId)
+
+
+
+@helper RenderOrderChannelsGrid()
+{
+      @(Html.Kendo().Grid<ProductChannelsModel>().Name("ProductChannelsGrid")
+        .Columns(columns =>
+        {
+           columns.ForeignKey(p => p.OrderChannelId, (System.Collections.IEnumerable)ViewData["channels"], "OrderChannelId", "Name").Title("Channel");
+           columns.Bound(c => c.Reference);
+           columns.Bound(c => c.AutomaticOrder);
+           columns.Command(c => c.Destroy());
+        })
+        .ToolBar(toolbar => toolbar.Create())
+        .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("OrderChannel"))
+        .DataSource(ds => ds.Ajax().PageSize(5).ServerOperation(true)
+           .Read(read => read.Action("GetChannelsForProduct", "OrderChannels", new { productId = Model.ProductId }))
+           .Create(update => update.Action("AddProductToChannel", "OrderChannels"))
+           .Update(update => update.Action("UpdateProductChannel", "OrderChannels"))
+           .Destroy(update => update.Action("RemoveProductChannel", "OrderChannels"))
+           .Model(m =>
+           {
+              m.Id(f => f.OrderChannelProductId);
+              m.Field(f => f.ProductId).DefaultValue(Model.ProductId);
+              m.Field(f => f.AutomaticOrder);
+              m.Field(f => f.Reference);
+              m.Field(f => f.Channel).DefaultValue(ViewData["DefaultChannel"] as OrderChannelModel);
+           })
+           .Sort(sort => sort.Add(s => s.Channel.Name)))
+        .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+
+        .Sortable())
+}
+
+
+<div id="categoryTreeWindow"></div>
+<div id="ledgerTreeWindow"></div>
+<div id="scanCodeWindow"></div>
+
+
+
+<script>
+
+   var manageStockOnLoad;
+   $(document).ready(function () {
+      manageStockOnLoad = $('#ManageStock').is(':checked');
+      $(document).on("keypress", ":input:not(textarea)", function (event) {
+         return event.keyCode != 13;
+      });
+
+      // Scan code
+      createScanCodeWindow("SPC","UPN", @Model.ProductId.GetValueOrDefault(), $('#scanCodeGrid'));
+      $('#scanSpc').click(function (e) {
+         $('#ScanCodeValue').val('@ScanCodeValue.Spc');
+         $('#scanCodeWindow').data('kendoWindow').title("Scan barcode for SPC").center().open();
+      });
+
+      $('#scanUpc').click(function (e) {
+         $('#ScanCodeValue').val('@ScanCodeValue.Upc');
+         $('#scanCodeWindow').data('kendoWindow').title("Scan barcode for UPN").center().open();
+      });
+
+      $('#saveButton').click(function() {
+         var grid = $("#scanCodeGrid").data("kendoGrid");
+         grid.saveChanges();
+      });
+
+      // refresh product settings when tab activated
+      var tabStrip = $('#tabstrip').data('kendoTabStrip');
+      tabStrip.bind("show", onShow);
+      // set product settings on checkbox checked
+      $('#UseCategorySettings').change(function () {
+         var selectedSettings = $('#SelectedSettings').data('kendoMultiSelect');
+         if ($(this).is(":checked")) {
+            setSelectedSettings();
+            selectedSettings.readonly(true);
+         } else {
+            selectedSettings.value([]);
+            selectedSettings.readonly(false);
+         }
+         $('#UseCategorySettings').val($(this).is(':checked'));
+      });
+
+      $('#SelectedCategories').data('kendoMultiSelect').input.keydown(function (e) {
+         e.preventDefault();
+         return false;
+      });
+
+      $('#CategoryMulti').keydown(function () {
+         e.preventDefault();
+         return false;
+      });
+
+      createCategoryTreeWindow("SelectedCategories");
+      $('#BrowseCategories').click(function () {
+         var selectedCategories = $('#SelectedCategories').data('kendoMultiSelect');
+         var selectedDataItems = selectedCategories.dataItems();
+         var categoryMulti = $('#CategoryMulti').data('kendoMultiSelect');
+         $.each(selectedDataItems, function (index, category) {
+            categoryMulti.dataSource.add({ id: category.Value, CategoryName: category.Text });
+         });
+         categoryMulti.value(selectedCategories.value());
+         $('#categoryTreeWindow').data('kendoWindow').center().open();
+      });
+
+      createLedgerTreeWindow(@ViewBag.LedgerType);
+      $('#BrowseLedgers').click(function () {
+         $('#ledgerTreeWindow').data('kendoWindow').center().open();
+      });
+
+      var errorMessage = "@ViewBag.ErrorMessage";
+      if (errorMessage != '') {
+         getAlert('danger', errorMessage);
+      }
+
+      $('#ManageStock').change(function (e) {
+         $('#alertPlaceholder').empty();
+         var checked = $('#ManageStock').is(':checked');
+
+         if (!checked && '@(!Model.IsNew)' && manageStockOnLoad) {
+            getAlert('warning', 'Choosing not to manage stock for this product will remove total stock and reset to 0. Please ensure you want to make this change as it is not reversible.');
+         }
+
+         var specifyLevels = $('#AutoReorderSetting_@((int)ReorderSettings.SpecifyLevels)');
+         var doNotAutoOrder = $('#AutoReorderSetting_@((int)ReorderSettings.DoNotReorder)');
+         var replaceOnUse = $('#AutoReorderSetting_@((int)ReorderSettings.OneForOneReplace)');
+
+         if (checked) {
+            // disable replace on use and enable specify levels
+            specifyLevels.removeAttr('disabled');
+
+            // set specify levels if replace on use was already selected
+            if (replaceOnUse.is(':checked')) {
+               replaceOnUse.removeAttr('checked');
+               specifyLevels.prop('checked', 'checked');
+            }
+            replaceOnUse.prop('disabled', 'disabled');
+         } else {
+            // disable specify levels and enable replace on use
+            replaceOnUse.removeAttr('disabled');
+
+            // set do not order if specify levels was already selected
+            if (specifyLevels.is(':checked')) {
+               specifyLevels.removeAttr('checked');
+               doNotAutoOrder.prop('checked', 'checked');
+            }
+            specifyLevels.prop('disabled', 'disabled');
+         }
+         $('#AutoReorderSettings input:checked').trigger('change');
+      });
+
+      $('#AutoReorderSettings input').on('change', function () {
+         var doNotAutoOrder = $('#AutoReorderSetting_@((int)ReorderSettings.DoNotReorder)');
+         allowEditStockHandlingFields($('#ManageStock').is(':checked') && !doNotAutoOrder.is(':checked'));
+      });
+
+   });
+
+   function allowEditStockHandlingFields(bool) {
+      var stockHandlingFields = $('#StockHandlingFields .k-input[name]');
+      var stockHandlingInputs = $('#StockHandlingFields .k-formatted-value');
+
+      // toggle styling of numeric boxes
+      $.each(stockHandlingInputs, function (index, value) {
+         if (bool) {
+            $(value).removeClass('input-disabled');
+         } else {
+            $(value).addClass('input-disabled');
+         }
+      });
+
+      // toggle readonly of numeric boxes
+      $.each(stockHandlingFields, function (index, value) {
+         $(value).data('kendoNumericTextBox').readonly(!bool);
+      });
+
+   }
+
+   function onShow(e) {
+      var tabToShow = $(e.item).find(".k-link").text();
+      if (tabToShow == "Product settings" && $('#UseCategorySettings').is(":checked")) {
+         setSelectedSettings();
+      } else if (tabToShow == 'Stock handling') {
+         $('#ManageStock').trigger('change');
+      }
+   }
+
+   function setSelectedSettings() {
+      var selectedSettings = $('#SelectedSettings').data('kendoMultiSelect');
+      selectedSettings.readonly(true);
+
+      var categories = $('#SelectedCategories').data('kendoMultiSelect');
+      var selectedCategories = categories.value();
+      if (selectedCategories.length == 0) {
+         selectedSettings.value([]);
+         return;
+      }
+
+      $.ajax({
+         type: 'GET',
+         contentType: 'application/json',
+         traditional: true,
+         data: { ids: selectedCategories },
+         url: "@Url.Action("CategoriesSettings", "ProductSettings")",
+         success: function (data) {
+            var selectedIds = [];
+            $.each(data, function (index, value) {
+               selectedIds.push(value);
+            });
+            selectedSettings.value(selectedIds);
+         }
+      });
+   }
+
+   function onAutoReorderSettingsChange(e) {
+      controlReorderSettings(e.sender.value());
+   }
+
+   function onProductStatusChange(e) {
+      if (e.sender.value() == '@((int) ProductStatus.Disabled)') {
+         getAlert('warning', 'Setting the status of this product to <i>Disabled</i> will prevent it from being visible in product searches. Stock levels will not be affected.');
+      } else {
+         $('#alertPlaceholder').empty();
+      }
+   }
+
+   function controlReorderSettings(newSetting) {
+      var targetStockLevel = $('#TargetStockLevel').data('kendoNumericTextBox');
+      var reorderThreshold = $('#ReorderThreshold').data('kendoNumericTextBox');
+
+      if (newSetting == '@((int) ReorderSettings.DoNotReorder)') { // Do not reorder
+         targetStockLevel.readonly();
+         targetStockLevel.value(0);
+
+         reorderThreshold.readonly();
+         reorderThreshold.value(0);
+
+      } else if (newSetting == '@((int) ReorderSettings.OneForOneReplace)') { // One for one replace
+         setThresholdForReplace(targetStockLevel, reorderThreshold);
+      } else if (newSetting == '@((int) ReorderSettings.SpecifyLevels)') { // Specify levels
+         targetStockLevel.enable();
+         reorderThreshold.enable();
+      }
+   }
+
+   function setThresholdForReplace(targetStockLevelControl, reorderThresholdControl) {
+      targetStockLevelControl.enable();
+
+      reorderThresholdControl.readonly();
+      var target = targetStockLevelControl.value();
+      if (target == null) {
+         reorderThresholdControl.value(null);
+      } else if (target == 0) {
+         reorderThresholdControl.value(0);
+      } else {
+         reorderThresholdControl.value(targetStockLevelControl.value() - 1);
+      }
+   }
+
+   function onTargetStockLevelChange(e) {
+      if ($('#AutoReorderSetting').data('kendoDropDownList').value() == '@((int) ReorderSettings.OneForOneReplace)') {
+         setThresholdForReplace($('#TargetStockLevel').data('kendoNumericTextBox'), $('#ReorderThreshold').data('kendoNumericTextBox'));
+      }
+   }
+
+</script>
+<style>
+   .k-widget.k-multiselect {
+      display: block;
+      width: 100%;
+   }
+
+   .k-state-disabled {
+      opacity: 1;
+   }
+
+   #tabstrip {
+      margin-bottom: 1em;
+   }
+
+   .tab-row {
+      height: 24em;
+      padding-top: 1em;
+      padding-left: 15px;
+      padding-right: 15px;
+   }
+
+   #financialPrices {
+      margin-top: 1em;
+   }
+
+   #tabstrip {
+      margin-bottom: 20px;
+      margin-top: 20px;
+   }
+
+   .window-multiselect.k-multiselect.k-header {
+      padding-right: 25px !important;
+   }
+
+   #stock-label {
+      padding-top: 5px;
+   }
+
+   .fieldlist {
+      margin: 0 0 -1em;
+      padding: 0;
+   }
+
+      .fieldlist li {
+         list-style: none;
+         padding-bottom: 1em;
+      }
+
+   .input-disabled {
+      background-color: #f8f8f8 !important;
+   }
+</style>

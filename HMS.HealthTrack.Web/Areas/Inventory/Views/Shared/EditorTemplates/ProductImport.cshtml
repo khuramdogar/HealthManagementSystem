@@ -1,0 +1,169 @@
+﻿@{
+   Layout = null;
+}
+@using System.Web.Mvc.Html
+@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.ProductImport.ProductImportModel
+@using (Html.BeginForm())
+{
+   <div class="editor-label">
+      @Html.LabelFor(m => m.ProductId)
+   </div>
+   <div class="editor-field">
+      @Html.Kendo().TextBoxFor(m => m.ProductId)
+      @Html.ValidationMessageFor(m => m.ProductId)
+   </div>
+   <div class="editor-label">
+      @Html.LabelFor(m => m.SPC)
+   </div>
+   <div class="editor-field">
+      @Html.Kendo().TextBoxFor(m => m.SPC)
+      @Html.ValidationMessageFor(m => m.SPC)
+   </div>
+
+   <div class="editor-label">
+      @Html.LabelFor(m => m.LPC)
+   </div>
+   <div class="editor-field">
+      @Html.Kendo().TextBoxFor(m => m.LPC)
+      @Html.ValidationMessageFor(m => m.LPC)
+   </div>
+
+   <div class="editor-label">
+      @Html.LabelFor(m => m.Description)
+   </div>
+   <div class="editor-field">
+      @Html.Kendo().TextBoxFor(m => m.Description)
+      @Html.ValidationMessageFor(m => m.Description)
+   </div>
+
+   <div class="editor-label">
+      @Html.LabelFor(m => m.Notes)
+   </div>
+   <div class="editor-field">
+      @Html.Kendo().TextBoxFor(m => m.Notes)
+      @Html.ValidationMessageFor(m => m.Notes)
+   </div>
+
+   <div class="editor-label">
+      @Html.LabelFor(m => m.GLC)
+   </div>
+   <div class="editor-field">
+      @Html.Kendo().TextBoxFor(m => m.GLC)
+      @Html.ValidationMessageFor(m => m.GLC)
+   </div>
+
+   <div class="editor-label">
+      @Html.LabelFor(m => m.Manufacturer)
+   </div>
+   <div class="editor-field">
+      @Html.Kendo().TextBoxFor(m => m.Manufacturer)
+      @Html.ValidationMessageFor(m => m.Manufacturer)
+   </div>
+
+   <div class="editor-label">
+      @Html.LabelFor(m => m.Supplier)
+   </div>
+   <div class="editor-field">
+      @Html.Kendo().TextBoxFor(m => m.Supplier)
+      @Html.ValidationMessageFor(m => m.Supplier)
+   </div>
+
+   <div class="editor-label">
+      @Html.LabelFor(m => m.Category)
+   </div>
+   <div class="editor-field">
+      @Html.Kendo().TextBoxFor(m => m.Category)
+      @Html.ValidationMessageFor(m => m.Category)
+   </div>
+
+   <div class="editor-label">
+      @Html.LabelFor(m => m.MinimumOrder)
+   </div>
+   <div class="editor-field">
+      @Html.Kendo().TextBoxFor(m => m.MinimumOrder)
+      @Html.ValidationMessageFor(m => m.MinimumOrder)
+   </div>
+
+   <div class="editor-label">
+      @Html.LabelFor(m => m.OrderMultiple)
+   </div>
+   <div class="editor-field">
+      @Html.Kendo().TextBoxFor(m => m.OrderMultiple)
+      @Html.ValidationMessageFor(m => m.OrderMultiple)
+   </div>
+
+   <div class="editor-label">
+      @Html.LabelFor(m => m.ReorderThreshold)
+   </div>
+   <div class="editor-field">
+      @Html.Kendo().TextBoxFor(m => m.ReorderThreshold)
+      @Html.ValidationMessageFor(m => m.ReorderThreshold)
+   </div>
+
+   <div class="editor-label">
+      @Html.LabelFor(m => m.TargetStockLevel)
+   </div>
+   <div class="editor-field">
+      @Html.Kendo().TextBoxFor(m => m.TargetStockLevel)
+      @Html.ValidationMessageFor(m => m.TargetStockLevel)
+   </div>
+
+   <div class="editor-label">
+      @Html.LabelFor(m => m.PublicUnitPrice)
+   </div>
+   <div class="editor-field">
+      @Html.Kendo().TextBoxFor(m => m.PublicUnitPrice)
+      @Html.ValidationMessageFor(m => m.PublicUnitPrice)
+   </div>
+
+   <div class="editor-label">
+      @Html.LabelFor(m => m.PrivateUnitPrice)
+   </div>
+   <div class="editor-field">
+      @Html.Kendo().TextBoxFor(m => m.PrivateUnitPrice)
+      @Html.ValidationMessageFor(m => m.PrivateUnitPrice)
+   </div>
+
+   <div class="editor-label">
+      @Html.LabelFor(m => m.Consignment)
+   </div>
+   <div class="editor-field">
+      @Html.Kendo().TextBoxFor(m => m.Consignment)
+      @Html.ValidationMessageFor(m => m.Consignment)
+   </div>
+
+   <div class="editor-label">
+      @Html.LabelFor(m => m.Sterile)
+   </div>
+   <div class="editor-field">
+      @Html.Kendo().TextBoxFor(m => m.Sterile)
+      @Html.ValidationMessageFor(m => m.Sterile)
+   </div>
+
+   <div class="editor-label">
+      @Html.LabelFor(m => m.UPN)
+   </div>
+   <div class="editor-field">
+      @Html.Kendo().TextBoxFor(m => m.UPN)
+      @Html.ValidationMessageFor(m => m.UPN)
+   </div>
+}
+<style>
+   .k-edit-form-container { width: 555px; }
+
+   .k-edit-label {
+      padding-right: 15px;
+      text-align: right;
+   }
+
+   .templateRow {
+      padding-bottom: 5px;
+      padding-left: 10px;
+      padding-top: 5px;
+   }
+
+   .k-textbox { width: 333px; }
+
+   label { margin-bottom: 0px; }
+</style>

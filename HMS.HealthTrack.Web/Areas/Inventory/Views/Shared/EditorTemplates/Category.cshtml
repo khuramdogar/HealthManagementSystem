@@ -1,0 +1,70 @@
+﻿@{
+   Layout = null;
+}
+@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.Categories.CategoryViewModel
+
+<div class="templateRow">
+   <div class="k-edit-label">
+      <label for="ParentCategoryList">Parent category</label>
+   </div>
+   <input data-role="dropdownlist" data-bind="value:parentId" id="ParentCategoryList" name="ParentCategoryId" />
+</div>
+
+<div class="templateRow">
+   <div class="k-edit-label">
+      <label for="CategoryName">Category Name</label>
+   </div>
+   <input type="text" class="k-input k-textbox" name="CategoryName" data-bind="value:CategoryName" />
+</div>
+
+<div class="templateRow">
+   <div class="k-edit-label">
+      <label for="Disinherit">Ignore parent settings</label>
+   </div>
+   <input type="checkbox" data-bind="checked:Disinherit" name="Disinherit" id="Disinherit"/>
+</div>
+
+<div class="templateRow" id="SettingsArea">
+   <div class="k-edit-label">
+      <label for="StockSettings">Product settings</label>
+   </div>
+   <div data-container-for="StockSettings" class="k-edit-field" unselectable="on">
+      @(Html.Kendo().MultiSelectFor(model => model.StockSettings)
+            .Name("StockSettings")
+           .DataTextField("Text")
+           .DataValueField("SettingId")
+           .Placeholder("Select settings...")
+           .Value(Model.StockSettings != null ? Model.StockSettings.Select(s => s.SettingId) : new List<string>())
+           .AutoBind(true)
+           .DataSource(source => source.Read(read => read.Action("GetAll", "ProductSettings")).ServerFiltering(true))
+      )
+   </div>
+</div>
+
+<style>
+   .k-window {
+      width: 600px;
+   }
+
+   .k-edit-form-container {
+      width: 555px;
+   }
+
+   .k-edit-label {
+      padding-right: 15px;
+   }
+
+   .templateRow {
+      padding-top: 5px;
+      padding-bottom: 5px;
+   }
+
+   .k-textbox, .k-dropdown {
+      width: 333px;
+   }
+
+   .k-edit-field {
+      float: left;
+   }
+</style>

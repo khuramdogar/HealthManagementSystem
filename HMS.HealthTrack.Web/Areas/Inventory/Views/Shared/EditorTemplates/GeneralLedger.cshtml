@@ -1,0 +1,56 @@
+﻿@{
+   Layout = null;
+}
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.GeneralLedger.GeneralLedgerModel
+
+
+<div class="templateRow">
+   <div class="k-edit-label">
+      <label for="ParentLedgerList">Parent ledger</label>
+   </div>
+   <input data-role="dropdownlist" data-bind="value:parentId" id="ParentLedgerList" name="ParentLedgerList" />
+</div>
+
+<div class="templateRow">
+   <div class="k-edit-label">
+      <label for="Name">Ledger name</label>
+   </div>
+   <input type="text" class="k-input k-textbox" name="Name" data-bind="value:Name" />
+</div>
+
+<div class="templateRow">
+   <div class="k-edit-label">
+      <label for="Code">Code</label>
+   </div>
+   <input type="text" class="k-input k-textbox" name="Code" data-bind="value:Code"/>
+</div>
+
+<div class="templateRow">
+   <div class="k-edit-label">
+      <label for="AlternateCode">Alternate code</label>
+   </div>
+   <input type="text" class="k-input k-textbox" name="AlternateCode" data-bind="value:AlternateCode" />
+</div>
+
+<style>
+   .k-window {
+      width: 600px;
+   }
+
+   .k-edit-form-container {
+      width: 555px;
+   }
+
+   .k-edit-label {
+      padding-right: 15px;
+   }
+
+   .templateRow {
+      padding-top: 5px;
+      padding-bottom: 5px;
+   }
+
+   .k-input, .k-dropdown {
+      width: 300px;
+   }
+</style>

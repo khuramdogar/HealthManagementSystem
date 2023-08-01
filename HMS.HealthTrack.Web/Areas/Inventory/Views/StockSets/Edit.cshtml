@@ -1,0 +1,141 @@
+﻿@using HMS.HealthTrack.Web.Data.Model.Inventory
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.StockSets
+@using Kendo.Mvc.UI
+@model StockSet
+
+@{
+   ViewBag.Title = "Edit";
+}
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Treatment Plan.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Edit product stock set</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div id="alertPlaceholder"></div>
+<div>
+   @using (Html.BeginForm())
+   {
+      @Html.AntiForgeryToken()
+
+      <div class="form-horizontal">
+         @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+         @Html.HiddenFor(model => model.StockSetId)
+
+         <div class="form-group">
+            <div class="col-sm-2 control-label text-right">
+               @Html.LabelFor(model => model.Name)
+            </div>
+            <div class="col-sm-3">
+               @Html.Kendo().TextBoxFor(xx => xx.Name).HtmlAttributes(new { @class = "page-input"})
+               @Html.ValidationMessageFor(model => model.Name, "", new {@class = "text-danger"})
+            </div>
+            <div class="col-sm-1">
+               <input type="submit" value="Save" class="k-button" />
+            </div>
+            <div class="col-sm-1">
+               <a class="k-button" href="@Url.Action("Index")">Cancel</a>
+            </div>
+         </div>
+      </div>
+   }
+</div>
+<br/>
+<div >
+   @(Html.Kendo().Grid<StockSetItemModel>()
+        .Name("StockSetItems")
+        .Columns(columns =>
+        {
+           columns.Bound(c => c.ProductId).Width(120);
+           columns.Bound(c => c.ProductDescription).EditorTemplateName("Product");
+           columns.Bound(c => c.Quantity).Width(120).EditorTemplateName("Integer");
+           columns.Command(commands =>
+           {
+              commands.Edit();
+              commands.Destroy();
+           }).HtmlAttributes(new {@class = "button-column"}).Width(200);
+        })
+        .ToolBar(toolbar => toolbar.Create())
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Pageable(page => page.Refresh(true).PageSizes(true).ButtonCount(5))
+        .Events(e =>
+        {
+           e.Edit("onEdit");
+           e.Save("onSave");
+        })
+        .DataSource(dataSource => dataSource.WebApi().PageSize(20)
+           .Model(model =>
+           {
+              model.Id(m => m.StockSetItemId);
+              model.Field(m => m.ProductId);
+              model.Field(m => m.ProductDescription);
+              model.Field(m => m.Quantity).DefaultValue(1);
+           })
+           .Events(events => events.Error("onError"))
+           .Read(read => read.Url(Url.HttpRouteUrl("DefaultApi", new {controller = "StockSetItems", stockSetId = Model.StockSetId})))
+           .Create(create => create.Url(Url.HttpRouteUrl("DefaultApi", new {controller = "StockSetItems"})))
+           .Update(update => update.Url(Url.HttpRouteUrl("DefaultApi", new {controller = "StockSetItems", id = "{0}"})))
+           .Destroy(destroy => destroy.Url(Url.HttpRouteUrl("DefaultApi", new {controller = "StockSetItems", id = "{0}"})))
+        )
+        )
+</div>
+@section scripts
+{
+   <script src="~/Scripts/Inventory.js"></script>
+   <script type="text/javascript">
+
+      function onEdit(e) {
+         $('#ProductId').attr('class', 'k-textbox');
+         $('#ProductId').attr('readonly', 'readonly');
+         var descriptionBox = $('#InternalId').data('kendoComboBox');
+         descriptionBox.input.focus();
+         if (e.model.isNew()) {
+            descriptionBox.input.attr('placeholder', 'Search');
+         } else {
+            $('#ProductId').val('');
+            $('#InternalId').val('');
+         }
+      }
+
+      function onAdditionalData() {
+         return {
+            text: $("#InternalId").data("kendoComboBox").text()
+         };
+      }
+
+      function onProductChange(e) {
+         var descriptionBox = $('#InternalId').data('kendoComboBox');
+         $('#ProductId').val(descriptionBox.value());
+      }
+
+      function onSave(e) {
+         if (e.model.InternalId != null) {
+            $.ajax({
+               type: 'GET',
+               async: false,
+               url: "@Url.Action("GetDescription", "Products")/" + e.model.InternalId.Value,
+               success: function(data) {
+                  e.model.ProductDescription = data;
+               },
+               error: function(data) {
+                  alert('could not update description');
+               }
+            });
+            e.model.ProductId = e.model.InternalId.Value;
+         }
+         e.model.StockSetId = "@Model.StockSetId";
+      }
+
+      function onError(e) {
+         getAlert('warning', e.xhr.responseJSON.Message);
+      }
+
+   </script>
+}

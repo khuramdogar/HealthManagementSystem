@@ -1,0 +1,194 @@
+﻿@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.Suppliers.SuppliersViewModel
+
+@{
+   ViewBag.Title = "Edit supplier";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Delivery Man.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Edit supplier</h2>
+         </div>
+      </div>
+   </div>
+</div>
+<div id="alertPlaceholder"></div>
+@using (Html.BeginForm("Edit", "Suppliers"))
+{
+   @Html.AntiForgeryToken()
+   @Html.HiddenFor(model => model.company_ID)
+   <div class="form-horizontal">
+      @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+
+      @(Html.Kendo().TabStrip().Name("tabstrip")
+           .Items(items =>
+           {
+              items.Add().Text("Address").Selected(true)
+                 .Content(@<text>
+                              <br />
+                              <div class="form-group">
+                                 <div class="col-sm-2 control-label text-right">
+                                    @Html.LabelFor(model => model.Name)                                          
+                                 </div>
+                                 <div class="col-sm-4">
+                                    @Html.Kendo().TextBoxFor(model => model.Name).HtmlAttributes(new {@class = "page-input"})
+                                    @Html.ValidationMessageFor(model => model.Name, "", new {@class = "text-danger"})
+                                 </div>
+                              </div>
+
+                              <div class="form-group">
+                                 <div class="col-sm-2 control-label text-right">
+                                    @Html.LabelFor(model => model.Department)
+                                 </div>
+                                 <div class="col-sm-4">
+                                    @Html.Kendo().TextBoxFor(model => model.Department).HtmlAttributes(new {@class = "page-input"})
+                                    @Html.ValidationMessageFor(model => model.Department, "", new {@class = "text-danger"})
+                                 </div>
+                              </div>
+
+                              <div class="form-group">
+                                 <div class="col-sm-2 control-label text-right">
+                                    @Html.LabelFor(model => model.Address1)
+                                 </div>
+                                 <div class="col-sm-4">
+                                    @Html.Kendo().TextBoxFor(model => model.Address1).HtmlAttributes(new {@class = "page-input"})
+                                    @Html.ValidationMessageFor(model => model.Address1, "", new {@class = "text-danger"})
+                                 </div>
+                              </div>
+
+                              <div class="form-group">
+                                 <div class="col-sm-2 control-label text-right">
+                                    @Html.LabelFor(model => model.Address2)
+                                 </div>
+                                 <div class="col-sm-4">
+                                    @Html.Kendo().TextBoxFor(model => model.Address2).HtmlAttributes(new {@class = "page-input"})
+                                    @Html.ValidationMessageFor(model => model.Address2, "", new {@class = "text-danger"})
+                                 </div>
+                              </div>
+
+                              <div class="form-group">
+                                 <div class="col-sm-2 control-label text-right">
+                                    @Html.LabelFor(model => model.Suburb)
+                                 </div>
+                                 <div class="col-sm-4">
+                                    @Html.Kendo().TextBoxFor(model => model.Suburb).HtmlAttributes(new {@class = "page-input"})
+                                    @Html.ValidationMessageFor(model => model.Suburb, "", new {@class = "text-danger"})
+                                 </div>
+                              </div>
+
+                              <div class="form-group">
+                                 <div class="col-sm-2 control-label text-right">
+                                    @Html.LabelFor(model => model.State)
+                                 </div>
+                                 <div class="col-sm-4">
+                                    @Html.Kendo().TextBoxFor(model => model.State).HtmlAttributes(new {@class = "page-input"})
+                                    @Html.ValidationMessageFor(model => model.State, "", new {@class = "text-danger"})
+                                 </div>
+                              </div>
+
+                              <div class="form-group">
+                                 <div class="col-sm-2 control-label text-right">
+                                    @Html.LabelFor(model => model.PostCode)
+                                 </div>
+                                 <div class="col-sm-4">
+                                    @Html.Kendo().TextBoxFor(model => model.PostCode).HtmlAttributes(new {@class = "page-input"})
+                                    @Html.ValidationMessageFor(model => model.PostCode, "", new {@class = "text-danger"})
+                                 </div>
+                              </div>
+
+                              <div class="form-group">
+                                 <div class="col-sm-2 control-label text-right">
+                                    @Html.LabelFor(model => model.Country)
+                                 </div>
+                                 <div class="col-sm-4">
+                                    @Html.Kendo().TextBoxFor(model => model.Country).HtmlAttributes(new {@class = "page-input"})
+                                    @Html.ValidationMessageFor(model => model.Country, "", new {@class = "text-danger"})
+                                 </div>
+                              </div>
+                           </text>);
+
+              items.Add().Text("Contact")
+                 .Content(@<text>
+                              <br />
+                              <div class="form-group">
+                                 <div class="col-sm-2 control-label text-right">
+                                    @Html.LabelFor(model => model.ContactTitle)
+                                 </div>
+                                 <div class="col-sm-4">
+                                    @Html.Kendo().TextBoxFor(model => model.ContactTitle).HtmlAttributes(new {@class = "page-input"})
+                                    @Html.ValidationMessageFor(model => model.ContactTitle, "", new {@class = "text-danger"})
+                                 </div>
+                              </div>
+                              <div class="form-group">
+                                 <div class="col-sm-2 control-label text-right">
+                                    @Html.LabelFor(model => model.ContactFirstname)
+                                 </div>
+                                 <div class="col-sm-4">
+                                    @Html.Kendo().TextBoxFor(model => model.ContactFirstname).HtmlAttributes(new {@class = "page-input"})
+                                    @Html.ValidationMessageFor(model => model.ContactFirstname, "", new {@class = "text-danger"})
+                                 </div>
+                              </div>
+
+                              <div class="form-group">
+                                 <div class="col-sm-2 control-label text-right">
+                                    @Html.LabelFor(model => model.ContactSurname)
+                                 </div>
+                                 <div class="col-sm-4">
+                                    @Html.Kendo().TextBoxFor(model => model.ContactSurname).HtmlAttributes(new {@class = "page-input"})
+                                    @Html.ValidationMessageFor(model => model.ContactSurname, "", new {@class = "text-danger"})
+                                 </div>
+                              </div>
+                              <div class="form-group">
+                                 <div class="col-sm-2 control-label text-right">
+                                    @Html.LabelFor(model => model.PhoneNumber)
+                                 </div>
+                                 <div class="col-sm-4">
+                                    @Html.Kendo().TextBoxFor(model => model.PhoneNumber).HtmlAttributes(new {@class = "page-input"})
+                                    @Html.ValidationMessageFor(model => model.PhoneNumber, "", new {@class = "text-danger"})
+                                 </div>
+                              </div>
+                              <div class="form-group">
+                                 <div class="col-sm-2 control-label text-right">
+                                    @Html.LabelFor(model => model.FaxNumber)
+                                 </div>
+                                 <div class="col-sm-4">
+                                    @Html.Kendo().TextBoxFor(model => model.FaxNumber).HtmlAttributes(new {@class = "page-input"})
+                                    @Html.ValidationMessageFor(model => model.FaxNumber, "", new {@class = "text-danger"})
+                                 </div>
+                              </div>
+
+                              <div class="form-group">
+                                 <div class="col-sm-2 control-label text-right">
+                                    @Html.LabelFor(model => model.Email)
+                                 </div>
+                                 <div class="col-sm-4">
+                                    @Html.Kendo().TextBoxFor(model => model.Email).HtmlAttributes(new {@class = "page-input"})
+                                    @Html.ValidationMessageFor(model => model.Email, "", new {@class = "text-danger"})
+                                 </div>
+                              </div>
+
+                              <div class="form-group">
+                                 <div class="col-sm-2 control-label text-right">
+                                    @Html.LabelFor(model => model.WebSite)
+                                 </div>
+                                 <div class="col-sm-4">
+                                    @Html.Kendo().TextBoxFor(model => model.WebSite).HtmlAttributes(new {@class = "page-input"})
+                                    @Html.ValidationMessageFor(model => model.WebSite, "", new {@class = "text-danger"})
+                                 </div>
+                              </div>
+                           </text>);
+           }))
+      <br />
+      <div class="form-group">
+         <div class="col-sm-12">
+            <a class="k-button" href="@Url.Action("Index")">Back to list</a>
+            <input type="submit" value="Save" class="k-button k-primary" />
+         </div>
+      </div>
+   </div>
+}

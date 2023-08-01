@@ -1,0 +1,48 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.Categories
+@using Kendo.Mvc.UI
+
+<div class="container-fluid">
+   <div class="row">
+      @Html.Hidden("CategorySelectMode", "search")
+      @(Html.Kendo().TreeList<CategoryViewModel>()
+           .Name("CategoryTree")
+           .AutoBind(false)
+           .Columns(columns => columns.Add().Field(f => f.CategoryName))
+           .DataSource(dataSource => dataSource
+              .Read(read => read.Action("Get", "Categories")).Sort(sort => sort.Add(s => s.CategoryName))
+              .Model(m =>
+              {
+                 m.Id(f => f.CategoryId);
+                 m.ParentId(f => f.ParentId);
+                 m.Field(f => f.CategoryName);
+                 m.Expanded(false);
+              })
+           )
+           .Events(events => events.DataBound("onCategoryTreeDataBound"))
+           .Filterable(f => f.Extra(false))
+           .Height(400)
+           .Scrollable(true)
+           .Selectable(true)
+           .Sortable(true)
+           //.Toolbar(toolbar => toolbar.Custom().Name(" "))
+           )
+   </div>
+
+   <div class="row">
+      @(Html.Kendo().MultiSelect().Name("CategoryMulti")
+           .DataTextField("CategoryName").DataValueField("id")
+           .Events(e => e.Open("onCategoryMultiOpen"))
+                  .HtmlAttributes(new { style="padding-right:0px !important;"})
+           .Placeholder("Select categories")
+           )
+   </div>
+   
+   <div class="row" style="padding-top: 0.5em;">
+      <div class="col-sm-12 pull-right text-right">
+         <button type="button" class="k-button k-primary" id="assignCategories">Save</button>
+         <button type="button" class="k-button" id="addCategory">Select category</button>
+         <button type="button" class="k-button" id="clearCategory">Clear</button>
+         <button type="button" class="k-button" id="closeCategoryWindow">Cancel</button>
+      </div>
+   </div>
+</div>

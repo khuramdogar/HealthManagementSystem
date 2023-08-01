@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+   <head>
+      @Scripts.Render("~/bundles/jquery")
+      @Scripts.Render("~/bundles/bootstrap")
+      @Scripts.Render("~/bundles/datetimepicker")
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width" />
+      <meta http-equiv="x-ua-compatible" content="IE=11">
+      <title>@ViewBag.Title</title>
+      @Styles.Render("~/Content/css")
+      
+      @Html.DevExpress().GetScripts(
+         new Script {ExtensionSuite = ExtensionSuite.HtmlEditor},
+         new Script {ExtensionSuite = ExtensionSuite.Report})
+
+      	<script src="@Url.Content("~/Scripts/kendo/2018.2.516/jszip.min.js")"></script>
+</head>
+   <body>
+      @Html.DevExpress().GetStyleSheets(
+         new StyleSheet {ExtensionSuite = ExtensionSuite.HtmlEditor},
+         new StyleSheet {ExtensionSuite = ExtensionSuite.Report})
+
+      <div class="navbar navbar-inverse navbar-fixed-top">
+         <div class="container">
+            <div class="navbar-header">
+               <a href="~/">
+                  <img alt="Brand" src="~/Content/images/HT-ICONS-PROD32.png" class="navbar-brand">
+                  <span class="navbar-brand">HealthTrack Web</span>
+               </a>
+            </div>
+            <div class="collapse navbar-collapse">
+               <ul class="nav navbar-nav">
+                  <li><a href="@Url.Action("Index", "Inventory")">Inventory</a></li>
+                  <li><a href="@Url.Action("Angular", "Home")">Angular App</a></li>
+               </ul>
+               <div class="nav navbar-text navbar-right">
+                  @if (User != null && User.Identity.IsAuthenticated)
+                  {
+                     <p>Welcome, <a href="@Url.Action("Permissions", "Security", new {Area = ""})">@User.Identity.Name</a><span id="titleLogout"><a href="@Url.Action("Logout", "Account")">Logout</a></span></p>
+                  }
+                  else
+                  {
+                     <a href="@Url.Action("Login", "Account")">Login</a>
+                  }
+               </div>
+            </div>
+         </div>
+      </div>
+
+      <div class="container fill">
+         <div class="body-content">
+            <div class="well-sm">@Html.MvcSiteMap().SiteMapPath()</div>
+            @RenderBody()
+            <hr />
+            <footer>
+               <p>&copy; @DateTime.Now.Year - HealthTrack</p>
+            </footer>
+         </div>
+      </div>
+
+      @RenderSection("scripts", required: false)
+   </body>
+</html>
+
+<style>
+   html, body { height: 100%; }
+
+   .body-content {
+      width: auto;
+      height: auto;
+      min-height: 100%;
+      min-width: 100%;
+      display: block;
+      overflow: auto;
+      overflow-x: hidden;
+   }
+
+   .fill {
+      padding-top: 50px !important;
+      height: 70%;
+   }
+
+   /* http://docs.telerik.com/kendo-ui/third-party/using-kendo-with-twitter-bootstrap */
+
+   .form-control.k-widget {
+      padding: 0;
+      width: 100%;
+      height: auto;
+   }
+</style>

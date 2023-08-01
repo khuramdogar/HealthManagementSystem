@@ -1,0 +1,19 @@
+﻿@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.Schedules.ScheduleIndexViewModel
+
+@{
+   ViewBag.Title = "Scheduler";
+}
+
+<h2>Scheduler</h2>
+
+<div>Task status: @ViewBag.Status</div>
+@using (Html.BeginForm())
+{
+   <div>
+      <span>Run every</span>
+      @Html.Kendo().NumericTextBoxFor(m => m.Times)
+      @Html.EnumDropDownListFor(m => m.SchedulerPeriod,htmlAttributes:new {@class = "k-dropdown"})
+      <input type="submit" value="Save" class="k-button k-primary" />
+   </div>
+}

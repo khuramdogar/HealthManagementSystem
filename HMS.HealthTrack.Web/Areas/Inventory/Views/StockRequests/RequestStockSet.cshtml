@@ -1,0 +1,142 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.StockSets
+@using Kendo.Mvc.UI
+@model dynamic
+
+@{
+   ViewBag.Title = "Request stock set";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Shipping Box 2 Note.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Request stock set</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div id="alertPlaceholder"></div>
+<div>
+   @(Html.Kendo().Grid<StockSetModel>().Name("StockSets")
+        .ClientDetailTemplateId("template")
+        .Columns(columns =>
+        {
+           columns.Bound(c => c.Name);
+           columns.Bound(c => c.Count).Title("Items");
+           columns.Bound(c => c.TotalCost);
+           columns.Command(c => c.Custom("request").Text("Request").Click("requestStockSet")).Width(100).HtmlAttributes(new {@class = "filter-column"});
+        })
+        .DataSource(ds => ds.WebApi().PageSize(20)
+           .Read(read => read.Url(Url.HttpRouteUrl("DefaultApi", new {controller = "StockSets"}))))
+        .Events(events => events.DataBound("onDataBound"))
+        .Filterable(filter => filter.Extra(false))
+        .Pageable(page => page.Refresh(true).PageSizes(true).ButtonCount(5))
+        .Resizable(resize => resize.Columns(true))
+        .Sortable()
+        )
+</div>
+
+<div id="window">
+   @Html.Hidden("IdToRequest")
+   <div class="container-fluid">
+      <div class="row row-buffer">
+         <div class="col-sm-3 control-label text-right">
+            <label for="location">Location</label>
+         </div>
+         <div class="col-sm-8">
+            @(Html.Kendo().DropDownList().Name("location")
+                 .AutoBind(true).Filter(FilterType.Contains)
+                 .DataTextField("Text").DataValueField("Value")
+                 .DataSource(ds => ds.Read(read => read.Action("GetStockLocations", "StockLocations")).ServerFiltering(true))
+                 .HtmlAttributes(new {@class = "page-input"})
+                 .Value(@Html.Encode(@ViewBag.UserPreferredLocation).ToString()))
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-sm-3 control-label text-right">
+            <label for="urgent">Urgent</label>
+         </div>
+         <div class="col-sm-8">
+            @(Html.Kendo().CheckBox().Name("urgent"))
+         </div>
+      </div>
+      <div class="row row-buffer">
+         <div class="col-sm-6 pull-right text-right">
+            <button type="button" class="k-button k-primary" id="SubmitRequest">Create request</button>
+            <button type="button" class="k-button" id="closeWindow">Cancel</button>
+         </div>
+      </div>
+   </div>
+</div>
+
+<script id="template" type="text/kendo-templ">
+   @(Html.Kendo().Grid<StockSetItemModel>().Name("StockSetItems_#=StockSetId#")
+        .Columns(columns =>
+        {
+           columns.Bound(c => c.ProductDescription).Title("Description");
+           columns.Bound(c => c.ProductSPC).Title("SPC");
+           columns.Bound(c => c.Quantity);
+        })
+        .DataSource(ds => ds.WebApi().Read(read => read.Url(Url.HttpRouteUrl("DefaultApi", new {controller = "StockSetItems", stockSetId = "#=StockSetId#"}))))
+        .ToClientTemplate()
+        )
+</script>
+
+@section Scripts {
+   <script src="~/Scripts/Inventory.js"></script>
+   <script type="text/javascript">
+
+      $(document).ready(function() {
+         createWindow();
+         var dialog = $('#window').data('kendoWindow');
+         dialog.bind('open', function(e) {
+            var win = this;
+            $('#closeWindow').click(function() {
+               win.close();
+            });
+
+            $('#SubmitRequest').click(function(e) {
+               $.ajax({
+                  type: 'POST',
+                  async: false,
+                  url: "@Url.HttpRouteUrl("DefaultApi", new {controller = "StockRequests"})/CreateStockRequestFromStockSet",
+                  data: { StockSetId: $('#IdToRequest').val(), Location: $('#location').val(), Urgent: $('#urgent').is(':checked') },
+                  success: function(data) {
+                     getAlert('success', "Successfully created requests for the stock set <strong>" + data + "</strong>.");
+                     $('#closeWindow').trigger('click');
+                  },
+                  error: function(data) {
+                     getAlert('danger', data.responseJSON.Message);
+                  }
+               });
+            });
+         });
+      });
+
+      function createWindow() {
+         if (!$('#window').data('kendoWindow')) {
+            $('#window').kendoWindow({
+               title: 'Select location',
+               scrollable: false,
+               width: 600,
+               visible: false
+            });
+         }
+      }
+
+      function onDataBound() {
+         applyGridTooltips();
+      }
+
+      function requestStockSet(e) {
+         var dataItem = this.dataItem($(e.currentTarget).closest('tr'));
+         $('#IdToRequest').val(dataItem.StockSetId);
+         var dialog = $('#window').data('kendoWindow');
+         dialog.open().center();
+      }
+   </script>
+}

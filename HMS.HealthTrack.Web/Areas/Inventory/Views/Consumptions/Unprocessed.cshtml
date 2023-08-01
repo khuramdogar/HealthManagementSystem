@@ -1,0 +1,86 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.Consumptions
+@using Kendo.Mvc.UI
+@model dynamic
+
+@{
+   ViewBag.Title = "Unprocessed used inventory";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Barcode Progress.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Unprocessed used inventory</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div class="row" id="header">
+   <div id="message" class="col-lg-12"></div>
+</div>
+<div id="alertPlaceholder"></div>
+<div>
+   @(Html.Kendo().Notification()
+        .Name("staticNotification")
+        .AppendTo("#message").AutoHideAfter(0).Button(true)
+        )
+</div>
+<div>
+   @(Html.Kendo().Grid<IndexConsumptionsViewModel>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+           columns.Bound(c => c.ConsumptionId).Filterable(ftb => ftb.Extra(false));
+           columns.Bound(c => c.ProductId).Filterable(ftb => ftb.Extra(false));
+           columns.Bound(c => c.PatientMRN).Filterable(ftb => ftb.Extra(false));
+           columns.Bound(c => c.SPC).Filterable(ftb => ftb.Extra(false));
+           columns.Bound(c => c.Location).Filterable(ftb => ftb.Extra(false));
+           columns.Bound(c => c.Quantity).Width(110);
+           columns.Bound(c => c.Location).Title("").Width(110).Filterable(false).ClientTemplate("<a title=\"Details\" class=\"glyphicon glyphicon-list\" href=" + @Url.Action("Details", "Consumptions") + "/#=ConsumptionId#></a>" +
+                                                                                                "<a title='Ignore' class='glyphicon glyphicon-eye-close' href=javascript:ignoreConsumption(#=ConsumptionId#)></a>" +
+                                                                                                "<a title=\"Process\" class=\"glyphicon glyphicon-import\" href=" + @Url.Action("ProcessConsumptionNotification", "Consumptions") + "/#=ConsumptionId#></a>");
+        })
+        .DataSource(ds =>
+           ds.Ajax()
+              .PageSize(20)
+              .Model(model => model.Id(c => c.ConsumptionId))
+              .Read(read => read.Url(Url.Action("GetConsumptionsForProcessing", "Consumptions"))))
+        .Events(events => events.DataBound("onDataBound"))
+        .Filterable()
+        .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+        .Sortable()
+        )
+</div>
+
+@section Scripts {
+   <script src="~/Scripts/Inventory.js"></script>
+   <script src="~/Areas/Inventory/Scripts/Consumptions.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+         if ('@ViewBag.SuccessMessage' != '') {
+            getAlert('success', '@ViewBag.SuccessMessage');
+         }
+      });
+
+      function onProcessAll() {
+         $.ajax({
+            async: false,
+            type: 'GET',
+            url: "@Url.Action("ProcessAllInventoryUsed", "Consumptions")",
+            success: function(data) {
+               var staticNotification = $("#staticNotification").data("kendoNotification");
+               staticNotification.show("Processing started. Please check again later, or check <a href='@Url.RouteUrl("DefaultWeb", new {controller = "Hangfire", action = "job"})/" + data + "'>here</a> for progress", "info");
+            }
+         });
+      }
+
+      function onDataBound(e) {
+         applyGridTooltips();
+      }
+
+   </script>
+}

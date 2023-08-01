@@ -1,0 +1,123 @@
+﻿@using HMS.HealthTrack.Web.Data.Model.Inventory
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.StockTakes
+@using Kendo.Mvc.UI
+@model dynamic
+
+@{
+   ViewBag.Title = "Inventory stock take";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Bar Scanner.png" class="img-responsive"/>
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Stock takes</h2>
+         </div>
+      </div>
+   </div>
+</div>
+@(Html.Kendo().Grid<StockTakeViewModel>()
+     .Name("StockTakes")
+     .Columns(columns =>
+     {
+        columns.Bound(c => c.Name);
+        columns.Bound(c => c.StockTakeDate).Format("{0:dd/MM/yyyy HH:mm}").Width(170);
+        columns.Bound(c => c.LocationName);
+        columns.Bound(c => c.Status);
+        columns.Bound(c => c.SubmittedOn).Title("Processed On").Format("{0:dd/MM/yyyy HH:mm}").Width(150);
+        columns.Bound(c => c.ItemCount).Title("Items").Width(90);
+        columns.Command(commands =>
+        {
+           commands.Custom("Edit").Click("onCustomCommand").HtmlAttributes(new {@class = "edit-command"});
+           commands.Destroy();
+        }).HtmlAttributes(new { @class = "button-column" }).Width(170);
+     })
+     .Events(events => events.DataBound("onDataBound"))
+     .Filterable()
+     .Pageable(page => page.Refresh(true).PageSizes(new[] {5, 10, 20, 50, 100}).ButtonCount(5))
+     .Resizable(resize => resize.Columns(true))
+     .Sortable()
+     .ToolBar(toolbar => toolbar.Template(@<text>
+                                              <div class="toolbar">
+                                                 <div class="toolbar-left">
+                                                    @(Html.Kendo().Button().Name("NewStockTake").Content("New").Events(e => e.Click("onNewStockTake")))
+                                                 </div>
+                                              </div>
+                                           </text>))
+     .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(20)
+        .Events(events => events.Error("error_handler"))
+        .Read(read => read.Action("GetAll", "StockTakes")).Sort(sort => sort.Add(s => s.StockTakeDate).Descending())
+        .Destroy("Delete", "StockTakes")
+        .Model(model =>
+        {
+           model.Id(m => m.StockTakeId);
+           model.Field(m => m.StockTakeDate);
+        })
+     ))
+<div id="stockTakeLocationSelection"></div>
+@section scripts
+{
+   <script src="~/Areas/Inventory/Scripts/StockTakes.js"></script>
+   <script src="~/Scripts/Inventory.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+         createStockTakeLocationSelectionWindow();
+         $('#stockTakeLocationSelection').on('click', '#selectLocation', function() {
+            var locationId = $('#StockTakeLocation').val();
+            window.location.href = '@(Url.Action("New", "StockTakes"))/?locationId=' + locationId;
+         });
+      });
+
+      function error_handler(e) {
+         var msg = e.xhr.responseJSON.Message;
+         alert(msg);
+         $('#StockTakes').data('kendoGrid').cancelChanges();
+      }
+
+      function onNewStockTake(e) {
+         $('#stockTakeLocationSelection').data('kendoWindow').center().open();
+      }
+
+      function onEdit(e) {
+         var stockTakeId = $('#StockTakes').data('kendoGrid').dataItem($(e.target).closest('tr')).StockTakeId;
+         window.location = "@Url.Action("Edit", "StockTakes")/" + stockTakeId;
+      }
+
+      function onCustomCommand(e) {
+         var dataItem = $('#StockTakes').data('kendoGrid').dataItem($(e.target).closest('tr'));
+
+         if (dataItem.Status == '@((int) StockTakeStatus.Created)') {
+            window.location = "@Url.Action("Edit", "StockTakes")/" + dataItem.StockTakeId;
+         } else {
+            window.location = "@Url.Action("View", "StockTakes")/" + dataItem.StockTakeId;
+         }
+      }
+
+      function onStockTakeLocationDataBound(e) {
+         this.value(@Html.Encode(@ViewBag.UserPreferredLocation).ToString());
+      }
+
+      //http://www.telerik.com/forums/change-text-on-command-dynamically
+      function onDataBound(e) {
+         applyGridTooltips();
+
+         var grid = this;
+         var gridRows = grid.tbody.find("tr");
+         for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            //perform your custom check
+            if (dataItem.Status == '@((int) StockTakeStatus.Complete)') {
+               //hide buttons using jQuery
+               row.find(".edit-command").text('View');
+               row.find(".k-grid-delete").addClass('invisible');
+            }
+         }
+      }
+   </script>
+}

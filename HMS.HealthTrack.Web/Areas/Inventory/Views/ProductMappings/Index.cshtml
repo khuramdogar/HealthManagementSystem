@@ -1,0 +1,67 @@
+﻿@using HMS.HealthTrack.Web.Data.Model
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.Shared
+@using HMS.HealthTrack.Web.Data.Model.Inventory
+@using Kendo.Mvc.UI
+@model IEnumerable<HMS.HealthTrack.Web.Data.Model.Inventory.MappingOverview>
+
+@{
+   ViewBag.Title = "Product mappings";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Cargo 2 Help.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>External product mappings</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div>
+   @(Html.Kendo().Grid<MappingOverview>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+           columns.Bound(c => c.ExternalId).Filterable(ftb => ftb.Extra(false)).Width(120);
+           columns.Bound(c => c.ExternalDescription).Filterable(ftb => ftb.Extra(false));
+           columns.Template(@<text></text>).ClientTemplate(" <div class='glyphicon glyphicon-arrow-right''></div>").Width(50);
+           columns.Bound(c => c.InternalId).Width(120);
+           columns.Bound(c => c.InternalDescription);
+           columns.Bound(c => c.SPC);
+           columns.Template(@<text></text>).Width(110).ClientTemplate("<a title=\"Details\" class=\"glyphicon glyphicon-list\" href=" + @Url.Action("Details", "ProductMappings") + "/#: MappingId #></a>" +
+                                                                      "<a title=\"Edit\" class=\"glyphicon glyphicon-log-in\" href=" + @Url.Action("Edit", "ProductMappings") + "/#: MappingId #></a>" +
+                                                                      "<a title=\"Delete\" class=\"glyphicon glyphicon-trash delete\" ></a>");
+        })
+        .DataSource(ds => ds.WebApi()
+           .PageSize(20)
+           .Model(model => model.Id(p => p.MappingId))
+           .Read(read => read.Url(Url.HttpRouteUrl("DefaultApi", new {controller = "ProductMappings"}))))
+        .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ProductMapping").Window(builder => builder.Title("Create mapping")))
+        .Events(events => events.DataBound("onDataBound"))
+        .Filterable()
+        .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+        .Resizable(resize => resize.Columns(true))
+        .Sortable())
+</div>
+
+@{
+   Html.RenderPartial("_DeletePrompt", new DeletePromptModel());
+}
+
+@section Scripts {
+   <script src="~/Scripts/Inventory.js"></script>
+   <script type="text/javascript">
+      function onDataBound(e) {
+         applyGridTooltips();
+         $('.delete').click(function(e) {
+            var grid = $('#grid').data('kendoGrid');
+            var item = grid.dataItem($(e.currentTarget).closest('tr'));
+            dynamicDeletePrompt(grid, item.SPC, '@Url.HttpRouteUrl("DefaultApi", new {controller = "ProductMappings"})/' + item.MappingId);
+         });
+      }
+   </script>
+}

@@ -1,0 +1,113 @@
+﻿@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.Orders.DetailsOrdersViewModel
+
+
+<div>
+   @(Html.Kendo().TabStrip()
+        .Name("tabstrip")
+        .Items(tabstrip =>
+        {
+           tabstrip.Add().Text("Details").Selected(true)
+              .Content(@<text>
+                           <br/>
+                           <dl class="dl-horizontal">
+                              <dt>
+                                 @Html.DisplayNameFor(model => model.Status)
+                              </dt>
+
+                              <dd>
+                                 @Html.DisplayFor(model => model.Status)
+                              </dd>
+                     
+                              <dt>
+                                 @Html.DisplayNameFor(model => model.Name)
+                              </dt>
+                              <dd>
+                                 @Html.DisplayFor(model => model.Name)
+                              </dd>
+                     
+                              <dt>
+                                 @Html.DisplayNameFor(model => model.IsUrgent)
+                              </dt>
+                              <dd>
+                                 @Html.DisplayFor(model => model.IsUrgent)
+                              </dd>
+                     
+                              <dt>
+                                 @Html.DisplayNameFor(model => model.DeliveryLocation)
+                              </dt>
+                              <dd>
+                                 @Html.DisplayFor(model => model.DeliveryLocation)
+                              </dd>
+                     
+                              <dt>
+                                 @Html.DisplayNameFor(model => model.NeedBy)
+                              </dt>
+                              <dd>
+                                 @Html.DisplayFor(model => model.NeedBy)
+                              </dd>
+                     
+                              <dt>
+                                 @Html.DisplayNameFor(model => model.ChargeAccount)
+                              </dt>
+                              <dd>
+                                 @Html.DisplayFor(model => model.ChargeAccount)
+                              </dd>
+                              
+                              <dt>
+                                 @Html.DisplayNameFor(model => model.LedgerCode)
+                              </dt>
+                              <dd>
+                                 @Html.DisplayFor(model => model.LedgerCode)
+                              </dd>
+
+                              <dt>
+                                 @Html.DisplayNameFor(model => model.Total)
+                              </dt>
+                              <dd>
+                                 @Html.DisplayFor(model => model.Total)
+                              </dd>
+                              
+                              <dt>
+                                 @Html.DisplayNameFor(model => model.Notes)
+                              </dt>
+                              <dd>
+                                 @Html.DisplayFor(model => model.Notes)
+                              </dd>
+                              
+                           </dl>
+                        </text>);
+
+           tabstrip.Add().Text("History").Content(@<text>
+                                                      <br />
+                                                      <dl class="dl-horizontal">
+                                                         <dt>
+                                                            @Html.DisplayNameFor(model => model.CreatedBy)
+                                                         </dt>
+                                                         <dd>
+                                                            @Html.DisplayFor(model => model.CreatedBy)
+                                                         </dd>
+                                                         <dt>
+                                                            @Html.DisplayNameFor(model => model.DateCreated)
+                                                         </dt>
+                                                         <dd>
+                                                            @Html.DisplayFor(model => model.DateCreated)
+                                                         </dd>
+                                                         
+                                                         <dt>
+                                                            @Html.DisplayNameFor(model => model.LastModifiedBy)
+                                                         </dt>
+                                                         <dd>
+                                                            @Html.DisplayFor(model => model.LastModifiedBy)
+                                                         </dd>
+                                                         
+                                                         <dt>
+                                                            @Html.DisplayNameFor(model => model.LastModifiedOn)
+                                                         </dt>
+                                                         <dd>
+                                                            @Html.DisplayFor(model => model.LastModifiedOn)
+                                                         </dd>
+                                                      </dl>
+                                                   </text>);
+        }))
+</div>

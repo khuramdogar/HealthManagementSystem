@@ -1,0 +1,92 @@
+﻿@using HMS.HealthTrack.Web.Data.Model.Inventory
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.StockSets
+@using Kendo.Mvc.UI
+@model IEnumerable<StockSet>
+
+@{
+   ViewBag.Title = "Stock Sets";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Treatment Plan.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Product stock sets</h2>
+         </div>
+      </div>
+   </div>
+</div>
+<div>
+   @(Html.Kendo().Grid<StockSet>()
+        .Name("grid")
+        .ToolBar(toolbar => toolbar.Custom().Text("New Stock Set").Action("Create", "StockSets"))
+        .Columns(columns =>
+        {
+           columns.Bound(c => c.Name);
+           columns.Command(c =>
+           {
+              c.Custom("Edit").Text("Edit").Click("onEditClick");
+              c.Destroy();
+           }).HtmlAttributes(new {@class = "button-column"}).Width(170);
+        }).DataSource(ds => ds.WebApi().PageSize(20).Model(model => model.Id(ss => ss.StockSetId))
+           .Read(read => read.Url(Url.HttpRouteUrl("DefaultApi", new {controller = "StockSets"})))
+           .Destroy(destroy => destroy.Url(Url.HttpRouteUrl("DefaultApi", new {controller = "StockSets", id = "{0}"})))
+        )
+        .Events(events => events.DataBound("onDataBound"))
+        .Filterable()
+        .Pageable(page => page.Refresh(true).PageSizes(true).ButtonCount(5))
+        .Resizable(resize => resize.Columns(true))
+        .Sortable()
+        .ClientDetailTemplateId("template")
+        )
+</div>
+
+<script id="template" type="text/kendo-tmpl">
+   @(Html.Kendo().TabStrip().Name("tabStrip_#=StockSetId#")
+        .SelectedIndex(0)
+        .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+        .Items(items =>
+        {
+           items.Add().Text("Items").Content(@<text>
+            @(Html.Kendo().Grid<StockSetItemModel>()
+                 .Name("grid_#=StockSetId#")
+                 .Columns(columns =>
+                 {
+                    columns.Bound(c => c.ProductId).Width(120);
+                    columns.Bound(c => c.ProductDescription);
+                    columns.Bound(c => c.Quantity).Width(120);
+                 }).DataSource(dataSource => dataSource.WebApi().PageSize(5).Read(read => read.Url(Url.HttpRouteUrl("DefaultApi", new {controller = "StockSetItems", stockSetId = "#=StockSetId#"})))
+                 )
+                 .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+                 .Sortable()
+                 .ToClientTemplate()
+                 )
+         </text>);
+        }).ToClientTemplate()
+        )
+</script>
+
+@section Scripts {
+   <script src="~/Scripts/Inventory.js"></script>
+   <script type="text/javascript">
+      function onDataBound(e) {
+         applyGridTooltips();
+         var grid = $('#grid');
+         var dataSource = e.sender.dataSource;
+         var colCount = grid.find('.k-grid-header colgroup > col').length;
+
+         if (dataSource._view.length == 0) {
+            grid.find('.k-grid-content tbody').append('<tr class="kendo-data-row"><td colspan="' + colCount + '" style=text-align:center;">No results found.</td></tr>');
+         }
+      }
+
+      function onEditClick(e) {
+         var row = $(e.currentTarget).closest('tr');
+         var dataItem = this.dataItem(row);
+         window.location.href = '@Url.Action("Edit", "StockSets")/' + dataItem.StockSetId;
+      }
+   </script>
+}

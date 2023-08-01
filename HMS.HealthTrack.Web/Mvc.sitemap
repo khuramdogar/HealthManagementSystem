@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<mvcSiteMap xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://mvcsitemap.codeplex.com/schemas/MvcSiteMap-File-4.0" xsi:schemaLocation="http://mvcsitemap.codeplex.com/schemas/MvcSiteMap-File-4.0 MvcSiteMapSchema.xsd">
+
+   <mvcSiteMapNode title="Home" controller="Home" action="Index">
+      <mvcSiteMapNode title="Inventory" controller="Inventory" action="Index" area="Inventory" >
+      <mvcSiteMapNode title="Stock" controller="Stock" action="Index" area="Inventory">
+         <mvcSiteMapNode title="Receive item" controller="Stock" action="ReceiveProduct" area="Inventory"/>
+         <mvcSiteMapNode title="Receive order" controller="Stock" action="ReceiveOrder" area="Inventory" preservedRouteParameters="id"/>
+         <mvcSiteMapNode title="Negative stock" controller="Stock" action="NegativeStock" area="Inventory"/>
+         <mvcSiteMapNode title="Received stock" controller="Stock" action="ReceivedStock" area="Inventory"/>
+         <mvcSiteMapNode title="Deductions" controller="StockAdjustments" action="Deductions" area="Inventory">
+            <mvcSiteMapNode title="Deduct stock" controller="StockAdjustments" action="DeductStock" area="Inventory"/>
+            <mvcSiteMapNode title="Missing patients" controller="StockAdjustments" action="MissingPatients" area="Inventory"/>
+            <mvcSiteMapNode title="Missing payment class" controller="StockAdjustments" action="RequirePaymentClass" area="Inventory"/>
+            <mvcSiteMapNode title="Missing lot number" controller="StockAdjustments" action="MissingLotNumber" area="Inventory"/>
+            <mvcSiteMapNode title="Missing serial number" controller="StockAdjustments" action="MissingSerialNumber" area="Inventory"/>
+         </mvcSiteMapNode>
+      </mvcSiteMapNode>
+         <mvcSiteMapNode title="Consumption" controller="Consumptions" action="Index" area="Inventory">
+            <mvcSiteMapNode title="By category" controller="Consumptions" action="ConsumptionByCategory" area="Inventory"/>
+            <mvcSiteMapNode title="By doctor" controller="Consumptions" action="ConsumptionReports" area="Inventory"/>
+            <mvcSiteMapNode title="By patient" controller="Consumptions" action="ConsumptionByPatient" area="Inventory"/>
+            <mvcSiteMapNode title="Unknown product consumption" controller="Consumptions" action="MapsMissing" area="Inventory">
+               <mvcSiteMapNode title="Create product map" controller="ProductMappings" action="Create" area="Inventory" preservedRouteParameters="id" />   
+            </mvcSiteMapNode>
+         </mvcSiteMapNode>
+         <mvcSiteMapNode title="Stock takes" controller="StockTakes" action="Index" area="Inventory">
+            <mvcSiteMapNode title="Edit" controller="StockTakes" action="Edit" area="Inventory" preservedRouteParameters="id" />
+            <mvcSiteMapNode title="Submit" controller="StockTakes" action="Submit" area="Inventory"/>
+            <mvcSiteMapNode title="View" controller="StockTakes" action="View" area="Inventory" preservedRouteParameters="id" />
+            <mvcSiteMapNode title="Create check list" controller="StockTakes" action="CreateList" area="Inventory"/>
+         </mvcSiteMapNode>
+      <mvcSiteMapNode title="Stock requests" controller="StockRequests" action="Index" area="Inventory">
+         <mvcSiteMapNode title="Request product" controller="StockRequests" action="RequestProduct" area="Inventory"/>
+         <mvcSiteMapNode title="Request stock set" controller="StockRequests" action="RequestStockSet" area="Inventory"/>
+         <mvcSiteMapNode title="Low stock" controller="Stock" action="LowStock" area="Inventory"/>
+         <mvcSiteMapNode title="Request from consumption" controller="StockConsumptions" action="RestockConsumptions" area="Inventory">
+         </mvcSiteMapNode>
+         <mvcSiteMapNode title="Edit" controller="StockRequests" action="Edit" area="Inventory" preservedRouteParameters="id" />
+         <mvcSiteMapNode title="Delete" controller="StockRequests" action="Delete" area="Inventory" preservedRouteParameters="id"/>
+         <mvcSiteMapNode title="Details" controller="StockRequests" action="Details" area="Inventory" preservedRouteParameters="id"/>
+      </mvcSiteMapNode>
+         <mvcSiteMapNode title="Products" controller="Products" action="Index" area="Inventory">
+            <mvcSiteMapNode title="Create" controller="Products" action="Create" area="Inventory"/>
+            <mvcSiteMapNode title="Edit" controller="Products" action="Edit" area="Inventory" preservedRouteParameters="id" />
+            <mvcSiteMapNode title="Delete" controller="Products" action="Delete" area="Inventory" preservedRouteParameters="id"/>
+            <mvcSiteMapNode title="Details" controller="Products" action="Details" area="Inventory" preservedRouteParameters="id"/>
+            <mvcSiteMapNode title="Stock sets" controller="StockSets" action="Index" area="Inventory">
+               <mvcSiteMapNode title="Create" controller="StockSets" action="Create" area="Inventory" />
+               <mvcSiteMapNode title="Edit" controller="StockSets" action="Edit" area="Inventory" preservedRouteParameters="id"/>
+               <mvcSiteMapNode title="Details" controller="StockSets" action="Details" area="Inventory" preservedRouteParameters="id"/>
+            </mvcSiteMapNode>
+            <mvcSiteMapNode title="Export" controller ="Products" action="Export" area="Inventory"/>
+         </mvcSiteMapNode>
+         <mvcSiteMapNode title="Product imports" controller="ProductImport" action="Index" area="Inventory">
+            <mvcSiteMapNode title="Products to import" controller="ProductImport" action="Products" area="Inventory" preservedRouteParameters="id">
+               <mvcSiteMapNode title="Edit" controller="ProductImport" action="Edit" area="Inventory" preservedRouteParameters="id"/>
+            </mvcSiteMapNode>
+         </mvcSiteMapNode>
+      
+      <mvcSiteMapNode title="Orders" controller="Orders" action="Index" area="Inventory">
+         <mvcSiteMapNode title="Create" controller="Orders" action="Create" area="Inventory"/>
+         <mvcSiteMapNode title="Approve" controller="Orders" action="Approve" area="Inventory"/>
+         <mvcSiteMapNode title="Create from request" controller="Orders" action="OrderFromRequest" area="Inventory"/>
+         <mvcSiteMapNode title="Edit" controller="Orders" action="Edit" area="Inventory" preservedRouteParameters="id" />
+         <mvcSiteMapNode title="Delete" controller="Orders" action="Delete" area="Inventory" preservedRouteParameters="id"/>
+         <mvcSiteMapNode title="Details" controller="Orders" action="Details" area="Inventory" preservedRouteParameters="id"/>
+      </mvcSiteMapNode>
+      <mvcSiteMapNode title="Admin" controller="Admin" action="Index" area="Inventory">
+         <mvcSiteMapNode title="Consumptions" controller="Consumptions" action="Index" area="Inventory">
+            <mvcSiteMapNode title="Edit" controller="Consumptions" action="Edit" area="Inventory" preservedRouteParameters="id" />
+            <mvcSiteMapNode title="Delete" controller="Consumptions" action="Delete" area="Inventory" preservedRouteParameters="id"/>
+            <mvcSiteMapNode title="Details" controller="Consumptions" action="Details" area="Inventory" preservedRouteParameters="id"/>
+            <mvcSiteMapNode title="Processing errors" controller="Consumptions" action="Errors" area="Inventory" preservedRouteParameters="id"/>
+            <mvcSiteMapNode title="Unmapped products" controller="Consumptions" action="MapsMissing" area="Inventory" preservedRouteParameters="id"/>
+            <mvcSiteMapNode title="Unprocessed" controller="Consumptions" action="Unprocessed" area="Inventory"/>
+         </mvcSiteMapNode>
+         <mvcSiteMapNode title="External product mappings" controller="ProductMappings" action="Index" area="Inventory">
+            <mvcSiteMapNode title="Create" controller="ProductMappings" action="Create" area="Inventory"/>
+            <mvcSiteMapNode title="Edit" controller="ProductMappings" action="Edit" area="Inventory" preservedRouteParameters="id" />
+            <mvcSiteMapNode title="Delete" controller="ProductMappings" action="Delete" area="Inventory" preservedRouteParameters="id"/>
+            <mvcSiteMapNode title="Details" controller="ProductMappings" action="Details" area="Inventory" preservedRouteParameters="id"/>
+         </mvcSiteMapNode>
+         <mvcSiteMapNode title="Product categories" controller="Categories" action="Index" area="Inventory"/>
+         <mvcSiteMapNode title="Stock locations" controller="StockLocations" action="Index" area="Inventory">
+            <mvcSiteMapNode title="Create" controller="StockLocations" action="Create" area="Inventory"/>
+            <mvcSiteMapNode title="Edit" controller="StockLocations" action="Edit" area="Inventory" preservedRouteParameters="id" />
+            <mvcSiteMapNode title="Delete" controller="StockLocations" action="Delete" area="Inventory" preservedRouteParameters="id"/>
+            <mvcSiteMapNode title="Details" controller="StockLocations" action="Details" area="Inventory" preservedRouteParameters="id"/>
+         </mvcSiteMapNode>
+         <mvcSiteMapNode title="Settings" controller="Admin" action="Settings" area="Inventory"/>
+         <mvcSiteMapNode title="User permissions" controller="Admin" action="UserPermissions" area="Inventory"/>
+         <mvcSiteMapNode title="Suppliers" controller="Suppliers" action="Index" area="Inventory">
+            <mvcSiteMapNode title="Create" controller="Suppliers" action="Create" area="Inventory"/>
+            <mvcSiteMapNode title="Edit" controller="Suppliers" action="Edit" area="Inventory" preservedRouteParameters="id"/>
+            <mvcSiteMapNode title="Delete" controller="Suppliers" action="Delete" area="Inventory" preservedRouteParameters="id"/>
+            <mvcSiteMapNode title="Details" controller="Suppliers" action="Details" area="Inventory" preservedRouteParameters="id"/>
+         </mvcSiteMapNode>
+         <mvcSiteMapNode title="General ledgers" controller="GeneralLedger" action="Index" area="Inventory"/>
+         <mvcSiteMapNode title="Payment class mappings" controller="PaymentClassMapping" action="Index" area="Inventory"/>
+         <mvcSiteMapNode title="Stock adjustment reasons" controller="StockAdjustmentReasons" action="Index" area="Inventory"/>
+      </mvcSiteMapNode>
+   </mvcSiteMapNode>
+   </mvcSiteMapNode>
+   
+
+</mvcSiteMap>

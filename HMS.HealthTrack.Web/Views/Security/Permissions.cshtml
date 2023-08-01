@@ -1,0 +1,66 @@
+﻿@using System.Security.Claims
+@model IEnumerable<HMS.HealthTrack.Web.Data.Model.Security.HealthTrackPermission>
+          
+@Styles.Render("~/Content/css")
+      
+      @Scripts.Render("~/bundles/kendo")
+
+      <script src="~/Scripts/kendo/2018.2.516/kendo.aspnetmvc.min.js"></script>
+
+      @Styles.Render("~/Content/kendo")
+    
+<div>
+   <h2>User permissions for @User.Identity.Name</h2>
+   <hr/>
+  
+   <div id="permissions">
+      @(Html.Kendo().TabStrip()
+           .Name("tabstrip")
+           .Items(tabstrip =>
+           {
+              tabstrip.Add().Text("HealthTrack permissions")
+                 .Selected(true)
+                 .Content(@<text>
+                              <ul>
+                                 @foreach (var auth in Model.Where(auth => auth != null && !string.IsNullOrEmpty(auth.Keyword)))
+                                 {
+                                    <li>
+                                       @auth.Keyword
+                                    </li>
+                                 }
+                              </ul>
+
+                           </text>);
+
+              @*tabstrip.Add().Text("Network roles")
+                 .Content(@<text>
+                              <ul>
+                                 @{
+                                    var wi = User.Identity as System.Security.Principal.WindowsIdentity;
+                                    foreach (var g in wi.Groups)
+                                    {
+                                       var account = g.Translate(typeof (System.Security.Principal.NTAccount));
+                                       <li>@account.Value</li>
+                                    }
+                                 }
+                              </ul>
+
+                           </text>);*@
+
+              tabstrip.Add().Text("User claims").Enabled(true)
+                 .Content(@<text>
+                              <ul>
+                                 @{
+                                    foreach (var g in ClaimsPrincipal.Current.Claims)
+                                    {
+                                       <li>@g.Type @g.Value</li>
+                                    }
+                                 }
+                              </ul>
+
+                           </text>);
+           })
+           )
+   </div>
+   
+</div>

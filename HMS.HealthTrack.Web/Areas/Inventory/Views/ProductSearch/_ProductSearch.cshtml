@@ -1,0 +1,293 @@
+﻿@using HMS.HealthTrack.Web.Data.Model.Inventory
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.ProductSearch
+@using Kendo.Mvc.UI
+@model ProductSearchModel
+
+<div class="container-fluid">
+   <div class="row">
+      @*left column*@
+      <div class="col-sm-7">
+         <div class="form-horizontal">
+            <div class="form-group">
+               <div class="col-sm-4 control-label text-right">
+                  @Html.LabelFor(m => m.psDescription)
+               </div>
+               <div class="col-sm-8">
+                  @Html.Kendo().TextBoxFor(m => m.psDescription).HtmlAttributes(new {@class = "page-input", tabindex = "1"})
+               </div>
+            </div>
+
+            <div class="form-group">
+               <div class="col-sm-4 control-label text-right">
+                  @Html.LabelFor(m => m.psSPC)
+               </div>
+               <div class="col-sm-6">
+                  @Html.Kendo().TextBoxFor(m => m.psSPC).HtmlAttributes(new {@class = "page-input", tabindex = "2"})
+               </div>
+               <div class="col-sm-2 no-padding-left">
+                  <a id="scanSpc" class="k-button">Scan</a>
+               </div>
+            </div>
+
+            <div class="form-group">
+               <div class="col-sm-4 control-label text-right">
+                  @Html.LabelFor(m => m.psUPN)
+               </div>
+               <div class="col-sm-6">
+                  @Html.Kendo().TextBoxFor(m => m.psUPN).HtmlAttributes(new {@class = "page-input", tabindex = "3"})
+               </div>
+               <div class="col-sm-2 no-padding-left">
+                  <a id="scanUpc" class="k-button">Scan</a>
+               </div>
+            </div>
+
+            <div class="form-group">
+               <div class="col-sm-4 control-label text-right">
+                  @Html.LabelFor(m => m.psRebateCode)
+               </div>
+               <div class="col-sm-8">
+                  @Html.Kendo().TextBoxFor(m => m.psRebateCode).HtmlAttributes(new {@class = "page-input", tabindex = "4"})
+               </div>
+            </div>
+
+            <div class="form-group">
+               <div class="col-sm-4 control-label text-right">
+                  @Html.LabelFor(m => m.psSupplier)
+               </div>
+               <div class="col-sm-8">
+                  @(Html.Kendo().DropDownListFor(m => m.psSupplier)
+                       .DataSource(ds => ds.Read(read => read.Action("GetSuppliers", "Suppliers")).ServerFiltering(true))
+                       .DataTextField("Text").DataValueField("Value")
+                       .Filter(FilterType.Contains)
+                       .HtmlAttributes(new {@class = "page-input", tabindex = "5"})
+                       .OptionLabel(" ")
+                       )
+               </div>
+            </div>
+
+            <div class="form-group">
+               <div class="col-sm-4 control-label text-right">
+                  @Html.LabelFor(m => m.psManufacturer)
+               </div>
+               <div class="col-sm-8">
+                  @Html.Kendo().TextBoxFor(m => m.psManufacturer).HtmlAttributes(new {@class = "page-input", tabindex = "6"})
+               </div>
+            </div>
+
+            <div class="form-group">
+               <div class="col-sm-4 control-label text-right">
+                  @Html.LabelFor(m => m.psCategories)
+               </div>
+               <div class="col-sm-8">
+                  <span class="k-textbox k-space-right page-input" style="border: none;">
+                     @(Html.Kendo().MultiSelect().Name("psSelectedCategories")
+                                 .DataTextField("CategoryName").DataValueField("id").Events(events => events.Open("onCategoryMultiOpen"))
+                          .HtmlAttributes(new {@class = "page-input window-multiselect", tabindex = "5"})
+                          .TagMode(TagMode.Single))
+                     <a href="#" class="k-icon k-i-search" id="psBrowseCategories">&nbsp;</a>
+                  </span>
+               </div>
+            </div>
+            
+            <div class="form-group">
+               <div class="col-sm-4 control-label text-right">
+                  @Html.LabelFor(m => m.psStatus)
+               </div>
+               <div class="col-sm-8">
+                  @(Html.Kendo().MultiSelect().Name("psStatus")
+                       .BindTo(EnumHelper.GetSelectList(typeof (ProductStatus)).OrderBy(e => e.Text))
+                       .DataTextField("Text").DataValueField("Text")
+                       .HtmlAttributes(new {@class = "page-input"})
+                       .TagMode(TagMode.Single)
+                       )
+               </div>
+            </div>
+         </div>
+      </div>
+      @* middle column *@
+      <div class="col-sm-5" style="padding-right:2em;">
+         <div class="form-horizontal">
+            <div class="form-group">
+               <div class="col-sm-7 control-label text-right">
+                  @Html.LabelFor(m => m.psInStock)
+               </div>
+               <div class="col-sm-5">
+                  @(Html.Kendo().DropDownList()
+                       .Name("psInStock")
+                       .BindTo(new List<string>()
+                       {
+                          "",
+                          "Yes",
+                          "No"
+                       }).HtmlAttributes(new {@class = "page-input", tabindex = "9"}))
+               </div>
+            </div>
+            
+            <div class="form-group">
+               <div class="col-sm-7 control-label text-right">
+                  @Html.LabelFor(m => m.psUnclassified)
+               </div>
+               <div class="col-sm-5">
+                  @(Html.Kendo().DropDownList()
+                       .Name("psUnclassified")
+                       .BindTo(new List<string>()
+                       {
+                          "",
+                          "Yes",
+                          "No"
+                       })
+                       .HtmlAttributes(new {@class = "page-input", tabindex = "9"}))
+               </div>
+            </div>
+            
+            <div class="form-group">
+               <div class="col-sm-7 control-label text-right">
+                  @Html.LabelFor(m => m.psHasHadStockTake)
+               </div>
+               <div class="col-sm-5">
+                  @(Html.Kendo().DropDownList()
+                       .Name("psHasHadStockTake")
+                       .BindTo(new List<string>()
+                       {
+                          "",
+                          "Yes",
+                          "No"
+                       })
+                       .HtmlAttributes(new {@class = "page-input", tabindex = "11"}))
+               </div>
+            </div>
+            
+            <div class="form-group">
+               <div class="col-sm-7 control-label text-right">
+                  @Html.LabelFor(m => m.psConsignment)
+               </div>
+               <div class="col-sm-5">
+                  @(Html.Kendo().DropDownList()
+                       .Name("psIsConsignment")
+                       .BindTo(new List<string>()
+                       {
+                          "",
+                          "Yes",
+                          "No"
+                       })
+                       .HtmlAttributes(new {@class = "page-input", tabindex = "10"}))
+               </div>
+            </div>
+            
+            <div class="form-group">
+               <div class="col-sm-7 control-label text-right">
+                  @Html.LabelFor(m => m.psPendingConsumedProducts)
+               </div>
+               <div class="col-sm-5">
+                  @(Html.Kendo().DropDownList()
+                       .Name("psPendingConsumedProducts")
+                       .BindTo(new List<string>()
+                       {
+                          "",
+                          "Yes",
+                          "No"
+                       })
+                       .HtmlAttributes(new {@class = "page-input", tabindex = "11"}))
+               </div>
+            </div>
+            
+            <div class="form-group">
+               <div class="col-sm-7 control-label text-right">
+                  @Html.LabelFor(m => m.psInError)
+               </div>
+               <div class="col-sm-5">
+                  @(Html.Kendo().DropDownList()
+                       .Name("psInError")
+                       .BindTo(new List<string>()
+                       {
+                          "",
+                          "Yes",
+                          "No"
+                       })
+                       .HtmlAttributes(new {@class = "page-input", tabindex = "12"}))
+               </div>
+            </div>
+
+            <div class="form-group">
+               <div class="col-sm-7 control-label text-right">
+                  @Html.LabelFor(m => m.psManageStock)
+               </div>
+               <div class="col-sm-5">
+                  @(Html.Kendo().DropDownList()
+                       .Name("psManageStock")
+                       .BindTo(new List<string>()
+                       {
+                          "",
+                          "Yes",
+                          "No"
+                       })
+                       .HtmlAttributes(new { @class = "page-input", tabindex = "13" }))
+               </div>
+            </div>
+            <div class="form-group">
+               <div class="col-sm-7 control-label text-right">
+                  @Html.LabelFor(m => m.psIncludeDeleted)
+               </div>
+               <div class="col-sm-5">
+                  @Html.Kendo().DropDownListFor(m=>m.psIncludeDeleted).Items(i =>
+                  {
+                     i.Add().Text("Include").Value("true").Selected(false);
+                     i.Add().Text("Exclude").Value("false").Selected(true);
+                  }).HtmlAttributes(new { @class = "page-input" })
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="row">
+      <div class="col-sm-5 pull-right text-right">
+         <a id="search" class="k-button k-primary">Search</a>
+         <a id="psClear" class="k-button">Clear</a>
+         <a id="psClose" class="k-button">Cancel</a>
+      </div>
+   </div>
+</div>
+
+<div id="categoryTreeWindow"></div>
+<div id="scanCodeWindow"></div>
+<script src="~/Areas/Inventory/Scripts/ScanCode.js"></script>
+<script src="~/Scripts/Inventory.js"></script>
+<script type="text/javascript">
+   $(document).ready(function() {
+      createCategoryTreeWindow('psSelectedCategories', 'SelectedCategories');
+      $('#psBrowseCategories').click(function () {
+         $('#CategoryMulti').data('kendoMultiSelect').value($('#psSelectedCategories').data('kendoMultiSelect').value());
+         $('#categoryTreeWindow').data('kendoWindow').center().open();
+      });
+
+      $('#psSelectedCategories').data('kendoMultiSelect').wrapper.find('input').on('keypress', function(e) {
+         e.preventDefault();
+      });
+
+      // Scan code code code
+      createScanCodeWindow("psSPC", "psUPN",0,null);
+      $('#scanSpc').click(function (e) {
+         $('#ScanCodeValue').val('@ScanCodeValue.Spc');
+         $('#scanCodeWindow').data('kendoWindow').title("Scan barcode for SPC").center().open();
+      });
+
+      $('#scanUpc').click(function (e) {
+         $('#ScanCodeValue').val('@ScanCodeValue.Upc');
+         $('#scanCodeWindow').data('kendoWindow').title("Scan barcode for UPN").center().open();
+      });
+   });
+
+</script>
+
+<style>
+
+   #searchResultActions { text-align: right; }
+
+   .window-multiselect.k-multiselect.k-header { padding-right: 25px !important; }
+
+   .k-widget.k-multiselect {
+      display: block;
+      width: 100%;
+   }
+
+</style>

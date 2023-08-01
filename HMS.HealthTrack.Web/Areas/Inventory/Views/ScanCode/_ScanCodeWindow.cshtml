@@ -1,0 +1,22 @@
+﻿@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.ScanCode.ScanCodeValueModel
+<div class="container-fluid">
+   @Html.HiddenFor(m => m.ScanCodeValue)
+   <div class="form-horizontal">
+      <div id="scanAlert"></div>
+      <div class="form-group">
+         <div class="col-sm-3 control-label text-right">
+            @Html.Label("Scan code")
+         </div>
+         <div class="col-sm-9">
+            @Html.Kendo().TextBox().Name("ScanCode").HtmlAttributes(new { @class = "page-input"})
+         </div>
+      </div>
+      <div class="form-group">
+         <div class="col-sm-12 pull-right text-right">
+            @Html.Kendo().Button().Name("searchScanCodeWindow").Content("Go").Events(e => e.Click("onSearchScanCodeWindowClick")).HtmlAttributes(new { @class = "k-primary" })
+            @Html.Kendo().Button().Name("closeScanCodeWindow").Content("Close").Events(e => e.Click("onCloseScanCodeWindowClick"))
+         </div>
+      </div>
+   </div>
+</div>

@@ -1,0 +1,15 @@
+﻿@model HMS.HealthTrack.Web.Areas.Inventory.Models.ProductImport.ProductImportDataViewModel
+<div class="row">
+   <div class="col-md-5">
+      <dl class="dl-horizontal" id="productImportDetails">
+         <dt>Imported products</dt>
+         <dd>@Html.DisplayFor(m => m.Imported) </dd>
+         <dt>Total products</dt>
+         <dd>@Html.DisplayFor(m => m.Count)</dd>
+         <dt>Status</dt>
+         <dd>@Html.DisplayFor(m => m.Status)</dd>
+         <dt>Imported on</dt>
+         <dd>@Html.DisplayFor(m => m.ImportedOn)</dd>
+      </dl>
+   </div>
+</div>

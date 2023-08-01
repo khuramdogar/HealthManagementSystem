@@ -1,0 +1,147 @@
+﻿@using HMS.HealthTrack.Web.Data.Model
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.StockAdjustment
+@using HMS.HealthTrack.Web.Views
+@using Kendo.Mvc.UI
+@model dynamic
+
+@{
+   ViewBag.Title = "Stock deductions";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Barcode.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Stock deductions</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div id="alertPlaceholder"></div>
+@(Html.Kendo().Grid<IndexStockAdjustmentsViewModel>()
+     .Name("grid")
+     .Columns(columns =>
+     {
+        columns.Bound(deduction => deduction.SPC).ClientTemplate("<a href='" + @Url.Action("Details", "Products", new {Area = "Inventory"}) + "/#=ProductId#'>#=SPC#</a>");
+        columns.Bound(deduction => deduction.ProductName).Filterable(ftb => ftb.Cell(cell => cell.ShowOperators(true)).Extra(false));
+        columns.Bound(deduction => deduction.AdjustedBy).Title("Deducted By");
+        columns.Bound(deduction => deduction.AdjustedOn).Format("{0:dd/MM/yyyy HH:mm}").Filterable(f => f.UI(GridFilterUIRole.DateTimePicker)).Title("Deducted On").Width(160);
+        columns.Bound(deduction => deduction.Quantity).Filterable(ftb => ftb.Extra(false)).Title("Qty").Width(70);
+        columns.Bound(deduction => deduction.Source).Title("Source").Width(120);
+     })
+     .Events(events => events.DataBound("onDataBound"))
+     .DataSource(dataSource => dataSource
+        .WebApi()
+        .PageSize(20)
+        .Model(model =>
+        {
+           model.Id(deduction => deduction.StockAdjustmentId); // Specify the property which is the unique identifier of the model
+           model.Field(deduction => deduction.StockAdjustmentId).Editable(false); // Make the consumptionID property not editable
+        })
+        .Read(read => read.Url(Url.Action("StockDeductions", "StockAdjustments")))
+        .Sort(sc =>
+        {
+           sc.Add(s => s.AdjustedOn).Descending();
+        }) // Action invoked when the grid needs data
+     )
+     .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+     .ToolBar(toolbar => toolbar.Template(@<text>
+                                              <span class="toolbar">
+                                                 <span class="toolbar-left">
+                                                    @(Html.Kendo().Button().Name("CreateDeduction").Content("Create").Events(e => e.Click("createDeduction")))
+                                                 </span>
+                                                 <span class="toolbar-right">
+                                                    <label class="filter-label" for="product">Product: </label>
+                                                    @Html.Kendo().TextBox().Name("product").HtmlAttributes(new {@class = "filter-control"})
+                                                    @(Html.Kendo().Button().Name("applyFilter").Content("Filter"))
+                                                    @(Html.Kendo().Button().Name("clearFilter").Content("Clear"))
+                                                 </span>
+                                              </span>
+                                           </text>))
+     .Filterable()
+     .Resizable(resize => resize.Columns(true))
+     .Sortable(sort => sort.SortMode(GridSortMode.MultipleColumn))
+     .ClientDetailTemplateId("template"))
+<script id="template" type="text/kendo-tmpl">
+      @(Html.Kendo().TabStrip()
+           .Name("tabStrip_#=StockAdjustmentId#")
+           .SelectedIndex(0)
+           .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+           .Items(items =>
+           {
+              items.Add().Text("Consumption details").Content("<div id='patient_#=StockAdjustmentId#'></div><script>getPatientDetails(#=StockAdjustmentId#,#=ClinicalRecordId#)</script>");
+              items.Add().Text("Additional details").Content("<div id='result_#=StockAdjustmentId#'></div><script>getDetails(#=StockAdjustmentId#)</script>");
+           }).ToClientTemplate())
+</script>
+
+@section Scripts {
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+   <script src="~/Scripts/Inventory.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+         var deductedStock = "@ViewBag.DeductedStock";
+         if (deductedStock != "") {
+            getAlert('success', 'Successfully deducted stock for <strong>' + deductedStock + '</strong>.');
+         }
+
+         InitFilterControls();
+         var grid = $('#grid').data('kendoGrid');
+         var statusFilter = $('#consumptionStatus').data('kendoDropDownList');
+         $('#applyFilter').click(function() {
+            var filters = GetFilters(grid);
+            filters = UpdateSearchFilters(filters, "ProductName", "contains", $('#product').val(), "and");
+            filters = UpdateSearchFilters(filters, "AdjustmentStatus", "eq", statusFilter.value(), "and");
+            grid.dataSource.filter(filters);
+         });
+
+         $('#clearFilter').click(function() {
+            $('#product').val('');
+            statusFilter.select(0);
+            ClearFilters(grid);
+         });
+      });
+
+      function getDetails(stockAdjustmentId) {
+         $("#result_" + stockAdjustmentId).load("@Url.Action("AdditionalDetails", "StockAdjustments", new {Area = "Inventory"})?stockAdjustmentId=" + stockAdjustmentId);
+      };
+
+      function getPatientDetails(stockAdjustmentId, containerId) {
+         if (containerId == null) {
+            $("#patient_" + stockAdjustmentId).html("<p>There are no patient details associated with this record</p>");
+         } else {
+            $("#patient_" + stockAdjustmentId).load("@Url.Action("PatientDetails", "Patient", new {Area = "Inventory"})?containerId=" + containerId);
+         }
+      };
+
+      function dataBound() {
+         this.expandRow(this.tbody.find("tr.k-master-row").first());
+      }
+
+      function createDeduction() {
+         window.location.href = '@Url.Action("DeductStock", "StockAdjustments")';
+      }
+
+      function onDataBound(e) {
+         applyGridTooltips();
+         $('#grid').find('tr.k-master-row').each(function() {
+            var row = $(this);
+            var grid = $('#grid').data('kendoGrid');
+            var button = $(row).children().children('.k-grid-Ignore')[0];
+            var item = grid.dataItem($(row).closest('tr'));
+            var status = item.get('StockStatus');
+            if (status == '@ConsumptionProcessingStatus.Ignored.ToString()') {
+               $(button).html('Unignore');
+            } else if (status != '@ConsumptionProcessingStatus.Unprocessed' || status != '@ConsumptionProcessingStatus.Processed') {
+               $(button).attr('disabled', 'disabled');
+            }
+         });
+      }
+   </script>
+}

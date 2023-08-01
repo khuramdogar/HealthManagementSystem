@@ -1,0 +1,33 @@
+﻿@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.Orders.DetailsOrdersViewModel
+<div class="row">
+
+
+   @(Html.Kendo().Grid(Model.Items)
+        .Name("grid")
+        .Columns(columns =>
+        {
+           columns.Template(@<text></text>).Hidden(true).Width(90).
+              ClientTemplate("<input type='hidden' name = 'OrderItems.Index' value='#= ProductId #'/>");
+           columns.Bound(orderItem => orderItem.PriceModelId).Hidden(true).Width(90).ClientTemplate("<input type='hidden' name = 'OrderItems[#= ProductId #].PriceModelId' value= '#= PriceModelId #' />");
+           columns.Bound(orderItem => orderItem.OrderItemId).Hidden(true).ClientTemplate("<input type='hidden' name='OrderItems[#=ProductId#].OrderItemId' value='#= OrderItemId#'/>");
+
+           columns.Bound(orderItem => orderItem.ProductId).Width(90).ClientTemplate("#= ProductId # <input type='hidden' name = 'OrderItems[#= ProductId #].ProductId' value='#= ProductId #' />");
+           columns.Bound(orderItem => orderItem.Product.Description).Width(350);
+           columns.Bound(orderItem => orderItem.Quantity).Width(100).ClientTemplate("#= Quantity # <input type='hidden' name = 'OrderItems[#= ProductId #].Quantity' value=#=Quantity# />");
+           columns.Template(@<text></text>).Title("Recieved Quantity").ClientTemplate(Html.Kendo().TextBox().Name("OrderItems[#=ProductId#].ReceivedQuantity").Value("#= Quantity #").ToClientTemplate().ToHtmlString()).HtmlAttributes(new {name = "OrderItems[#= ProductId #].ReceivedQuanity"});
+           columns.Template(@<text></text>).Title("Status").HtmlAttributes(new {@class="templateCell"})
+              .ClientTemplate(Html.Kendo().DropDownList().Name("OrderItems[#=ProductId#].OrderItemStatus").DataValueField("Value").DataTextField("Text").BindTo(Model.OrderItemStatuses.Select(xx => new SelectListItem() { Value = xx.Key.ToString(), Text = xx.Value })).Value("1").ToClientTemplate().ToHtmlString());
+        })
+        .DataSource(dataSource => dataSource
+           .Ajax().PageSize(20).ServerOperation(false)
+           .Model(model =>
+           {
+              model.Id(orderItem => orderItem.OrderItemId);
+           })
+        ).Sortable()
+        .Events(events => events.DataBound("initDropDown"))
+        )
+</div>
+<div class="row" style="height: 10px"></div>
+

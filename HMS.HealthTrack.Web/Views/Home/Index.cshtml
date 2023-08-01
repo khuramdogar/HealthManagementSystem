@@ -1,0 +1,27 @@
+﻿@{
+   ViewBag.Title = "HealthTrack Web";
+}
+<div class="jumbotron">
+   <div class="row">
+      <div class="col-md-3">
+         <img src="~/Content/images/healthtrack-logo-t.png" />
+      </div>
+      <div class="col-md-9 ">
+         <blockquote><h1>HealthTrack Web</h1></blockquote>
+      </div>
+   </div>
+   <div class="row">
+      <p class="lead col-lg-12">HealthTrack web interface. From here you can perform specific HealthTrack related tasks.</p>
+   </div>
+</div>
+
+
+<div class="row text-center">
+   <div class="col-sm-4">
+      <img src="~/Content/images/Icons/128x128/Shipping Boxes 2.png" alt="HealthTrack Inventory" class="center-block">
+      <h3>HealthTrack Inventory</h3>
+      <p>HealthTrack's inventory system allows you to keep track of your stock. You can see all available products, order new products, consume stock, receive stock.</p>
+      <p><a class="btn btn-default" href="@Url.Action("Index", "Inventory", new { Area = "Inventory" })">Inventory &raquo;</a></p>
+   </div>
+</div>
+

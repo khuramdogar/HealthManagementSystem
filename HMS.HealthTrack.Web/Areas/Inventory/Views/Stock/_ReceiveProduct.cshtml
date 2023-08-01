@@ -1,0 +1,56 @@
+﻿@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.Stock.ReceiveProductInput
+@using (Ajax.BeginForm("ReceiveProduct", "Stock", new AjaxOptions
+{
+   HttpMethod = "Post",
+   OnFailure = "onReceiveProductFailure", 
+   OnSuccess = "onReceiveProductSuccess",
+   Url = @Url.Action("ReceiveProduct", "Stock")
+}, new { id = "receiveProductForm" }))
+{
+   @Html.HiddenFor(m => m.ProductId)
+   @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+   <div class="form-horizontal">
+      <div class="form-group">
+         <div class=" col-md-3 col-lg-4 control-label">
+            @Html.LabelFor(model => model.SelectedLocation)
+         </div>
+         <div class="col-md-6 col-lg-7" id="receiveProductSelectedLocation">
+            @(Html.Kendo().DropDownListFor(model => model.SelectedLocation).DataTextField("Text").DataValueField("Value")
+                 .Filter(FilterType.Contains).AutoBind(true)
+                 .DataSource(ds => ds.Read(read => read.Action("GetStockLocations", "StockLocations")).ServerFiltering(true))
+                 .Events(e => e.DataBound("onLocationDataBound"))
+                 .HtmlAttributes(new {@class = "page-input"})
+                 )
+            @Html.ValidationMessageFor(model => model.SelectedLocation)
+         </div>
+      </div>
+      <div class="form-group">
+         <div class="col-md-3 col-lg-4 control-label">
+            @Html.LabelFor(model => model.Quantity)
+         </div>
+         <div class="col-md-6 col-lg-7">
+            @Html.Kendo().TextBoxFor(model => model.Quantity).Format("#.##").HtmlAttributes(new {@class = "page-input"})
+            @Html.ValidationMessageFor(model => model.Quantity, "", new {@class = "text-danger"})
+         </div>
+      </div>
+      <div class="form-group">
+         <div class="col-md-3 col-lg-4 control-label">
+            @Html.LabelFor(model => model.ExpiresOn)
+         </div>
+         <div class="col-md-6 col-lg-7">
+            @Html.Kendo().DatePickerFor(model => model.ExpiresOn).HtmlAttributes(new {@class = "page-input"})
+            @Html.ValidationMessageFor(model => model.ExpiresOn, "", new {@class = "text-danger"})
+         </div>
+      </div>
+      <br/>
+      @Html.HiddenFor(model => model.ContinueReceipt)
+      <div class="form-group">
+         <div class="col-sm-12 pull-right text-right">
+            <a class="k-button k-primary" id="addContinue">Add and continue</a>
+            <a class="k-button" id="addReturn">Add to stock</a>
+            <a class="k-button" id="cancelReceiveProduct" href="@Url.Action("ReceivedStock", "Stock")">Back to list</a>
+         </div>
+      </div>
+   </div>
+}

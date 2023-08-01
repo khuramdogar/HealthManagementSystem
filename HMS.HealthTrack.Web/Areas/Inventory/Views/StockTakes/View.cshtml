@@ -1,0 +1,81 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.StockTakes
+@using Kendo.Mvc.UI
+@model StockTakeViewModel
+
+@{
+   ViewBag.Title = "Inventory stock take";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Bar Scanner.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Stock take</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div id="alertPlaceholder"></div>
+<div class="row">
+   <div class="col-md-5">
+      <dl class="dl-horizontal" id="stockTakeDetails">
+         <dt>Stock take #</dt>
+         <dd>@Html.DisplayFor(m => m.StockTakeId) </dd>
+         <dt>Name</dt>
+         <dd>@Html.DisplayFor(m => m.Name)</dd>
+         <dt>Date</dt>
+         <dd>@Html.DisplayFor(m => m.StockTakeDate)</dd>
+         <dt>Location</dt>
+         <dd><span id="LocationName">@Html.DisplayFor(m => m.LocationName)</span></dd>
+         <dt>Status</dt>
+         <dd>@Html.DisplayFor(m => m.Status)</dd>
+         <dt>Message</dt>
+         <dd>@Html.DisplayFor(m => m.Message)</dd>
+      </dl>
+   </div>
+</div>
+<div>
+   @(Html.Kendo().Grid<StockTakeItemViewModel>()
+        .Name("StockTakeItems")
+        .Columns(columns =>
+        {
+           columns.Bound(c => c.SPC).Width(200);
+           columns.Bound(c => c.Description);
+           columns.Bound(c => c.StockLevel).Width(120).EditorTemplateName("Integer");
+        })
+        .Events(events => events.DataBound("onDataBound"))
+        .Pageable(page => page.Refresh(true).PageSizes(true).ButtonCount(5))
+        .DataSource(dataSource => dataSource
+           .Ajax()
+           .PageSize(20)
+           .Read("GetStockTakeItems", "StockTakeItems", new {stockTakeId = Model.StockTakeId})
+           .Model(model =>
+           {
+              model.Id(m => m.StockTakeItemId);
+              model.Field(m => m.Description);
+              model.Field(m => m.StockLevel).DefaultValue(1);
+              model.Field(m => m.ProductId);
+              model.Field<int>(m => m.StockTakeId).DefaultValue((int) Model.StockTakeId);
+           })
+        ))
+</div>
+
+@section Scripts{
+   <script src="~/Scripts/Inventory.js"></script>
+   <script type="text/javascript">
+      function onDataBound() {
+         applyGridTooltips();
+      }
+   </script>
+}
+
+
+<style>
+   .dl-horizontal dt { width: auto; }
+
+   .dl-horizontal dd { margin-left: 100px; }
+</style>

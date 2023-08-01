@@ -1,0 +1,185 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.Shared
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.StockRequests
+@using HMS.HealthTrack.Web.Views
+@using Kendo.Mvc.UI
+@model IEnumerable<IndexProductStockRequestViewModel>
+
+@{
+   ViewBag.Title = "Stock requests";
+}
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Basket 1.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Stock requests</h2>
+         </div>
+      </div>
+   </div>
+</div>
+<div id="alertPlaceholder"></div>
+<div id="StockRequestGrid">
+   @(Html.Kendo().Grid<IndexProductStockRequestViewModel>()
+        .Name("grid")
+        .ClientDetailTemplateId("stockRequestDetailsTemplate")
+        .Columns(columns =>
+        {
+           columns.Bound(c => c.Description).Filterable(filter => filter.Extra(false));
+           columns.Bound(c => c.CreatedBy).Filterable(filter => filter.Extra(false));
+           columns.Bound(c => c.CreatedOn).Format("{0:dd/MM/yyyy}").Width(140);
+           columns.Bound(c => c.RequestedQuantity).Filterable(filter => filter.Extra(false)).Title("Requested");
+           columns.Bound(c => c.IsUrgent).Filterable(filter => filter.Extra(false)).Title("Urgent").ClientTemplate("#= IsUrgent ? 'Yes' : 'No' #");
+           columns.Bound(c => c.ApprovedQuantity).ClientTemplate("# if (Status == 'Open') {#" +
+                                                                 "<input class='numeric k-textbox' name='ApprovedQuantity' style='width:70px' id='ApprovedQuantity_#=StockRequestId#' value='#=ApprovedQuantity#'" +
+                                                                 "#} else {#" +
+                                                                 "#=ApprovedQuantity#" +
+                                                                 "#}#"
+              ).HtmlAttributes(new {@class = "ApprovedQuantity"}).Filterable(false).Title("Approved").Width(90);
+           columns.Bound(c => c.StockRequestId).Title("").Filterable(false).ClientTemplate(
+              "# if (Status == 'Open') {# " +
+              "<a title=\"Approve\" class=\"glyphicon glyphicon glyphicon-check approveRequest\" onclick='approveRequest(#= StockRequestId #);'</a>" +
+              "#}#" +
+              "# if(Status == 'Open' || Status == 'Approved') {#" +
+              "<a title=\"Reject\" class=\"glyphicon glyphicon-ban-circle\" href=" + @Url.Action("Reject", "StockRequests") + "/#: StockRequestId #></a>" +
+              "#}#" +
+              "<a title=\"Delete\" class=\"glyphicon glyphicon-trash delete\" ></a>");
+        })
+        .DataSource(ds => ds.WebApi().PageSize(20)
+           .Model(model => model.Id(m => m.StockRequestId))
+           .Read(read => read.Url(Url.HttpRouteUrl("DefaultApi", new {controller = "StockRequests"}))).Group(group => group.AddDescending(sr => sr.Status)).Sort(sort =>
+           {
+              sort.Add(sr => sr.IsUrgent).Descending();
+              sort.Add(sr => sr.CreatedOn).Descending();
+           })
+        )
+        .Events(events => events.DataBound("onDataBound"))
+        .Filterable().Groupable().Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+        .Resizable(resize => resize.Columns(true))
+        .Sortable(sort => sort.SortMode(GridSortMode.MultipleColumn))
+        .ToolBar(toolbar => toolbar.Template(@<text>
+                                                 <span class="toolbar">
+                                                    <span class="toolbar-left">
+                                                       @(Html.Kendo().Button().Name("RequestProduct").Content("Request a product").Events(events => events.Click("onRequestProduct")))
+                                                    </span>
+                                                    <span class="toolbar-right">
+                                                       <label class="filter-label" for="descriptionFilter">Description:</label>
+                                                       @(Html.Kendo().TextBox().Name("descriptionFilter").HtmlAttributes(new {@class = "filter-control"}))
+                                                       @(Html.Separator())
+                                                       <label class="filter-label" for="RequestStatus">Status:</label>
+                                                       @(Html.Kendo().DropDownList()
+                                                            .Name("RequestStatus")
+                                                            .AutoBind(true)
+                                                            .DataSource(ds => ds.Read("GetRequestStatuses", "StockRequests"))
+                                                            .DataTextField("Text").DataValueField("Value")
+                                                            .HtmlAttributes(new {@class = "filter-control"})
+                                                            .OptionLabel("All")
+                                                            )
+                                                       @(Html.Separator())
+                                                       @(Html.Kendo().Button().Name("applyFilter").Content("Filter"))
+                                                       @(Html.Kendo().Button().Name("clearFilter").Content("Clear"))
+                                                    </span>
+                                                 </span>
+
+                                              </text>))
+              
+        )
+</div>
+
+@{
+   Html.RenderPartial("_DeletePrompt", new DeletePromptModel
+   {
+      Controller = "Products",
+   });
+}
+
+<script type="text/kendo-templ" id="stockRequestDetailsTemplate">
+   @(Html.Kendo().TabStrip()
+        .Name("tabStrip_#=StockRequestId#").SelectedIndex(0).Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+        .Items(items =>
+        {
+           items.Add().Text("Details").Content("<div id='details_#=StockRequestId#'></div><script>getDetails(#=StockRequestId#)</script>");
+           items.Add().Text("History").Content("<div id='history_#=StockRequestId#'></div><script>getHistory(#=StockRequestId#)</script>");
+        }).ToClientTemplate()
+        )
+</script>
+@section Scripts {
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+   <script src="~/Scripts/Inventory.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+         InitFilterControls();
+         var grid = $('#grid').data('kendoGrid');
+         $('#applyFilter').click(function() {
+            var requestStatus = $('#RequestStatus').data('kendoDropDownList').value();
+            var filters = GetFilters(grid);
+            filters = UpdateSearchFilters(filters, "Description", "contains", $('#descriptionFilter').val(), "and");
+            if (requestStatus == '') {
+               filters = RemoveSearchFilter(filters, 'RequestStatus');
+            } else {
+               filters = UpdateSearchFilters(filters, 'RequestStatus', "eq", requestStatus, "and");
+            }
+            grid.dataSource.filter(filters);
+         });
+
+         $('#clearFilter').click(function() {
+            $('#RequestStatus').data('kendoDropDownList').select(0);
+            $('#descriptionFilter').val('');
+            ClearFilters(grid);
+         });
+      });
+
+      function onRequestProduct(e) {
+         window.location = '@Url.Action("RequestProduct", "StockRequests")';
+      }
+
+      function onDataBound(e) {
+         applyGridTooltips();
+         $('.delete').click(function(e) {
+            var grid = $('#grid').data('kendoGrid');
+            var item = grid.dataItem($(e.currentTarget).closest('tr'));
+            dynamicDeletePrompt(grid, item.Description, '@Url.HttpRouteUrl("DefaultApi", new {controller = "StockRequests"})/' + item.StockRequestId);
+         });
+      }
+
+      function approveRequest(requestId) {
+         var approvedQuantity = $('#ApprovedQuantity_' + requestId).val();
+         var approveUrl = "@Url.HttpRouteUrl("DefaultApi", new {controller = "StockRequests"})";
+         var approveDto = { StockRequestId: requestId, ApprovedQuantity: approvedQuantity }
+
+         var description = $('#grid').data('kendoGrid').dataSource.get(requestId).Description;
+         $.ajax({
+            type: 'POST',
+            data: JSON.stringify(approveDto),
+            contentType: 'application/json',
+            url: approveUrl,
+            success: function(data) {
+               getAlert('success', 'Request approved for <strong>' + description + '</strong> with a quantity of <strong>' + approvedQuantity + '</strong>.');
+               $('#grid').data('kendoGrid').dataSource.read();
+               $('#grid').data('kendoGrid').refresh();
+            },
+            error: function(data) {
+               getAlert('danger', 'Could not approve request. Please refresh and try again.');
+            }
+         });
+      }
+
+      function getDetails(stockRequestId) {
+         $('#details_' + stockRequestId).load("@Url.Action("Details", "StockRequests", new {Area = "Inventory"})/" + stockRequestId);
+      }
+
+      function getHistory(stockRequestId) {
+         $('#history_' + stockRequestId).load("@Url.Action("History", "StockRequests", new {Area = "Inventory"})/" + stockRequestId);
+      }
+   </script>
+}
+<style>
+   .approvedApprovedQuantity {
+      border: none;
+      background: none;
+   }
+
+   a.approveRequest { cursor: pointer; }
+
+</style>

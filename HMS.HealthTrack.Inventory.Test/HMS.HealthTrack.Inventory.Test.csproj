@@ -1,0 +1,251 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{941E285C-B068-4D81-9AE7-DC508B60F13C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HMS.HealthTrack.Inventory.Test</RootNamespace>
+    <AssemblyName>HMS.HealthTrack.Inventory.Test</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Configuration">
+      <HintPath>..\packages\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.RegistrationByConvention">
+      <HintPath>..\packages\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Moq, Version=4.2.1502.911, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Moq.4.2.1502.0911\lib\net40\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="MSTestExtensions">
+      <HintPath>..\packages\MSTestExtensions.3.0.0\lib\net40\MSTestExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.1.5.14\lib\net45\Serilog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog.FullNetFx, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.1.5.14\lib\net45\Serilog.FullNetFx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.6\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ObjectModel" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.6\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.6\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.6\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.6\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.6\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.6\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.6\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <Choose>
+    <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="Inventory\AdjustReceivedStock.cs" />
+    <Compile Include="Inventory\CalculateReorderAmountTests.cs" />
+    <Compile Include="Inventory\Consumptions\ConsumptionUnitOfWorkTests.cs" />
+    <Compile Include="Inventory\Consumptions\HealthTrackConsumptionProcessorTests.cs" />
+    <Compile Include="Inventory\Consumptions\ConsumptionReversalTests.cs" />
+    <Compile Include="Inventory\Consumptions\FindMatchingProductTests.cs" />
+    <Compile Include="Inventory\Consumptions\InventoryConsumptionProcessorTests.cs" />
+    <Compile Include="Inventory\Consumptions\InventoryConsumptionProcessorLocationTests.cs" />
+    <Compile Include="Inventory\Mocks\HealthTrackMocks\MockedHealthTrackConsumptionProcessorData.cs" />
+    <Compile Include="Inventory\Mocks\HealthTrackMocks\MockedHealthTrackData.cs" />
+    <Compile Include="Inventory\Mocks\HealthTrackMocks\MockedHealthTrackRepositoryFactory.cs" />
+    <Compile Include="Inventory\Mocks\MockedInventoryConsumptionProcessorData.cs" />
+    <Compile Include="Inventory\Mocks\MockedInventoryData.cs" />
+    <Compile Include="Inventory\Mocks\MockedInventoryLowStockData.cs" />
+    <Compile Include="Inventory\Mocks\MockedInventoryOrderableItemsData.cs" />
+    <Compile Include="Inventory\Mocks\MockedInventoryOrderItemData.cs" />
+    <Compile Include="Inventory\Mocks\MockedInventoryProductData.cs" />
+    <Compile Include="Inventory\Mocks\MockedInventoryProductImportData.cs" />
+    <Compile Include="Inventory\Mocks\MockedInventoryRepositoryFactory.cs" />
+    <Compile Include="Inventory\Mocks\MockedInventoryStockData.cs" />
+    <Compile Include="Inventory\Mocks\MockedInventoryStockTakeData.cs" />
+    <Compile Include="Inventory\Mocks\MockedInventoryUnitOfWorkFactory.cs" />
+    <Compile Include="Inventory\Mocks\MockedStockAdjustmentData.cs" />
+    <Compile Include="Inventory\Mocks\MockedStockLocationData.cs" />
+    <Compile Include="Inventory\Products\ProductImportTests.cs" />
+    <Compile Include="Inventory\Products\ProductMergeTests.cs" />
+    <Compile Include="Inventory\Products\ProductSearchQueryHandlerTests.cs" />
+    <Compile Include="Inventory\ReceiveOrders\ReceiveOrderTests.cs" />
+    <Compile Include="Inventory\ReceiveOrders\OrderStatusTests.cs" />
+    <Compile Include="Inventory\SerialAndBatchNumberValidation.cs" />
+    <Compile Include="Inventory\SerialAndBatchDeduction.cs" />
+    <Compile Include="Inventory\StockDeductionTests.cs" />
+    <Compile Include="Inventory\StockReallocationTests.cs" />
+    <Compile Include="Inventory\StockRequestTests.cs" />
+    <Compile Include="Inventory\OrderableItemTests.cs" />
+    <Compile Include="Inventory\LowStockTests.cs" />
+    <Compile Include="Inventory\StockSplittingForDeduction.cs" />
+    <Compile Include="Inventory\StockTakes\StockAdjustmentTests.cs" />
+    <Compile Include="Inventory\StockTakes\StockTakeApiTests.cs" />
+    <Compile Include="Inventory\StockTakes\StockTakeProcessingTests.cs" />
+    <Compile Include="MockedInventoryItems.cs" />
+    <Compile Include="MockingHelper.cs" />
+    <Compile Include="Inventory\ReceiveStockTests.cs" />
+    <Compile Include="Inventory\Products\ProductTests.cs" />
+    <Compile Include="OrderingIntegration\BackgroundProcessing\BackgroundProcessingTests.cs" />
+    <Compile Include="OrderingIntegration\BackgroundProcessing\OrderStatusUpdateTests.cs" />
+    <Compile Include="OrderingIntegration\BackgroundProcessing\OrderSubmissionTests.cs" />
+    <Compile Include="OrderingIntegration\Oracle\Domain\OracleErrorReportTests.cs" />
+    <Compile Include="OrderingIntegration\Oracle\Domain\OracleInboundFileTests.cs" />
+    <Compile Include="OrderingIntegration\Oracle\Domain\OracleOutboundOrderItemIdentifierTests.cs" />
+    <Compile Include="OrderingIntegration\Oracle\Domain\OracleOutboundOrderTests.cs" />
+    <Compile Include="OrderingIntegration\Oracle\OracleErrorReportServiceTests.cs" />
+    <Compile Include="OrderingIntegration\Oracle\OracleInboundFtpWatcherTests.cs" />
+    <Compile Include="OrderingIntegration\Oracle\OracleOrderProcessingServiceTests.cs" />
+    <Compile Include="OrderingIntegration\Oracle\Domain\OracleOutboundOrderDistributionLineTests.cs" />
+    <Compile Include="OrderingIntegration\Oracle\Domain\OraclePurchaseOrderTests.cs" />
+    <Compile Include="OrderingIntegration\Oracle\OraclePurchaseOrderServiceTests.cs" />
+    <Compile Include="OrderingIntegration\Translations\ProductIdentifierTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Security\SecurityTests.cs" />
+    <Compile Include="Inventory\InventoryStockCheckTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HMS.HealthTrack.Inventory.Common\HMS.HealthTrack.Inventory.Common.csproj">
+      <Project>{EEAB3791-9A8C-48FD-82E4-E4FDF99354E0}</Project>
+      <Name>HMS.HealthTrack.Inventory.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HMS.HealthTrack.Inventory.Data\HMS.HealthTrack.Web.Data.csproj">
+      <Project>{55687582-4e37-4c02-a2b5-b31c9e05d491}</Project>
+      <Name>HMS.HealthTrack.Web.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HMS.HealthTrack.Inventory.OrderingIntegration\HMS.HealthTrack.Inventory.OrderingIntegration.csproj">
+      <Project>{9FF60469-188A-4D32-B2A7-965D909413FC}</Project>
+      <Name>HMS.HealthTrack.Inventory.OrderingIntegration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HMS.HealthTrack.Web\HMS.HealthTrack.Web.csproj">
+      <Project>{13a2334b-b1a2-4e3e-b2b1-04cb994ca3c1}</Project>
+      <Name>HMS.HealthTrack.Web</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup />
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.CodedUITestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Extension, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITesting, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

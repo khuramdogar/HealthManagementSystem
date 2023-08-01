@@ -1,0 +1,84 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.StockTakes
+@model StockTakeViewModel
+
+@{
+   ViewBag.Title = "Inventory stock take";
+}
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Bar Scanner.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Confirm stock take submission</h2>
+         </div>
+      </div>
+   </div>
+</div>
+<div id="alertPlaceholder"></div>
+<div id="submissionConfirmation">
+   @Html.Partial("_SubmissionConfirmation", Model)
+</div>
+
+@section scripts
+{
+   <script src="~/Scripts/Inventory.js"></script>
+   <script type="text/javascript">
+   function error_handler(e) {
+      var msg = e.xhr.responseJSON.Message;
+      alert(msg);
+      $('#StockTakeItems').data('kendoGrid').cancelChanges();
+   }
+
+   $(document).ready(function() {
+      getAlert('warning', "Warning: The following action will adjust current stock levels according to the details in the grid below.");
+
+      var url = "/api/inventory/StockTakes/PostSubmit/";
+      $('#Adjust').click(function() {
+         $('#Edit').data('kendoButton').enable(false);
+         $('#Adjust').data('kendoButton').enable(false);
+         $.ajax({
+            type: 'POST',
+            async: false,
+            url: url,
+            contentType: 'application/json',
+            data: JSON.stringify({
+               StockTakeId: '@Model.StockTakeId'
+            }),
+            success: function(data) {
+               getAlert('success', data + ' <a href="@Url.Action("Index", "StockTakes")"> Click here to return to viewing available stock takes</a>');
+               // reload
+               $('#submissionConfirmation').load('@Url.Action("GetSubmissionConfirmation", "StockTakes")/' + @Model.StockTakeId, function() {
+                  $('#Edit').data('kendoButton').enable(false);
+                  $('#Adjust').data('kendoButton').enable(false);
+               });
+            },
+               error: function(data) {
+                  getAlert('danger', data.responseJSON.Message);
+                  $('#Edit').data('kendoButton').enable(true);
+                  $('#Adjust').data('kendoButton').enable(true);
+               }
+            });
+         });
+      });
+
+      function onEditClick() {
+         window.location = '@Url.Action("Edit", "StockTakes", new {id = @Model.StockTakeId})';
+      }
+
+   function onDataBound(e) {
+      applyGridTooltips();
+   }
+   </script>
+}
+
+<style>
+   .dl-horizontal dt {
+      width: auto;
+   }
+
+   .dl-horizontal dd {
+      margin-left: 100px;
+   }
+</style>

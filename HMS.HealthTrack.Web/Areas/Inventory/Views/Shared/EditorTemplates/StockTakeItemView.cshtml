@@ -1,0 +1,18 @@
+﻿@{
+   Layout = null;
+}
+
+@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.StockTakes.StockTakeItemViewModel
+
+@(Html.Kendo().ComboBox()
+     .Name("UPN")
+     .AutoBind(false)
+     .DataValueField("Key")
+     .DataTextField("Value")
+     .Filter("contains")
+     .MinLength(3)
+     .DataSource(source => source.Read(read => read.Action("UpnSearch", "StockTakes"))
+        .ServerFiltering(true))
+     .Events(e => e.Change("onProductChange").DataBound("onDataBind"))
+     .HtmlAttributes(new {style = "width:95%"}))

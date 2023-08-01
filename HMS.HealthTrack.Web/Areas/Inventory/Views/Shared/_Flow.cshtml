@@ -1,0 +1,144 @@
+﻿@model dynamic
+
+<div id="diagram" style="height: 250px;width: 100%;border: none"></div>
+
+<script>
+
+   function AddStep(diagram, data) {
+
+      var shape = new kendo.dataviz.diagram.Shape(
+      {
+         type: "rectangle",
+         x: data.x,
+         y: data.y,
+         width: (data.width === undefined) ? 260 : data.width,
+         height: (data.height === undefined) ? 90 : data.height,
+         fill: data.colorScheme,
+         url: data.url,
+         editable: false,
+   });
+
+      var title = new kendo.dataviz.diagram.TextBlock({
+         text: data.step,
+         x: 100,
+         y: 25,
+         fontSize: 20,
+         fill: "#fff",
+
+      });
+      shape.visual.append(title);
+      shape.visual.append(new kendo.dataviz.diagram.Image(
+      {
+         source: "@Url.Content("~/Content/images/")" + data.image,
+         width: 80,
+         height: 80,
+         x: 5,
+         y: 5
+      }));
+
+
+      return diagram.addShape(shape);
+   }
+
+
+   $(document).ready(function() {
+      var element = $("#diagram").kendoDiagram({
+         editable: false,
+         selectable: false,
+         zoom: 100,
+         zoomRate: 0,
+         container:{height:400},
+         pannable: false,
+         connectionDefaults: {
+            stroke: {
+               color: "#979797",
+               width: 5
+            },
+            type: "polyline",
+            startCap: "FilledCircle",
+            endCap: "ArrowEnd"
+         },
+         click: function(e) {
+            if (e.item instanceof kendo.dataviz.diagram.Shape && e.item.options.url != undefined)
+               window.location = e.item.options.url;
+            else
+               console.log("Clicked a connection.");
+         }
+      });
+      var diagram = element.data("kendoDiagram");
+      
+      var monitorStockData =
+      {
+         image: "Cargo 1 Search.png",
+         step: "Monitor stock",
+         description: "View low stock and consumed items",
+         colorScheme: "#165800",
+         url: "@Url.Action("Index", "Stock")",
+         x: 10,
+         y: 10,
+      };
+
+      var requestStockData =
+      {
+         image: "Basket 1.png",
+         step: "Request stock",
+         description: "Request low items or consumed items",
+         colorScheme: "#1696d3",
+         url: "@Url.Action("Index", "StockRequests")",
+         x: 400,
+         y: 10,
+      };
+
+      var orderData =
+      {
+         step: "Order items",
+         image: "Delivery Truck 2.png",
+         description: "Order requested items",
+         colorScheme: "#ee587b",
+         url: "@Url.Action("Index", "Orders")",
+         x: 800,
+         y: 10,
+      };
+
+      var receiveData =
+      {
+         step: "Receive items",
+         image: "Barcode.png",
+         description: "Receive orders",
+         colorScheme: "#ef0044",
+         url: "@Url.Action("ReceiveProduct", "Stock")",
+         x: 600,
+         y: 200,
+      };
+
+      var consumeData =
+      {
+         step: "Consume stock",
+         image: "FirstAidKit.png",
+         description: "Use items",
+         colorScheme: "#ee5800",
+         url: "@Url.Action("DeductStock", "StockDeductions")",
+         x: 200,
+         y: 200,
+      };
+
+
+      var monitorStep = AddStep(diagram, monitorStockData);
+      var requestStock = AddStep(diagram, requestStockData);
+      var orderStep = AddStep(diagram, orderData);
+      var receiveStep = AddStep(diagram, receiveData);
+      var consumeStep = AddStep(diagram, consumeData);
+
+      diagram.connect(monitorStep, requestStock);
+      diagram.connect(requestStock, orderStep);
+      diagram.connect(orderStep, receiveStep);
+      diagram.connect(receiveStep, consumeStep);
+
+      var from = consumeStep.getConnector("left");
+      var to = monitorStep.getConnector("bottom");
+      diagram.connect(from, to);
+
+      diagram.bringIntoView(diagram.shapes);
+   });
+
+</script>

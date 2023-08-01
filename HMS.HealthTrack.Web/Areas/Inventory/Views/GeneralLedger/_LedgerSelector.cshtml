@@ -1,0 +1,40 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.GeneralLedger
+@using Kendo.Mvc.UI
+@model int
+
+<div class="container-fluid">
+   @(Html.Hidden("SelectedLedgerId"))
+   <div class="row">
+      @(Html.Kendo().TreeList<GeneralLedgerModel>()
+        .Name("LedgerTree")
+        .AutoBind(false)
+        .Columns(columns =>
+        {
+           columns.Add().Field(f => f.Name);
+           columns.Add().Field(f => f.Code);
+        })
+        .DataSource(dataSource => dataSource
+                 .Read(read => read.Url(@Url.Action("GetWithLedgerCode", "GeneralLedger") + "?ledgerType=" + @Model))
+           .Model(m =>
+           {
+              m.Id(f => f.LedgerId);
+              m.ParentId(f => f.ParentLedger);
+              m.Field(f => f.ParentId);
+              m.Field(f => f.Name);
+              m.Expanded(false);
+           })
+        )
+        .Filterable(f => f.Extra(false))
+        .Height(400)
+        .Selectable(true)
+        .Sortable(true)
+      )
+   </div>
+   <div class="row" style="padding-top: 0.5em;">
+      <div class="col-sm-6 pull-right text-right">
+         <button type="button" class="k-button k-primary" id="assignLedger">Assign</button>
+         <button type="button" class="k-button" id="clearLedger">Clear</button>
+         <button type="button" class="k-button" id="closeLedgerWindow">Cancel</button>
+      </div>
+   </div>
+</div>

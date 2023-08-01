@@ -1,0 +1,234 @@
+﻿@using HMS.HealthTrack.Inventory.Common.Constants
+@using Kendo.Mvc.UI
+@{
+   ViewBag.Title = "Merge product";
+}
+@model int?
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Scale And Box Configuration.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Merge products</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div id="alertPlaceholder"></div>
+@Html.Hidden("ProductId") @*Used to receive the result of product search*@
+<table class="table table-hover noselect">
+   <thead>
+      <tr>
+         <th class="col-sm-2 text-right"><img src="~/Content/images/Icons/32x32/Scale And Box Check.png" /></th> @* Label *@
+         <th class="col-sm-4">
+            <span class="page-subheading control-label">Product to keep (<span id="ProductIdToKeep"></span>)</span>
+            @(Html.Kendo().Button().Name("SearchProductIdToKeep").Content("Search").Events(events => events.Click("onSearchProductIdToKeepClick")).HtmlAttributes(new {@class = "pull-right btn-sm"}))
+         </th> @* value *@
+         <th class="col-sm-2">
+            <img src="~/Content/images/Icons/32x32/Scale And Box Delete.png" class="pull-right" />
+         </th> @* checkboxes *@
+         <th class="col-sm-4">
+            <span class="page-subheading">
+               Product to delete (<span id="ProductIdToDelete"></span>)
+            </span>
+            @(Html.Kendo().Button().Name("SearchProductIdToDelete").Content("Search").Events(events => events.Click("onSearchProductToDeleteClick")).HtmlAttributes(new {@class = "pull-right btn-sm"}))
+         </th> @* other value *@
+      </tr>
+   </thead>
+   <tbody id="productMergeDetails">
+   </tbody>
+</table>
+<div class="row">
+   <div class="col-sm-12">
+      @(Html.Kendo().Button().Name("Return").Content("Back to product list").Events(e => e.Click("onReturnClick")))
+      @(Html.Kendo().Button().Name("ToggleCheckBoxes").Content("Tick all/none").Events(events => events.Click("onToggleCheckBoxesClick")))
+      @(Html.Kendo().Button().Name("SwapProducts").Content("Swap").Events(events => events.Click("onSwapProductsClick")))
+      @(Html.Kendo().Button().Name("Merge").Content("Merge").Events(events => events.Click("onMergeClick")).HtmlAttributes(new {@class = "k-primary"}))
+   </div>
+</div>
+
+<div id="advancedSearchWindow"></div>
+@section Scripts{
+   <script src="~/Areas/Inventory/Scripts/AdvancedSearch.js"></script>
+   <script src="~/Scripts/Inventory.js"></script>
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+   <script type="text/javascript">
+      var productBeingSearched;
+      var productToKeep = "productToKeepDetails";
+      var productToDelete = "productToDeleteDetails";
+      $(document).ready(function() {
+         createAdvancedSearchWithGrid();
+
+         if ('@Model.HasValue' == 'True') {
+            setProductIdToKeep('@Model');
+            loadProducts();
+         }
+
+         $('#productMergeDetails').on('dblclick', 'tr', function(e) {
+
+            var checkbox = $(e.currentTarget).find('.mergeCheckbox');
+            var checked = $(checkbox).is(':checked');
+            checkbox.prop('checked', !checked);
+            $($(e.currentTarget).find('.checkboxSpan')).trigger('click');
+         });
+
+         $('#ProductId').change(function(e) {
+            if (productBeingSearched === productToKeep) {
+               setProductIdToKeep($('#ProductId').val());
+            } else if (productBeingSearched === productToDelete) {
+               setProductIdToDelete($('#ProductId').val());
+            } else {
+               getAlert('danger', "Unable to determine which product to assign result to. Please refresh and try again.");
+               return;
+            }
+            loadProducts();
+         });
+      });
+
+      function loadProducts() {
+         $('#alertPlaceholder').empty();
+         var toKeep = $('#ProductIdToKeep').val();
+         var toDelete = $('#ProductIdToDelete').val();
+
+         if (toKeep == toDelete) {
+            getAlert('warning', 'Cannot merge a product with itself. Please select another product.');
+            return;
+         }
+
+         $.ajax({
+            contentType: 'application/json',
+            url: '@(Url.Action("DisplayMergeProducts"))/?productIdToKeep=' + toKeep + '&productIdToDelete=' + toDelete,
+            type: 'GET',
+            success: function(data) {
+               $("#productMergeDetails").html(data);
+            },
+            error: function(request, status, err) {
+               getAlert('danger', 'Unable to load products for merge.');
+            }
+         });
+      }
+
+      function onCheckboxClick(e) {
+         var checkbox = e.children[0];
+         var sanitisedName = checkbox.name.replace('@InventoryConstants.MergeControlPrefix', '').replace('@InventoryConstants.MergePricePrefix', '');
+         if ($(checkbox).is(':checked')) {
+            $('#' + sanitisedName).css("text-decoration", "line-through");
+         } else {
+            $('#' + sanitisedName).css("text-decoration", "none");
+         }
+      }
+
+      function onMergeClick(e) {
+
+         if (!confirm('WARNING: This action cannot be undone. Are you sure you want to proceed?')) {
+            e.preventDefault();
+            return;
+         }
+
+         var checkboxes = $('.mergeCheckbox:checked');
+         var properties = [];
+         $.each(checkboxes, function(index, value) {
+            properties.push($(value).attr('name').replace('@InventoryConstants.MergeControlPrefix', ''));
+         });
+
+         $.ajax({
+            async: false,
+            contentType: 'application/json',
+            data: JSON.stringify({
+               productIdToKeep: $('#ProductIdToKeep').val(),
+               productIdToDelete: $('#ProductIdToDelete').val(),
+               propertiesToMerge: properties
+            }),
+            type: 'POST',
+            url: '@Url.Action("Merge")',
+            success: function(data) {
+               window.location.href = "@Url.Action("Details")/" + $('#ProductIdToKeep').val();
+            },
+            error: function(data) {
+               $("body").scrollTop(0);
+               if (data.status == 400) {
+                  getAlert('danger', data.statusText);
+                  return;
+               }
+               getAlert('danger', 'An error occurred while trying to merge products.');
+            }
+         });
+      }
+
+      function onReturnClick(e) {
+         window.location.href = "@Url.Action("Index")";
+      }
+
+      function onSearchProductIdToKeepClick(e) {
+         productBeingSearched = productToKeep;
+         openAdvancedSearch();
+      }
+
+      function onSearchProductToDeleteClick(e) {
+         productBeingSearched = productToDelete;
+         openAdvancedSearch();
+      }
+
+      function onSwapProductsClick(e) {
+         if ($('#ProductIdToDelete').val() == '' || $('#ProductIdToDelete').val() == 0) {
+            getAlert('warning', 'Please search and select a product to delete before attempting to swap products.');
+            return;
+         }
+
+         var temp = $('#ProductIdToKeep').val();
+         $('#ProductIdToKeep').val($('#ProductIdToDelete').val());
+         $('#ProductIdToKeep').text($('#ProductIdToDelete').val());
+         $('#ProductIdToDelete').val(temp);
+         $('#ProductIdToDelete').text(temp);
+         loadProducts();
+      }
+
+      function onToggleCheckBoxesClick(e) {
+         var allCheckboxes = $('.mergeCheckbox');
+         var checkboxes = $('.mergeCheckbox:checked');
+         var equalLengths = allCheckboxes.length != checkboxes.length;
+         var textDecoration;
+         if (equalLengths) {
+            textDecoration = "line-through";
+         } else {
+            textDecoration = "none";
+         }
+
+         $.each(allCheckboxes, function(index, value) {
+            $(value).prop('checked', equalLengths);
+         });
+
+         $.each($('.productText'), function(index, value) {
+            $(value).css('text-decoration', textDecoration);
+         });
+      }
+
+      function setProductIdToKeep(productId) {
+         $('#ProductIdToKeep').val(productId);
+         $('#ProductIdToKeep').text(productId);
+      }
+
+      function setProductIdToDelete(productId) {
+         $('#ProductIdToDelete').val(productId);
+         $('#ProductIdToDelete').text(productId);
+      }
+
+   </script>
+}
+
+<style>
+   .page-subheading { font-size: 1.5em; }
+
+   #productMergeDetails { padding-top: 1em; }
+
+   .non-table-arrow {
+      border-spacing: 0 0;
+      border-collapse: collapse;
+      box-sizing: border-box;
+      display: inline-block;
+      margin-right: -4px;
+   }
+</style>

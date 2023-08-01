@@ -1,0 +1,35 @@
+﻿@{
+   Layout = null;
+}
+@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Data.Model.Inventory.MappingOverview
+
+<script type="text/javascript">
+   function onAdditionalData() {
+      return {
+         text: $("#InternalId").data("kendoComboBox").text()
+      };
+   }
+</script>
+<div style="text-align: center">
+   <div>External Product ID</div>
+   @Html.Kendo().NumericTextBoxFor(model => model.ExternalId).Placeholder("External ID").Step(1).Value(null).Decimals(0).Format("0")
+   <br />
+   <div class="glyphicon glyphicon-arrow-down text-center"></div>
+   <br />
+
+   @Html.Label("Inventory product", htmlAttributes: new { @class = "control-label" })
+   <br />
+
+   @(Html.Kendo().ComboBox()
+              .Name("InternalId")
+              .DataTextField("Description")
+              .DataValueField("ProductId")
+              .Filter(FilterType.Contains)
+              .DataSource(source => source.Read(read => read.Action("GetProducts", "Products").Data("onAdditionalData"))
+                 .ServerFiltering(true))
+              .SelectedIndex(-1)
+              .Text("")
+              .HtmlAttributes(new { style = "width:95%" })
+   )
+</div>

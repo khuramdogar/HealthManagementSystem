@@ -1,0 +1,274 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.Stock
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.StockAdjustment
+@using Kendo.Mvc.UI
+@{
+   ViewBag.Title = "Negative Stock";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Shipping Box 1 Error.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Negative stock</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div id="alertPlaceholder"></div>
+<div>
+   @(Html.Kendo().Grid<NegativeStockViewModel>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+           columns.Bound(c => c.SPC).ClientTemplate("<a href='" + @Url.Action("Details", "Products", new {Area = "Inventory"}) + "/#=ProductId#'>#=SPC#</a>");
+           columns.Bound(c => c.Description);
+           columns.Bound(c => c.Location);
+           columns.Bound(c => c.Quantity).ClientTemplate("-#=Quantity#").Title("Stock Level").Width(130);
+           columns.Command(command =>
+           {
+              command.Custom("Receive stock").Click("receiveStock");
+              command.Custom("Stock take").Click("performStockTake");
+           }).Width(220).HtmlAttributes(new {@class = "button-column"});
+        })
+        .ClientDetailTemplateId("negativeStockDeductions")
+        .DataSource(ds => ds.WebApi().PageSize(20)
+           .Read(read => read.Url(@Url.Action("ReadNegativeStock", "Stock"))).Sort(sort => sort.Add(s => s.Description)))
+        .Events(events => events.DataBound("onDataBound"))
+        .Filterable(filter => filter.Extra(false)).Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+        .Resizable(resize => resize.Columns(true))
+        .Sortable()
+        .ToolBar(toolbar => toolbar.Template(@<text>
+                                                 <span class="toolbar">
+                                                    <span class="toolbar-left">
+                                                       @(Html.Kendo().Button().Name("createStockTakeList").Content("Create stock take list").Events(events => events.Click("onCreateStockTakeListClick")))
+                                                    </span>
+                                                 </span>
+                                                 <span class="toolbar-right">
+                                                    <label class="filter-label" for="description">Description:</label>
+                                                    @(Html.Kendo().TextBox().Name("description").HtmlAttributes(new {@class = "filter-control"}))
+                                                    @(Html.Kendo().Button().Name("applyFilter").Content("Filter"))
+                                                    @(Html.Kendo().Button().Name("clearFilter").Content("Clear"))
+                                                 </span>
+                                              </text>)))
+</div>
+
+<div id="receiveWindow" style="display: none;">
+   <div id="receiveProductAlertPlaceholder"></div>
+   <div class="form-horizontal">
+      <div class="form-group">
+         <div class="control-label col-sm-4">
+            @Html.Label("Product to receive")
+         </div>
+         <div class="col-sm-7 control-label-text">
+            <span id="ProductToReceive"></span>
+         </div>
+      </div>
+   </div>
+   @Html.Partial("_ReceiveProduct", new ReceiveProductInput())
+</div>
+<div id="stockTakeWindow" style="display: none;">
+   @Html.Partial("_StockTakeProduct")
+</div>
+
+<script id="negativeStockDeductions" type="text/kendo-templ">
+   @(Html.Kendo().Grid<SimpleStockAdjustmentDetailsViewModel>()
+        .Name("grid_#=ProductId#_#=StoredAt#")
+        .Columns(columns =>
+        {
+           columns.Bound(c => c.AdjustedBy).Title("Deducted by");
+           columns.Bound(c => c.AdjustedOn).Format("{0:dd/MM/yyyy HH:mm}").Title("Deducted on");
+           columns.Bound(c => c.Source).Title("Source");
+           columns.Bound(c => c.ClinicalRecordId);
+           columns.Bound(c => c.Quantity);
+        })
+        .DataSource(ds => ds.Ajax()
+           .PageSize(6)
+           .Events(events => events.Error("error_handler"))
+                       .Read(read => read.Url(Url.Action("GetNegativeDeductions", "StockAdjustments", new { productId = "#=ProductId#", locationId = "#=StoredAt#" }))).Sort(sort => sort.Add(s => s.AdjustedOn).Descending()))
+        .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+        .ToClientTemplate()
+        )
+</script>
+@section scripts
+{
+   <script src="~/Areas/Inventory/Scripts/ReceiveProduct.js"></script>
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+   <script src="~/Scripts/Inventory.js"></script>
+   @Scripts.Render("~/bundles/jqueryval")
+
+   <script type="text/javascript">
+
+      $(document).ready(function() {
+         InitFilterControls();
+         createWindows();
+         var grid = $('#grid').data('kendoGrid');
+
+         $('#clearFilter').click(function() {
+            $('#description').val('');
+            ClearFilters(grid);
+         });
+
+         $('#applyFilter').click(function() {
+            var filters = GetFilters(grid);
+            filters = UpdateSearchFilters(filters, "Description", "contains", $('#description').val(), "and");
+            grid.dataSource.filter(filters);
+         });
+
+         $('#StockLevel').kendoNumericTextBox({
+            format: '#',
+            decimals: 0
+         });
+
+         getAlertForId('stockTakeProductAlert', 'warning', "Submitting this stock take will immediately adjust the stock level for this product at the specified location.");
+      });
+
+      function createWindows() {
+         if (!$("#receiveWindow").data("kendoWindow")) {
+            $("#receiveWindow").kendoWindow({
+               title: "Receive stock",
+               scrollable: false,
+               width: '750px',
+               visible: false
+            });
+
+            $('#cancelReceiveProduct').text('Cancel');
+            $('#cancelReceiveProduct').removeAttr('href');
+            $('#cancelReceiveProduct').click(function() {
+               $('#receiveWindow').data('kendoWindow').close();
+            });
+            $('#addReturn').hide();
+            $('#addContinue').text('Receive stock');
+            $('#addContinue').click(function(e) {
+               $('#receiveProductForm').submit();
+            });
+         }
+
+         if (!$('#stockTakeWindow').data('kendoWindow')) {
+            $('#stockTakeWindow').kendoWindow({
+               title: "Perform stock take",
+               scrollable: false,
+               width: '750px',
+               visible: false,
+               activate: function(e) {
+                  $('#StockLevel').val('');
+                  $('#StockLevel').data('kendoNumericTextBox').focus();
+               }
+            });
+
+            $('#cancelStockTakeForProduct').click(function(e) {
+               $('#stockTakeWindow').data('kendoWindow').close();
+            });
+
+            $('#submitStockTakeForProduct').click(function(e) {
+               var stockLevel = $('#StockLevel').val();
+               if (stockLevel == '' || stockLevel < 0) {
+                  getAlertForId('stockTakeProductAlert', 'danger', 'Please specify a valid stock level.');
+                  return;
+               }
+
+               $.ajax({
+                  async: false,
+                  contentType: 'application/json',
+                  type: 'POST',
+                  data: JSON.stringify({
+                     StockTakeProductId: $('#StockTakeProductId').val(),
+                     StockTakeLocationId: $('#StockTakeLocationId').val(),
+                     StockLevel: stockLevel
+                  }),
+                  dataType: 'json',
+                  url: '/api/Inventory/StockTakes/SubmitStockTakeForProduct',
+                  success: function(data) {
+                     getAlert('success', 'Stock level successfully adjusted for product <strong>' + $('#Description').text() + '</strong>. <a href=@Url.Action("View", "StockTakes")/' + data + '> Click here to view the processed stock take.</a>');
+                     $('#grid').data('kendoGrid').dataSource.read();
+                     $('#stockTakeWindow').data('kendoWindow').close();
+                  },
+                  error: function(data) {
+                     getAlertForId('stockTakeProductAlert', 'danger', data.responseJSON.Message);
+                  }
+               });
+            });
+         }
+      }
+
+      function error_handler(e) {
+         getAlert('danger', e.xhr.responseJSON.Message);
+      }
+
+      function getDataItem(e) {
+         var grid = $('#grid').data('kendoGrid');
+         return grid.dataItem($(e.currentTarget).closest('tr'));
+      }
+
+      function onCreateStockTakeListClick(e) {
+         $.ajax({
+            async: true,
+            type: 'GET',
+            url: '@Url.Action("CreateStockTakeListForNegativeStock", "StockTakes")',
+            success: function(data) {
+               if (data.stockTakeLocations != undefined && data.stockTakeLocations.length > 0) {
+                  var stockTakeLinks = '';
+                  $.each(data.stockTakeLocations, function(index, value) {
+                     stockTakeLinks += ' <a href="@Url.Action("Edit", "StockTakes")/' + value.StockTakeId + '">' + value.Name + '</a>, ';
+                  });
+                  getAlert('success', 'Stock takes to correct the negative stock levels were created for the following locations: ' + stockTakeLinks.substring(0, stockTakeLinks.length - 2));
+                  $('#grid').data('kendoGrid').dataSource.read();
+                  return;
+               }
+               getAlert('warning', 'Unable to find any items with negative stock. No stock takes were created. Please refresh this page to view current levels.');
+            },
+            error: function(data) {
+               getAlert('danger', 'There was an error creating a stock take list. Please refresh the page and try again.');
+            }
+         });
+      }
+
+      function onDataBound(e) {
+         applyGridTooltips();
+      }
+
+      function onLocationDataBound(e) {
+         this.value(@Html.Encode(@ViewBag.UserPreferredLocation).ToString());
+      }
+
+      function receiveStock(e) {
+         var receiveWindow = $('#receiveWindow').data('kendoWindow');
+         receiveWindow.center().open();
+         var dataItem = getDataItem(e);
+         $('#ProductId').val(dataItem.ProductId);
+
+         $('#receiveProductSelectedLocation').append(dataItem.Location);
+         $('#receiveProductSelectedLocation').addClass('control-label-text');
+         var location = $('#SelectedLocation').data('kendoDropDownList');
+         location.value(dataItem.StoredAt);
+         location.readonly();
+         location.wrapper.hide();
+         $('#ProductToReceive').text(dataItem.Description);
+
+      }
+
+      function performStockTake(e) {
+         var stockTakeWindow = $('#stockTakeWindow').data('kendoWindow');
+         stockTakeWindow.center().open();
+         var dataItem = getDataItem(e);
+         $('#StockTakeProductId').val(dataItem.ProductId);
+         $('#StockTakeLocationId').val(dataItem.StoredAt);
+         $('#Description').text(dataItem.Description);
+         $('#Location').text(dataItem.Location);
+      }
+
+      function onReceiveProductSuccess(e) {
+         getAlert('success', 'Successfully received stock for the product <strong>' + $('#ProductToReceive').text() + '</strong>.');
+         $('#grid').data('kendoGrid').dataSource.read();
+         $('#receiveWindow').data('kendoWindow').close();
+      }
+
+      function onReceiveProductFailure(e) {
+         getAlertForId('receiveProductAlertPlaceholder', 'danger', 'Failed to received stock: <strong>' + e.statusText + '</strong>.');
+         $('#grid').data('kendoGrid').dataSource.read();
+      }
+   </script>
+}

@@ -1,0 +1,457 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+   <!-- EF Runtime content -->
+   <edmx:Runtime>
+      <!-- SSDL content -->
+      <edmx:StorageModels>
+         <Schema Namespace="HealthTrackSecurity.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008"
+                 Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator"
+                 xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation"
+                 xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+            <EntityType Name="HMS_Group">
+               <Key>
+                  <PropertyRef Name="base_ID" />
+                  <PropertyRef Name="member_ID" />
+               </Key>
+               <Property Name="base_ID" Type="varchar" MaxLength="50" Nullable="false" />
+               <Property Name="member_ID" Type="varchar" MaxLength="50" Nullable="false" />
+            </EntityType>
+            <EntityType Name="HMS_Permission">
+               <Key>
+                  <PropertyRef Name="User_ID" />
+                  <PropertyRef Name="Keyword" />
+                  <PropertyRef Name="Location_ID" />
+                  <PropertyRef Name="Department" />
+               </Key>
+               <Property Name="User_ID" Type="varchar" MaxLength="50" Nullable="false" />
+               <Property Name="Keyword" Type="varchar" MaxLength="50" Nullable="false" />
+               <Property Name="KeyValue" Type="bit" Nullable="false" />
+               <Property Name="Location_ID" Type="int" Nullable="false" />
+               <Property Name="Department" Type="int" Nullable="false" />
+            </EntityType>
+            <EntityType Name="HMS_Permission_Description">
+               <Key>
+                  <PropertyRef Name="Keyword" />
+               </Key>
+               <Property Name="Keyword" Type="varchar" MaxLength="50" Nullable="false" />
+               <Property Name="Description" Type="varchar" MaxLength="500" Nullable="false" />
+               <Property Name="VisibleToEditor" Type="bit" Nullable="false" />
+               <Property Name="EffectMenuItem" Type="bit" Nullable="false" />
+               <Property Name="SubGroup" Type="varchar" MaxLength="50" />
+               <Property Name="CreatedBy" Type="varchar" MaxLength="50" Nullable="false" />
+               <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+               <Property Name="Licensed" Type="bit" Nullable="false" />
+               <Property Name="AllowOverride" Type="bit" Nullable="false" />
+            </EntityType>
+            <EntityType Name="HMS_User">
+               <Key>
+                  <PropertyRef Name="User_ID" />
+               </Key>
+               <Property Name="User_ID" Type="varchar" MaxLength="50" Nullable="false" />
+               <Property Name="Password" Type="varchar" MaxLength="50" />
+               <Property Name="EntryType" Type="char" MaxLength="1" Nullable="false" />
+               <Property Name="Enabled" Type="bit" Nullable="false" />
+               <Property Name="Visible" Type="bit" Nullable="false" />
+               <Property Name="Privileged" Type="bit" Nullable="false" />
+               <Property Name="Title" Type="varchar" MaxLength="10" />
+               <Property Name="Firstname" Type="varchar" MaxLength="50" />
+               <Property Name="Surname" Type="varchar" MaxLength="50" />
+               <Property Name="Initials" Type="varchar" MaxLength="5" />
+               <Property Name="UserPosition" Type="varchar" MaxLength="100" />
+               <Property Name="Email" Type="varchar" MaxLength="100" />
+               <Property Name="LetterSignature_L1" Type="varchar" MaxLength="200" />
+               <Property Name="LetterSignature_L2" Type="varchar" MaxLength="200" />
+               <Property Name="Remote" Type="bit" Nullable="false" />
+               <Property Name="StartupMode" Type="varchar" MaxLength="50" />
+               <Property Name="CountAdd" Type="int" Nullable="false" />
+               <Property Name="CountModify" Type="int" Nullable="false" />
+               <Property Name="CountDelete" Type="int" Nullable="false" />
+               <Property Name="CountView" Type="int" Nullable="false" />
+               <Property Name="CountLogon" Type="int" Nullable="false" />
+               <Property Name="CountTimeouts" Type="int" Nullable="false" />
+               <Property Name="LastUpdate" Type="datetime" />
+               <Property Name="Workstation_ID" Type="varchar" MaxLength="50" />
+               <Property Name="LastLogon" Type="datetime" />
+               <Property Name="LastLogoff" Type="datetime" />
+               <Property Name="LastDiaryDefaultType" Type="varchar" MaxLength="20" />
+               <Property Name="LastBillingLocation" Type="int" />
+               <Property Name="diarySlotSize" Type="int" />
+               <Property Name="diaryColumns" Type="int" />
+               <Property Name="diarySlotOption1" Type="int" />
+               <Property Name="diarySlotOption2" Type="int" />
+               <Property Name="diarySlotOption3" Type="int" />
+               <Property Name="diarySlotOption4" Type="int" />
+               <Property Name="diaryEnableMulti" Type="bit" Nullable="false" />
+               <Property Name="lblPrinterType" Type="tinyint" />
+               <Property Name="lblColType" Type="tinyint" />
+               <Property Name="lblTypeA" Type="tinyint" />
+               <Property Name="lblTypeB" Type="tinyint" />
+               <Property Name="lblTypeC" Type="tinyint" />
+               <Property Name="lblTypeD" Type="tinyint" />
+               <Property Name="lblTypeE" Type="tinyint" />
+               <Property Name="lblTypeF" Type="tinyint" />
+               <Property Name="lblPrinterName" Type="varchar" MaxLength="100" />
+               <Property Name="lblPrinterTray" Type="tinyint" />
+               <Property Name="LastDiaryRoom" Type="int" />
+               <Property Name="LastDiaryMO" Type="int" />
+               <Property Name="LastPatientLoaded" Type="int" />
+               <Property Name="LoadDiaryOnStartup" Type="bit" Nullable="false" />
+               <Property Name="RememberLastPatientSearch" Type="bit" Nullable="false" />
+               <Property Name="DisplayHealthtrackChangeLog" Type="bit" Nullable="false" />
+               <Property Name="TaskDefaultGroup" Type="varchar" MaxLength="50" />
+               <Property Name="TaskDefaultToGroup" Type="bit" Nullable="false" />
+               <Property Name="AllocationDefaultVisible" Type="bit" Nullable="false" />
+               <Property Name="DirectoryShortcut1" Type="varchar" MaxLength="255" />
+               <Property Name="DirectoryShortcut2" Type="varchar" MaxLength="255" />
+               <Property Name="DirectoryShortcut3" Type="varchar" MaxLength="255" />
+               <Property Name="quickBillDefaultGroupingSet" Type="int" />
+               <Property Name="role_ID" Type="int" />
+               <Property Name="DM_roleWho" Type="tinyint" />
+               <Property Name="DM_delegateTo" Type="varchar" MaxLength="50" />
+               <Property Name="DM_assignTo" Type="varchar" MaxLength="50" />
+               <Property Name="diaryShowsPreferredName" Type="bit" Nullable="false" />
+               <Property Name="DM_group" Type="varchar" MaxLength="50" />
+               <Property Name="prefDocSecurity" Type="varchar" MaxLength="50" />
+               <Property Name="ExternalSearch" Type="bit" Nullable="false" />
+               <Property Name="AutoOpenPreference1" Type="varchar" MaxLength="50" />
+               <Property Name="AutoOpenPreference2" Type="varchar" MaxLength="50" />
+               <Property Name="Mobile" Type="varchar" MaxLength="20" />
+               <Property Name="PathDef_SetID" Type="int" />
+               <Property Name="DefaultDocManagementToPreview" Type="bit" Nullable="false" />
+               <Property Name="DefaultClinicalRecordDisplayMode" Type="char" MaxLength="1" Nullable="false" />
+               <Property Name="HideClinicalNoteShortcutInDiary" Type="bit" Nullable="false" />
+               <Property Name="IgnoreMIMSDrugDrugInteractionsLevel" Type="tinyint" />
+               <Property Name="MIMSLicenseReviewed" Type="bit" Nullable="false" />
+               <Property Name="WordEditorOption" Type="smallint" Nullable="false" />
+               <Property Name="DefaultEpisode" Type="int" />
+               <Property Name="DefaultImportCategory" Type="int" />
+               <Property Name="DisableWindowPositionSaving" Type="bit" Nullable="false" />
+            </EntityType>
+            <EntityContainer Name="HealthTrackSecurityStoreContainer">
+               <EntitySet Name="HMS_Group" EntityType="Self.HMS_Group" Schema="dbo" store:Type="Tables" />
+               <EntitySet Name="HMS_Permission" EntityType="Self.HMS_Permission" Schema="dbo" store:Type="Tables" />
+               <EntitySet Name="HMS_Permission_Description" EntityType="Self.HMS_Permission_Description" Schema="dbo"
+                          store:Type="Tables" />
+               <EntitySet Name="HMS_User" EntityType="Self.HMS_User" Schema="dbo" store:Type="Tables" />
+            </EntityContainer>
+         </Schema>
+      </edmx:StorageModels>
+      <!-- CSDL content -->
+      <edmx:ConceptualModels>
+         <Schema Namespace="HealthTrackSecurity" Alias="Self" annotation:UseStrongSpatialTypes="false"
+                 xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation"
+                 xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation"
+                 xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+            <EntityType Name="HealthTrackAuthorisation">
+               <Key>
+                  <PropertyRef Name="User_ID" />
+                  <PropertyRef Name="Keyword" />
+                  <PropertyRef Name="Location_ID" />
+                  <PropertyRef Name="Department" />
+               </Key>
+               <Property Name="User_ID" Type="String" MaxLength="50" FixedLength="false" Unicode="false"
+                         Nullable="false" />
+               <Property Name="Keyword" Type="String" MaxLength="50" FixedLength="false" Unicode="false"
+                         Nullable="false" />
+               <Property Name="KeyValue" Type="Boolean" Nullable="false" />
+               <Property Name="Location_ID" Type="Int32" Nullable="false" />
+               <Property Name="Department" Type="Int32" Nullable="false" />
+               <NavigationProperty Name="HealthTrackPermission"
+                                   Relationship="HealthTrackSecurity.HealthTrackPermissionHealthTrackAuthorisation"
+                                   FromRole="HealthTrackAuthorisation" ToRole="HealthTrackPermission" />
+            </EntityType>
+            <EntityType Name="HealthTrackPermission">
+               <Key>
+                  <PropertyRef Name="Keyword" />
+               </Key>
+               <Property Name="Keyword" Type="String" MaxLength="50" FixedLength="false" Unicode="false"
+                         Nullable="false" />
+               <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="false"
+                         Nullable="false" />
+               <Property Name="VisibleToEditor" Type="Boolean" Nullable="false" />
+               <Property Name="EffectMenuItem" Type="Boolean" Nullable="false" />
+               <Property Name="SubGroup" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false"
+                         Nullable="false" />
+               <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+               <Property Name="Licensed" Type="Boolean" Nullable="false" />
+               <Property Name="AllowOverride" Type="Boolean" Nullable="false" />
+               <NavigationProperty Name="HealthTrackAuthorisations"
+                                   Relationship="HealthTrackSecurity.HealthTrackPermissionHealthTrackAuthorisation"
+                                   FromRole="HealthTrackPermission" ToRole="HealthTrackAuthorisation" />
+            </EntityType>
+            <EntityType Name="HealthTrackUser">
+               <Key>
+                  <PropertyRef Name="User_ID" />
+               </Key>
+               <Property Name="User_ID" Type="String" MaxLength="50" FixedLength="false" Unicode="false"
+                         Nullable="false" />
+               <Property Name="Password" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="EntryType" Type="String" MaxLength="1" FixedLength="true" Unicode="false"
+                         Nullable="false" />
+               <Property Name="Enabled" Type="Boolean" Nullable="false" />
+               <Property Name="Visible" Type="Boolean" Nullable="false" />
+               <Property Name="Privileged" Type="Boolean" Nullable="false" />
+               <Property Name="Title" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+               <Property Name="Firstname" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="Surname" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="Initials" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
+               <Property Name="UserPosition" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+               <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+               <Property Name="LetterSignature_L1" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+               <Property Name="LetterSignature_L2" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+               <Property Name="Remote" Type="Boolean" Nullable="false" />
+               <Property Name="StartupMode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="CountAdd" Type="Int32" Nullable="false" />
+               <Property Name="CountModify" Type="Int32" Nullable="false" />
+               <Property Name="CountDelete" Type="Int32" Nullable="false" />
+               <Property Name="CountView" Type="Int32" Nullable="false" />
+               <Property Name="CountLogon" Type="Int32" Nullable="false" />
+               <Property Name="CountTimeouts" Type="Int32" Nullable="false" />
+               <Property Name="LastUpdate" Type="DateTime" Precision="3" />
+               <Property Name="Workstation_ID" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="LastLogon" Type="DateTime" Precision="3" />
+               <Property Name="LastLogoff" Type="DateTime" Precision="3" />
+               <Property Name="LastDiaryDefaultType" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+               <Property Name="LastBillingLocation" Type="Int32" />
+               <Property Name="diarySlotSize" Type="Int32" />
+               <Property Name="diaryColumns" Type="Int32" />
+               <Property Name="diarySlotOption1" Type="Int32" />
+               <Property Name="diarySlotOption2" Type="Int32" />
+               <Property Name="diarySlotOption3" Type="Int32" />
+               <Property Name="diarySlotOption4" Type="Int32" />
+               <Property Name="diaryEnableMulti" Type="Boolean" Nullable="false" />
+               <Property Name="lblPrinterType" Type="Byte" />
+               <Property Name="lblColType" Type="Byte" />
+               <Property Name="lblTypeA" Type="Byte" />
+               <Property Name="lblTypeB" Type="Byte" />
+               <Property Name="lblTypeC" Type="Byte" />
+               <Property Name="lblTypeD" Type="Byte" />
+               <Property Name="lblTypeE" Type="Byte" />
+               <Property Name="lblTypeF" Type="Byte" />
+               <Property Name="lblPrinterName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+               <Property Name="lblPrinterTray" Type="Byte" />
+               <Property Name="LastDiaryRoom" Type="Int32" />
+               <Property Name="LastDiaryMO" Type="Int32" />
+               <Property Name="LastPatientLoaded" Type="Int32" />
+               <Property Name="LoadDiaryOnStartup" Type="Boolean" Nullable="false" />
+               <Property Name="RememberLastPatientSearch" Type="Boolean" Nullable="false" />
+               <Property Name="DisplayHealthtrackChangeLog" Type="Boolean" Nullable="false" />
+               <Property Name="TaskDefaultGroup" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="TaskDefaultToGroup" Type="Boolean" Nullable="false" />
+               <Property Name="AllocationDefaultVisible" Type="Boolean" Nullable="false" />
+               <Property Name="DirectoryShortcut1" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+               <Property Name="DirectoryShortcut2" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+               <Property Name="DirectoryShortcut3" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+               <Property Name="quickBillDefaultGroupingSet" Type="Int32" />
+               <Property Name="role_ID" Type="Int32" />
+               <Property Name="DM_roleWho" Type="Byte" />
+               <Property Name="DM_delegateTo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="DM_assignTo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="diaryShowsPreferredName" Type="Boolean" Nullable="false" />
+               <Property Name="DM_group" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="prefDocSecurity" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="ExternalSearch" Type="Boolean" Nullable="false" />
+               <Property Name="AutoOpenPreference1" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="AutoOpenPreference2" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="Mobile" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+               <Property Name="PathDef_SetID" Type="Int32" />
+               <Property Name="DefaultDocManagementToPreview" Type="Boolean" Nullable="false" />
+               <Property Name="DefaultClinicalRecordDisplayMode" Type="String" MaxLength="1" FixedLength="true"
+                         Unicode="false" Nullable="false" />
+               <Property Name="HideClinicalNoteShortcutInDiary" Type="Boolean" Nullable="false" />
+               <Property Name="IgnoreMIMSDrugDrugInteractionsLevel" Type="Byte" />
+               <Property Name="MIMSLicenseReviewed" Type="Boolean" Nullable="false" />
+               <Property Name="WordEditorOption" Type="Int16" Nullable="false" />
+               <Property Name="DefaultEpisode" Type="Int32" />
+               <Property Name="DefaultImportCategory" Type="Int32" />
+               <Property Name="DisableWindowPositionSaving" Type="Boolean" Nullable="false" />
+            </EntityType>
+            <EntityContainer Name="Security" annotation:LazyLoadingEnabled="true">
+               <EntitySet Name="HealthTrackAuthorisations" EntityType="HealthTrackSecurity.HealthTrackAuthorisation" />
+               <EntitySet Name="HealthTrackPermissions" EntityType="HealthTrackSecurity.HealthTrackPermission" />
+               <EntitySet Name="HealthTrackUsers" EntityType="HealthTrackSecurity.HealthTrackUser" />
+               <AssociationSet Name="HealthTrackPermissionHealthTrackAuthorisation"
+                               Association="HealthTrackSecurity.HealthTrackPermissionHealthTrackAuthorisation">
+                  <End Role="HealthTrackPermission" EntitySet="HealthTrackPermissions" />
+                  <End Role="HealthTrackAuthorisation" EntitySet="HealthTrackAuthorisations" />
+               </AssociationSet>
+               <EntitySet Name="HealthTrackGroups" EntityType="HealthTrackSecurity.HealthTrackGroup" />
+            </EntityContainer>
+            <Association Name="HealthTrackPermissionHealthTrackAuthorisation">
+               <End Type="HealthTrackSecurity.HealthTrackPermission" Role="HealthTrackPermission" Multiplicity="1" />
+               <End Type="HealthTrackSecurity.HealthTrackAuthorisation" Role="HealthTrackAuthorisation"
+                    Multiplicity="*" />
+               <ReferentialConstraint>
+                  <Principal Role="HealthTrackPermission">
+                     <PropertyRef Name="Keyword" />
+                  </Principal>
+                  <Dependent Role="HealthTrackAuthorisation">
+                     <PropertyRef Name="Keyword" />
+                  </Dependent>
+               </ReferentialConstraint>
+            </Association>
+            <EntityType Name="HealthTrackGroup">
+               <Key>
+                  <PropertyRef Name="base_ID" />
+                  <PropertyRef Name="member_ID" />
+               </Key>
+               <Property Name="base_ID" Type="String" Nullable="false" MaxLength="50" FixedLength="false"
+                         Unicode="false" />
+               <Property Name="member_ID" Type="String" Nullable="false" MaxLength="50" FixedLength="false"
+                         Unicode="false" />
+            </EntityType>
+         </Schema>
+      </edmx:ConceptualModels>
+      <!-- C-S mapping content -->
+      <edmx:Mappings>
+         <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+            <EntityContainerMapping StorageEntityContainer="HealthTrackSecurityStoreContainer"
+                                    CdmEntityContainer="Security">
+               <EntitySetMapping Name="HealthTrackAuthorisations">
+                  <EntityTypeMapping TypeName="HealthTrackSecurity.HealthTrackAuthorisation">
+                     <MappingFragment StoreEntitySet="HMS_Permission">
+                        <ScalarProperty Name="User_ID" ColumnName="User_ID" />
+                        <ScalarProperty Name="Keyword" ColumnName="Keyword" />
+                        <ScalarProperty Name="KeyValue" ColumnName="KeyValue" />
+                        <ScalarProperty Name="Location_ID" ColumnName="Location_ID" />
+                        <ScalarProperty Name="Department" ColumnName="Department" />
+                     </MappingFragment>
+                  </EntityTypeMapping>
+               </EntitySetMapping>
+               <EntitySetMapping Name="HealthTrackPermissions">
+                  <EntityTypeMapping TypeName="HealthTrackSecurity.HealthTrackPermission">
+                     <MappingFragment StoreEntitySet="HMS_Permission_Description">
+                        <ScalarProperty Name="Keyword" ColumnName="Keyword" />
+                        <ScalarProperty Name="Description" ColumnName="Description" />
+                        <ScalarProperty Name="VisibleToEditor" ColumnName="VisibleToEditor" />
+                        <ScalarProperty Name="EffectMenuItem" ColumnName="EffectMenuItem" />
+                        <ScalarProperty Name="SubGroup" ColumnName="SubGroup" />
+                        <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                        <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                        <ScalarProperty Name="Licensed" ColumnName="Licensed" />
+                        <ScalarProperty Name="AllowOverride" ColumnName="AllowOverride" />
+                     </MappingFragment>
+                  </EntityTypeMapping>
+               </EntitySetMapping>
+               <EntitySetMapping Name="HealthTrackUsers">
+                  <EntityTypeMapping TypeName="HealthTrackSecurity.HealthTrackUser">
+                     <MappingFragment StoreEntitySet="HMS_User">
+                        <ScalarProperty Name="User_ID" ColumnName="User_ID" />
+                        <ScalarProperty Name="Password" ColumnName="Password" />
+                        <ScalarProperty Name="EntryType" ColumnName="EntryType" />
+                        <ScalarProperty Name="Enabled" ColumnName="Enabled" />
+                        <ScalarProperty Name="Visible" ColumnName="Visible" />
+                        <ScalarProperty Name="Privileged" ColumnName="Privileged" />
+                        <ScalarProperty Name="Title" ColumnName="Title" />
+                        <ScalarProperty Name="Firstname" ColumnName="Firstname" />
+                        <ScalarProperty Name="Surname" ColumnName="Surname" />
+                        <ScalarProperty Name="Initials" ColumnName="Initials" />
+                        <ScalarProperty Name="UserPosition" ColumnName="UserPosition" />
+                        <ScalarProperty Name="Email" ColumnName="Email" />
+                        <ScalarProperty Name="LetterSignature_L1" ColumnName="LetterSignature_L1" />
+                        <ScalarProperty Name="LetterSignature_L2" ColumnName="LetterSignature_L2" />
+                        <ScalarProperty Name="Remote" ColumnName="Remote" />
+                        <ScalarProperty Name="StartupMode" ColumnName="StartupMode" />
+                        <ScalarProperty Name="CountAdd" ColumnName="CountAdd" />
+                        <ScalarProperty Name="CountModify" ColumnName="CountModify" />
+                        <ScalarProperty Name="CountDelete" ColumnName="CountDelete" />
+                        <ScalarProperty Name="CountView" ColumnName="CountView" />
+                        <ScalarProperty Name="CountLogon" ColumnName="CountLogon" />
+                        <ScalarProperty Name="CountTimeouts" ColumnName="CountTimeouts" />
+                        <ScalarProperty Name="LastUpdate" ColumnName="LastUpdate" />
+                        <ScalarProperty Name="Workstation_ID" ColumnName="Workstation_ID" />
+                        <ScalarProperty Name="LastLogon" ColumnName="LastLogon" />
+                        <ScalarProperty Name="LastLogoff" ColumnName="LastLogoff" />
+                        <ScalarProperty Name="LastDiaryDefaultType" ColumnName="LastDiaryDefaultType" />
+                        <ScalarProperty Name="LastBillingLocation" ColumnName="LastBillingLocation" />
+                        <ScalarProperty Name="diarySlotSize" ColumnName="diarySlotSize" />
+                        <ScalarProperty Name="diaryColumns" ColumnName="diaryColumns" />
+                        <ScalarProperty Name="diarySlotOption1" ColumnName="diarySlotOption1" />
+                        <ScalarProperty Name="diarySlotOption2" ColumnName="diarySlotOption2" />
+                        <ScalarProperty Name="diarySlotOption3" ColumnName="diarySlotOption3" />
+                        <ScalarProperty Name="diarySlotOption4" ColumnName="diarySlotOption4" />
+                        <ScalarProperty Name="diaryEnableMulti" ColumnName="diaryEnableMulti" />
+                        <ScalarProperty Name="lblPrinterType" ColumnName="lblPrinterType" />
+                        <ScalarProperty Name="lblColType" ColumnName="lblColType" />
+                        <ScalarProperty Name="lblTypeA" ColumnName="lblTypeA" />
+                        <ScalarProperty Name="lblTypeB" ColumnName="lblTypeB" />
+                        <ScalarProperty Name="lblTypeC" ColumnName="lblTypeC" />
+                        <ScalarProperty Name="lblTypeD" ColumnName="lblTypeD" />
+                        <ScalarProperty Name="lblTypeE" ColumnName="lblTypeE" />
+                        <ScalarProperty Name="lblTypeF" ColumnName="lblTypeF" />
+                        <ScalarProperty Name="lblPrinterName" ColumnName="lblPrinterName" />
+                        <ScalarProperty Name="lblPrinterTray" ColumnName="lblPrinterTray" />
+                        <ScalarProperty Name="LastDiaryRoom" ColumnName="LastDiaryRoom" />
+                        <ScalarProperty Name="LastDiaryMO" ColumnName="LastDiaryMO" />
+                        <ScalarProperty Name="LastPatientLoaded" ColumnName="LastPatientLoaded" />
+                        <ScalarProperty Name="LoadDiaryOnStartup" ColumnName="LoadDiaryOnStartup" />
+                        <ScalarProperty Name="RememberLastPatientSearch" ColumnName="RememberLastPatientSearch" />
+                        <ScalarProperty Name="DisplayHealthtrackChangeLog" ColumnName="DisplayHealthtrackChangeLog" />
+                        <ScalarProperty Name="TaskDefaultGroup" ColumnName="TaskDefaultGroup" />
+                        <ScalarProperty Name="TaskDefaultToGroup" ColumnName="TaskDefaultToGroup" />
+                        <ScalarProperty Name="AllocationDefaultVisible" ColumnName="AllocationDefaultVisible" />
+                        <ScalarProperty Name="DirectoryShortcut1" ColumnName="DirectoryShortcut1" />
+                        <ScalarProperty Name="DirectoryShortcut2" ColumnName="DirectoryShortcut2" />
+                        <ScalarProperty Name="DirectoryShortcut3" ColumnName="DirectoryShortcut3" />
+                        <ScalarProperty Name="quickBillDefaultGroupingSet" ColumnName="quickBillDefaultGroupingSet" />
+                        <ScalarProperty Name="role_ID" ColumnName="role_ID" />
+                        <ScalarProperty Name="DM_roleWho" ColumnName="DM_roleWho" />
+                        <ScalarProperty Name="DM_delegateTo" ColumnName="DM_delegateTo" />
+                        <ScalarProperty Name="DM_assignTo" ColumnName="DM_assignTo" />
+                        <ScalarProperty Name="diaryShowsPreferredName" ColumnName="diaryShowsPreferredName" />
+                        <ScalarProperty Name="DM_group" ColumnName="DM_group" />
+                        <ScalarProperty Name="prefDocSecurity" ColumnName="prefDocSecurity" />
+                        <ScalarProperty Name="ExternalSearch" ColumnName="ExternalSearch" />
+                        <ScalarProperty Name="AutoOpenPreference1" ColumnName="AutoOpenPreference1" />
+                        <ScalarProperty Name="AutoOpenPreference2" ColumnName="AutoOpenPreference2" />
+                        <ScalarProperty Name="Mobile" ColumnName="Mobile" />
+                        <ScalarProperty Name="PathDef_SetID" ColumnName="PathDef_SetID" />
+                        <ScalarProperty Name="DefaultDocManagementToPreview" ColumnName="DefaultDocManagementToPreview" />
+                        <ScalarProperty Name="DefaultClinicalRecordDisplayMode"
+                                        ColumnName="DefaultClinicalRecordDisplayMode" />
+                        <ScalarProperty Name="HideClinicalNoteShortcutInDiary"
+                                        ColumnName="HideClinicalNoteShortcutInDiary" />
+                        <ScalarProperty Name="IgnoreMIMSDrugDrugInteractionsLevel"
+                                        ColumnName="IgnoreMIMSDrugDrugInteractionsLevel" />
+                        <ScalarProperty Name="MIMSLicenseReviewed" ColumnName="MIMSLicenseReviewed" />
+                        <ScalarProperty Name="WordEditorOption" ColumnName="WordEditorOption" />
+                        <ScalarProperty Name="DefaultEpisode" ColumnName="DefaultEpisode" />
+                        <ScalarProperty Name="DefaultImportCategory" ColumnName="DefaultImportCategory" />
+                        <ScalarProperty Name="DisableWindowPositionSaving" ColumnName="DisableWindowPositionSaving" />
+                     </MappingFragment>
+                  </EntityTypeMapping>
+               </EntitySetMapping>
+               <EntitySetMapping Name="HealthTrackGroups">
+                  <EntityTypeMapping TypeName="HealthTrackSecurity.HealthTrackGroup">
+                     <MappingFragment StoreEntitySet="HMS_Group">
+                        <ScalarProperty Name="member_ID" ColumnName="member_ID" />
+                        <ScalarProperty Name="base_ID" ColumnName="base_ID" />
+                     </MappingFragment>
+                  </EntityTypeMapping>
+               </EntitySetMapping>
+            </EntityContainerMapping>
+         </Mapping>
+      </edmx:Mappings>
+   </edmx:Runtime>
+   <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+   <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+      <Connection>
+         <DesignerInfoPropertySet>
+            <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+         </DesignerInfoPropertySet>
+      </Connection>
+      <Options>
+         <DesignerInfoPropertySet>
+            <DesignerProperty Name="ValidateOnBuild" Value="true" />
+            <DesignerProperty Name="EnablePluralization" Value="true" />
+            <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+            <DesignerProperty Name="UseLegacyProvider" Value="false" />
+            <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+         </DesignerInfoPropertySet>
+      </Options>
+      <!-- Diagram content (shape and connector positions) -->
+      <Diagrams></Diagrams>
+   </Designer>
+</edmx:Edmx>

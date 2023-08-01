@@ -1,0 +1,400 @@
+﻿@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.HealthTrackConsumptions.CreateHealthTrackConsumptionModel
+@{
+   ViewBag.Title = "Record consumption";
+}
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Barcode Edit.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Record consumption</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div id="alertPlaceholder"></div>
+
+@using (Html.BeginForm("Create", "HealthTrackConsumption", null, FormMethod.Post))
+{
+   <div class="row">
+      @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+   </div>
+   <div class="form-horizontal">
+      <div class="panel panel-default">
+         <div class="panel-heading">
+            Product information
+         </div>
+         <div class="panel-body">
+            @* row *@
+            <div class="form-group">
+               <div class="col-sm-3 control-label">
+                  @Html.Label("Search")
+               </div>
+               <div class="col-sm-3">
+                  @(Html.Kendo().DropDownList().Name("Product")
+                       .AutoBind(true)
+                       .DataTextField("Text").DataValueField("Value")
+                       .DataSource(ds => ds.Read(read => read.Action("ComplexSearch", "Products")).ServerFiltering(true))
+                       .Events(events => events.Select("onProductSelect"))
+                       .Filter(FilterType.Contains).OptionLabel(" ")
+                       )
+                  @Html.HiddenFor(m => m.ProductId)   
+               </div>
+               <div class="col-sm-1">
+                  @Html.Kendo().Button().Name("browseProducts").Content("Browse").Events(events => events.Click("onBrowseProductsClick"))
+               </div>
+               <div class="col-sm-3">
+                  @(Html.Kendo().Button().Name("NewProduct").Content("New product").Events(events => events.Click("onNewProductClick")))
+               </div>
+            </div>
+            <div id="productDetails" style="display:none;">
+               <div class="form-group">
+                  <div class="col-sm-3 control-label details-label">
+                     @Html.Label("Description")
+                  </div>
+                  <div class="col-sm-4 text-label">
+                     <span id="productDescription"></span>
+                  </div>
+                  <div class="col-sm-4 text-label">
+                     @Html.ValidationMessageFor(m => m.ProductId)
+                  </div>
+               </div>
+               @* row *@
+               <div class="form-group">
+                  <div class="col-sm-3 control-label">
+                     @Html.Label("SPC")
+                  </div>
+                  <div class="col-sm-3 text-label">
+                     <span id="productSPC"></span>
+                  </div>
+               </div>
+               @* row *@
+               <div class="form-group">
+                  <div class="col-sm-3 control-label">
+                     @Html.Label("UPN")
+                  </div>
+                  <div class="col-sm-3 text-label">
+                     <span id="productUPN"></span>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="panel panel-default">
+         <div class="panel-heading">
+            Consumption information
+         </div>
+         <div class="panel-body">
+            @* row *@
+            <div class="form-group">
+               <div class="col-sm-3 control-label">
+                  @Html.LabelFor(m => m.ContainerId)
+               </div>
+               <div class="col-sm-3">
+                  @Html.Kendo().NumericTextBoxFor(m => m.ContainerId).Spinners(false).Format("#")
+               </div>
+               <div class="col-sm-1">
+                  @Html.Kendo().Button().Name("findContainerId").Content("Find").Events(events => events.Click("onFindContainerIdClick"))
+               </div>
+               <div class="col-sm-3 text-label">
+                  @Html.ValidationMessageFor(m => m.ContainerId)
+               </div>
+               <div class="col-sm-4 text-label" id="containerIdResult"></div>
+            </div>
+            @* row *@
+            <div class="form-group">
+               <div class="col-sm-3 control-label">
+                  @Html.LabelFor(m => m.MRN)
+               </div>
+               <div class="col-sm-3">
+                  @Html.Kendo().TextBoxFor(m => m.MRN)
+               </div>
+               <div class="col-sm-4 text-label">
+                  @Html.ValidationMessageFor(m => m.MRN)
+               </div>
+            </div>
+            
+            @* row *@
+            <div class="form-group">
+               <div class="col-sm-3 control-label">
+                  @Html.LabelFor(m => m.HTLocationId)
+               </div>
+               <div class="col-sm-3">
+                  @(Html.Kendo().DropDownListFor(m => m.HTLocationId)
+                       .AutoBind(true)
+                       .DataTextField("Text").DataValueField("Value")
+                       .DataSource(ds => ds.Read(read => read.Action("GetAll", "HealthTrackLocation")).ServerFiltering(true))
+                       .OptionLabel(" ")
+                       )
+               </div>
+               <div class="col-sm-4 text-label">
+                  @Html.ValidationMessageFor(m => m.HTLocationId)
+               </div>
+            </div>
+
+            @* row *@
+            <div class="form-group">
+               <div class="col-sm-3 control-label">
+                  @Html.LabelFor(m => m.SerialNumber)
+               </div>
+               <div class="col-sm-3">
+                  @Html.Kendo().TextBoxFor(m => m.SerialNumber)
+               </div>
+               <div class="col-sm-4 text-label">
+                  @Html.ValidationMessageFor(m => m.SerialNumber)
+               </div>
+            </div>
+
+            @* row *@
+            <div class="form-group">
+               <div class="col-sm-3 control-label">
+                  @Html.LabelFor(m => m.LotNumber)
+               </div>
+               <div class="col-sm-3">
+                  @Html.Kendo().TextBoxFor(m => m.LotNumber)
+               </div>
+               <div class="col-sm-4 text-label">
+                  @Html.ValidationMessageFor(m => m.LotNumber)
+               </div>
+            </div>
+
+            @* row *@
+            <div class="form-group">
+               <div class="col-sm-3 control-label">
+                  @Html.LabelFor(m => m.Quantity)
+               </div>
+               <div class="col-sm-3">
+                  @Html.Kendo().NumericTextBoxFor(m => m.Quantity).Format("#.##")
+               </div>
+               <div class="col-sm-4 text-label">
+                  @Html.ValidationMessageFor(m => m.Quantity)
+               </div>
+            </div>
+            @* row *@
+            <div class="form-group">
+               <div class="col-sm-3 control-label">
+                  @Html.LabelFor(m => m.ConsumedBy)
+               </div>
+               <div class="col-sm-3">
+                  @Html.Kendo().TextBoxFor(m => m.ConsumedBy)
+               </div>
+               <div class="col-sm-4 text-label">
+                  @Html.ValidationMessageFor(m => m.ConsumedBy)
+               </div>
+            </div>
+            
+            @* row *@
+            <div class="form-group">
+               <div class="col-sm-3 control-label">
+                  @Html.LabelFor(m => m.ConsumedOn)
+               </div>
+               <div class="col-sm-3">
+                  @Html.Kendo().DateTimePickerFor(m => m.ConsumedOn).Culture("en-AU")
+               </div>
+               <div class="col-sm-4 text-label">
+                  @Html.ValidationMessageFor(m => m.ConsumedOn)
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="form-group" id="buttonsRow">
+         <div class="col-sm-4">
+            <a class="k-button" href="">Cancel</a>
+            <button class="k-button k-primary" type="submit">Submit</button>
+         </div>
+      </div>
+   </div>
+}
+
+<div id="advancedSearchWindow"></div>
+<div id="CreateProductWindow"></div>
+
+
+@section Scripts {
+   @Scripts.Render("~/bundles/jqueryval")
+   <script src="~/Areas/Inventory/Scripts/AdvancedSearch.js"></script>
+   <script src="~/Areas/Inventory/Scripts/CreateProduct.js"></script>
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+   <script src="~/Scripts/Inventory.js"></script>
+   <script type="text/javascript">
+      $.validator.setDefaults({
+         ignore: ""
+      });
+
+      $(function () {
+         $("form").kendoValidator();
+      });
+
+
+      $(document).ready(function() {
+         createAdvancedSearchWithGrid();
+         CreateProductWindow("Please enter the <i>current</i> stock levels for this product, excluding the item/s to be consumed.");
+
+         $('#ContainerId').on('input', function(e) {
+            var containerMessage = $('#containerIdResult');
+
+            if (containerMessage == '') {
+               clearContainerIdMessage();
+               return;
+            }
+
+            $('#MRN').prop('readonly', $('#ContainerId').val() != '');
+
+            $('#ContainerId').data('kendoNumericTextBox').wrapper.children().css('border-color', '#8a6d3b');
+
+            containerMessage.html('Please click Find to validate the container ID.');
+            if (containerMessage.hasClass('text-danger')) {
+               containerMessage.removeClass('text-danger');
+            }
+            if (containerMessage.hasClass('text-success')) {
+               containerMessage.removeClass('text-success');
+            }
+
+            if (!containerMessage.hasClass('text-warning')) {
+               containerMessage.addClass('text-warning');
+            }
+         });
+      });
+
+      $('#ProductId').on('change', function(e) {
+         $.ajax({
+            async: false,
+            contentType: 'application/json',
+            url: '@Url.Action("GetDetails", "Products")?id=' + $('#ProductId').val(),
+            type: 'GET',
+            success: function (data) {
+               $('#productDetails').show();
+               $('#productDescription').text(data.Description);
+               $('#productSPC').text(data.SPC);
+               $('#productUPN').text(data.UPN);
+            },
+            error: function (data) {
+               $('#productDescription').text('');
+               $('#productSPC').text('');
+               $('#productUPN').text('');
+            }
+         });
+      });
+
+      function onBrowseProductsClick(e) {
+         e.preventDefault();
+         openAdvancedSearch();
+      }
+
+      function clearContainerIdMessage() {
+         var containerMessage = $('#containerIdResult');
+         if (containerMessage.hasClass('text-warning')) {
+            containerMessage.removeClass('text-warning');
+         }
+
+         if (containerMessage.hasClass('text-success')) {
+            containerMessage.removeClass('text-success');
+         }
+
+         if (containerMessage.hasClass('text-danger')) {
+            containerMessage.removeClass('text-danger');
+         }
+
+         containerMessage.html('');
+      }
+
+      function onFindContainerIdClick(e) {
+         e.preventDefault();
+         var containerMessage = $('#containerIdResult');
+         var containerId = $('#ContainerId').val();
+         if (containerId == '') {
+            clearContainerIdMessage();
+            return;
+         }
+
+         $.ajax({
+            async: false,
+            contentType: 'application/json',
+            data: {
+               containerId: containerId
+            },
+            url: '@Url.Action("FindMRNByContainer", "HealthTrackConsumption")',
+            type: 'GET',
+            success: function(data) {
+               clearContainerIdMessage();
+
+               containerMessage.html('Matched to record!');
+               containerMessage.addClass('text-success');
+               $('#ContainerId').data('kendoNumericTextBox').wrapper.children().css('border-color', '#3c763d');
+
+               $('#MRN').val(data);
+               $('#MRN').prop('readonly', true);
+            },
+            error: function(data) {
+               containerMessage.html('Could not find matching container.');
+               containerMessage.addClass('text-danger');
+               $('#ContainerId').data('kendoNumericTextBox').wrapper.children().css('border-color', '#a94442');
+
+               $('#MRN').prop('readonly', false);
+            }
+         });
+      }
+
+      function onNewProductClick(e) {
+         openCreateProductWindow();
+         e.preventDefault();
+      }
+
+      function onProductSelect(e) {
+         var selected;
+         var index = e.item.index();
+         if (index == 0 && !e.item.is("li")) {
+            selected = "";
+         } else {
+            selected = this.dataItem(++index).Value;
+         }
+         $('#Product').val(selected);
+         $('#ProductId').val(selected);
+
+         $.ajax({
+            async: false,
+            contentType: 'application/json',
+            url: '@Url.Action("GetDetails", "Products")?id=' + selected,
+            type: 'GET',
+            success: function (data) {
+               $('#productDetails').show();
+               $('#productDescription').text(data.Description);
+               $('#productSPC').text(data.SPC);
+               $('#productUPN').text(data.UPN);
+            },
+            error: function(data) {
+               $('#productDescription').text();
+               $('#productSPC').text();
+               $('#productUPN').text();
+            }
+         });
+      }
+   </script>
+}
+
+
+<style>
+   .control-label {
+      margin-bottom: 0 !important;
+      padding-top: 7px;
+   }
+
+   .text-label {
+      margin-bottom: 0 !important;
+      padding-top: 7px;
+   }
+
+   .panel {
+      margin-left: auto;
+      margin-right: auto;
+   }
+
+   #containerIdResult { text-align: left; }
+
+   .k-textbox, .k-datetimepicker, .k-selectbox, .k-combobox, .k-dropdown, .k-numerictextbox { width: 20em; }
+
+</style>

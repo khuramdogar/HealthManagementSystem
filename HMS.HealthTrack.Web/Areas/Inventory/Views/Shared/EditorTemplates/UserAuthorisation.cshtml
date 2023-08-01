@@ -1,0 +1,19 @@
+﻿@model HMS.HealthTrack.Web.Areas.Inventory.Models.Security.UserAuthorisation
+@using HMS.HealthTrack.Web.Data.Model.Inventory
+@using Kendo.Mvc.UI
+@{
+    Layout = null;
+}
+
+<div style="text-align: center">
+   <h4>Select a permission to add</h4>
+   @Html.HiddenFor(model => model.User_ID)
+   @(Html.Kendo().ComboBoxFor(model => model.Keyword)
+     .Filter("contains")
+     .Placeholder("Select a permission")
+     .DataTextField("Text")
+     .DataValueField("Text")
+     .BindTo(InventoryPermissions.All().Select(p => new SelectListItem { Text = p }))
+   .SelectedIndex(3)
+   .Suggest(true))
+</div>

@@ -1,0 +1,232 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.GeneralLedger
+@using Kendo.Mvc.UI
+@using Newtonsoft.Json
+@model List<GeneralLedgerType>
+@{
+   ViewBag.Title = "General Ledgers";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Records 2.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>General ledgers</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div id="alertPlaceholder"></div>
+<div>
+   @(Html.Kendo().TabStrip()
+        .Name("tabstrip")
+        .Items(items =>
+        {
+           items.Add().Text(Model[0].Name + " ledgers").Selected(true).Content(
+              @<text>
+                  @(Html.Kendo().TreeList<GeneralLedgerModel>()
+                       .Name("Ledgers0") //Important: Named according to index of tab
+                       .Columns(columns =>
+                       {
+                          columns.Add().Field(e => e.Name);
+                          columns.Add().Field(e => e.Code);
+                          columns.Add().Field(e => e.AlternateCode);
+                          columns.Add().Field(e => e.Tier);
+                          columns.Add().Command(command =>
+                          {
+                             command.Edit();
+                             command.Destroy();
+                          }).Width(200).HtmlAttributes(new {@class = "button-column"});
+                       })
+                       .DataSource(dataSource => dataSource
+                          .Create(c => c.Action("Create", "GeneralLedger"))
+                          .Destroy(c => c.Action("Destroy", "GeneralLedger"))
+                          .Update(c => c.Action("Update", "GeneralLedger"))
+                          .Events(e => e.Error("errorHandler").Sync("onSync"))
+                          .Read(r => r.Url(@Url.Action("Get", "GeneralLedger") + "?ledgerType=" + Model[0].LedgerTypeId))
+                          .Model(m =>
+                          {
+                             m.Id(f => f.LedgerId);
+                             m.ParentId(f => f.ParentLedger);
+                             m.Expanded(true);
+                             m.Field(f => f.ParentId);
+                             m.Field(f => f.Name);
+                             m.Field(f => f.Code);
+                             m.Field(f => f.AlternateCode);
+                             m.Field(f => f.Tier);
+                          })
+                       )
+                       .Editable(edit => edit.Mode("popup").TemplateName("GeneralLedger"))
+                       .Events(events => events.Edit("onEdit").Save("onSave").Remove("onRemove"))
+                       .Filterable(f => f.Extra(false)) // IMPORTANT: The actual filtering is handled by a method in the controller then the filters are cleared.
+                       .Scrollable(true)
+                       .Sortable(sort => sort.AllowUnsort(false))
+                       .Toolbar(toolbar => toolbar.Create())
+                       )
+               </text>);
+           items.Add().Text(Model[1].Name + " ledgers").Content(
+              @<text>
+                  @(Html.Kendo().TreeList<GeneralLedgerModel>()
+                       .Name("Ledgers1")
+                       .Columns(columns =>
+                       {
+                          columns.Add().Field(e => e.Name);
+                          columns.Add().Field(e => e.Code);
+                          columns.Add().Field(e => e.AlternateCode);
+                          columns.Add().Field(e => e.Tier);
+                          columns.Add().Command(command =>
+                          {
+                             command.Edit();
+                             command.Destroy();
+                          }).Width(200).HtmlAttributes(new { @class = "button-column" }); ;
+                       })
+                       .DataSource(dataSource => dataSource
+                          .Create(c => c.Action("Create", "GeneralLedger"))
+                          .Destroy(c => c.Action("Destroy", "GeneralLedger"))
+                          .Update(c => c.Action("Update", "GeneralLedger"))
+                          .Events(e => e.Error("errorHandler").Sync("onSync"))
+                          .Read(r => r.Url(@Url.Action("Get", "GeneralLedger") + "?ledgerType=" + Model[1].LedgerTypeId))
+                          .Model(m =>
+                          {
+                             m.Id(f => f.LedgerId);
+                             m.ParentId(f => f.ParentLedger);
+                             m.Expanded(true);
+                             m.Field(f => f.ParentId);
+                             m.Field(f => f.Name);
+                             m.Field(f => f.Code);
+                             m.Field(f => f.AlternateCode);
+                             m.Field(f => f.LedgerType);
+                             m.Field(f => f.Tier);
+                          })
+                       )
+                       .Editable(edit => edit.Mode("popup").TemplateName("GeneralLedger"))
+                       .Events(events => events.Edit("onEdit").Save("onSave").Remove("onRemove"))
+                       .Filterable(f => f.Extra(false)) // IMPORTANT: The actual filtering is handled by a method in the controller then the filters are cleared.
+                       .Height(800)
+                       .Sortable(sort => sort.AllowUnsort(false))
+                       .Scrollable(true)
+                       .Toolbar(toolbar => toolbar.Create())
+                       )
+               </text>);
+        })
+        )
+</div>
+@section Scripts {
+   <script src="~/Scripts/Inventory.js"></script>
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+   <script type="text/javascript">
+   $(document).ready(function() {
+      var tabstrip = $('#tabstrip').data('kendoTabStrip');
+      var toolbarTemplateString = '<span class="toolbar">' +
+         '<span class="toolbar-left">' +
+         '<button data-command="create" class="k-button k-button-icontext k-grid-add">' +
+         '<span class="k-icon k-add"></span>' +
+         'Add new ledger' +
+         '</button>' +
+         '</span>' +
+         '<span class="toolbar-right">' +
+         '@Html.Label("Name", new {@class = "filter-label"})' +
+         '@Html.Kendo().TextBox().Name("name").HtmlAttributes(new {@class = "filter-control"})' + '<a class="k-button applyFilter">Filter</a>' + '<a class="k-button clearFilter">Clear</a>' + '</span>' + '</span>';
+      var tabCount = tabstrip.items().length;
+      for (var ii = 0; ii < tabCount; ii++) {
+         $('#Ledgers' + ii + ' div.k-grid-toolbar').html(toolbarTemplateString);
+      }
+      $('.applyFilter').click(function() {
+         var selectedTab = tabstrip.select().index();
+         var phrase = $('#Ledgers' + selectedTab + ' #name').val();
+         var treeList = $('#Ledgers' + selectedTab).data('kendoTreeList');
+         if (phrase != '') {
+            var filters = GetFilters(treeList);
+            filters = UpdateSearchFilters(filters, "Name", "contains", phrase, "and");
+            treeList.dataSource.filter(filters);
+         } else {
+            $('#clearFilter').trigger('click');
+         }
+      });
+      $('.filter-control').on('keydown', function(keyEvent) {
+         var code = (keyEvent.keyCode ? keyEvent.keyCode : keyEvent.which);
+         if (code == 13) {
+            $('.applyFilter').trigger('click');
+         }
+      });
+      $('.clearFilter').click(function() {
+         var selectedTab = tabstrip.select().index();
+         var treeList = $('#Ledgers' + selectedTab).data('kendoTreeList');
+         ClearFilters(treeList);
+         $('#Ledgers' + selectedTab + ' #name').val('');
+      });
+   });
+
+   function onEdit(e) {
+      var tabstrip = $('#tabstrip').data('kendoTabStrip');
+      var selectedTab = tabstrip.select().index();
+      var model = @Html.Raw(@JsonConvert.SerializeObject(Model));
+      var url = "@Url.Action("GetParentLedgers", "GeneralLedger")/?id=" + e.model.LedgerId + "&ledgerType=" + model[selectedTab].LedgerTypeId;
+
+         $('#ParentLedgerList').kendoDropDownList({
+            autobind: true,
+            dataTextField: "Text",
+            dataValueField: "Value",
+            dataSource: {
+               transport: {
+                  read: {
+                     type: "jsonp",
+                     serverFiltering: true,
+                     url: url,
+                  }
+               }
+            },
+            dataBound: function(ee) {
+               var dropdownlist = $("#ParentLedgerList").data("kendoDropDownList");
+               dropdownlist.select(function(dataItem) {
+                  return dataItem.Value === e.model.ParentId;
+               });
+            },
+            filter: "startswith",
+            optionLabel: " "
+         });
+      }
+
+      function onSave(e) {
+         var parentLedgerDropDown = $('#ParentLedgerList').data('kendoDropDownList');
+         var selectedLedger = parentLedgerDropDown.select();
+         if (selectedLedger > 0) {
+            e.model.set("parentId", parentLedgerDropDown.dataItem(selectedLedger).Value);
+         }
+         var tabstrip = $('#tabstrip').data('kendoTabStrip');
+         var selectedTab = tabstrip.select().index();
+         var model = @Html.Raw(@JsonConvert.SerializeObject(Model));
+         e.model.set("LedgerType", model[selectedTab].LedgerTypeId);
+      }
+
+      function onSync(e) {
+         this.read();
+      }
+
+      function errorHandler(e) {
+         if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function(key, value) {
+               if ('errors' in value) {
+                  $.each(value.errors, function() {
+                     message += this + "\n";
+                  });
+               }
+            });
+            getAlert('danger', message);
+         }
+      }
+
+      function onRemove(e) {
+         if (confirm('This will also delete all associated general ledgers. Are you sure you want to delete the general ledger ' + e.model.Name + '?')) {
+
+         } else {
+            e.preventDefault();
+            return;
+         }
+      }
+   </script>
+}

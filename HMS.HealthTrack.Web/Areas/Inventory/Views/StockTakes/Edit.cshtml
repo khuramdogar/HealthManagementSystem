@@ -1,0 +1,467 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.StockTakes
+@using Kendo.Mvc.UI
+@model StockTakeViewModel
+
+@{
+   ViewBag.Title = "Inventory stock take";
+}
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Bar Scanner Add.png" class="img-responsive"/>
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Perform stock take</h2>
+         </div>
+      </div>
+   </div>
+</div>
+<div id="stockTakeAlertPlaceholder"></div>
+<div>
+   <div class="panel panel-default">
+      <div class="panel-heading">
+         @Html.HiddenFor(m => m.StockTakeId)
+         <a data-toggle="collapse" data-target="#collapsableInfo" href="#collapsableInfo">
+            Stock take #@Model.StockTakeId
+         </a>
+      </div>
+      <div id="collapsableInfo" class="panel-collapse collapse in">
+         <div class="panel-body">
+            <div class="row">
+               <div class="col-md-1 col-lg-1 control-label text-right">
+                  @Html.LabelFor(m => m.Name)
+               </div>
+               <div class="col-md-2 col-lg-3">
+                  @Html.Hidden("OriginalName")
+                  @(Html.Kendo().TextBoxFor(m => m.Name).HtmlAttributes(new { @class = "page-input k-state-disabled"}))
+               </div>
+
+               <div class="col-md-1 col-lg-1 control-label text-right">
+                  @Html.LabelFor(m => m.LocationName)
+               </div>
+               <div class="col-md-3 col-lg-2">
+                  @Html.Hidden("OriginalLocationId")
+                  @(Html.Kendo().DropDownListFor(m => m.LocationId)
+                       .AutoBind(true).Enable(false)
+                       .DataSource(ds => ds.Read(read => read.Action("GetStockLocations", "StockLocations")))
+                       .DataTextField("Text").DataValueField("Value")
+                       .Filter("contains").HtmlAttributes(new {@class = "page-input"}))
+               </div>
+               <div class="col-md-2 col-lg-2 control-label text-right">
+                  @Html.LabelFor(m => m.StockTakeDate)
+               </div>
+               <div class="col-md-3 col-lg-2">
+                  @Html.Hidden("OriginalStockTakeDate")
+                  @(Html.Kendo().DateTimePickerFor(m => m.StockTakeDate).Enable(false))
+               </div>
+               <div class="hidden-lg stacked-column-space">
+               </div>
+            </div>
+            <div class="row">
+               <div class="col-md-4 col-lg-4 pull-right text-right">
+                  @Html.Kendo().Button().Name("Submit").Content("Submit").Events(events => events.Click("onSubmitClick")).HtmlAttributes(new { @class = "k-primary" })
+                  @Html.Kendo().Button().Name("Edit").Content("Edit").Events(events => events.Click("onEditClick"))
+                  @Html.Kendo().Button().Name("Print").Content("Print").Events(events => events.Click("onPrintClick"))
+                  @Html.Kendo().Button().Name("BackToList").Content("Back to list").Events(events => events.Click("onBackToListClick"))
+
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+<div id="alertPlaceholder"></div>
+<div class="row row-wide">
+   <div class="col-md-12 col-lg-6 left-column">
+      <div class="panel panel-default top-panel">
+         <div class="panel-heading">
+            Add/Update stock take items
+         </div>
+         @Html.Hidden("ProductId")
+         <div class="panel-body" id="productSearchPanel">
+            <div class="row">
+               <div class="col-sm-3 control-label text-right">
+                  <label for="scanCodeSearch">Scan code</label>
+               </div>
+               <div class="col-sm-8">
+                  <span id="scanCodeSearch">
+                     @(Html.Kendo().ComboBox().Name("Code")
+                          .AutoBind(true)
+                          .DataSource(source => source.Read(read => read.Action("GetProductByCode", "Products")).ServerFiltering(true))
+                          .DataTextField("Key").DataValueField("Key")
+                          .Events(events => events.DataBound("onCodeDataBound").Filtering("onCodeFiltering").Open("onCodeOpen").Select("onCodeSelect"))
+                          .Filter("contains")
+                          .HtmlAttributes(new {@class = "page-input"})
+                          )
+                  </span>
+               </div>
+               <div class="col-sm-1">
+                  <a href="#" title="Search for a product by scanning a barcode to the scan code box below. Alternatively, type part or all of an SPC/UPN and press Enter." class="tooltipLink">
+                     <span class="glyphicon glyphicon-info-sign control-label"></span>
+                  </a>
+               </div>
+            </div>
+            <div class="row">
+               <div class="col-sm-3 control-label text-right">
+                  <label for="stockLevel">Stock level</label>
+               </div>
+               <div class="col-sm-6">
+                  <span id="stockLevel"> @Html.Kendo().IntegerTextBox().Name("StockLevel").Min(0).HtmlAttributes(new {style = "width: 100%;"})</span>
+               </div>
+               <div class="col-sm-3 text-right">
+                  @(Html.Kendo().Button().Name("SaveItem").Content("Add/Update")
+                       .Events(events => events.Click("onSaveItemClick"))
+                       .HtmlAttributes(new {style = "width: 7em;", @class = "k-primary"}))
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="col-md-12 col-lg-6 right-column">
+      <div class="panel panel-default top-panel">
+         <div class="panel-heading">
+            Product details
+         </div>
+         <div class="panel-body" id="productDetailsPanel">
+            @Html.Hidden("productManageStock")
+            <div class="row no-margin">
+               <div class="col-md-3 col-lg-3 text-right">
+                  @Html.Label("Description")
+               </div>
+               <div class="col-md-7 col-lg-7">
+                  <span id="productDescription"></span>
+               </div>
+            </div>
+
+            <div class="row no-margin">
+               <div class="col-md-3 col-lg-3 text-right">
+                  @Html.Label("SPC")
+               </div>
+               <div class="col-md-7 col-lg-7">
+                  <span id="productSPC"></span>
+               </div>
+            </div>
+
+            <div class="row no-margin">
+               <div class="col-md-3 col-lg-3 text-right">
+                  @Html.Label("UPN")
+               </div>
+               <div class="col-md-7 col-lg-7">
+                  <span id="productUPN"></span>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+<div id="gridRow">
+   @(Html.Kendo().Grid<StockTakeItemViewModel>()
+        .Name("StockTakeItems")
+        .Columns(columns =>
+        {
+           columns.Bound(c => c.SPC);
+           columns.Bound(c => c.Description);
+           columns.Bound(c => c.StockLevel).EditorTemplateName("Integer");
+           columns.Template(@<text></text>).ClientTemplate(@"<a class='grid-delete-button k-button'><span class='k-icon k-delete'></span>Delete</a>").HtmlAttributes(new {@class = "button-column"}).Width(110);
+        })
+        .Editable()
+        .Events(events => events.Remove("onStockTakeItemRemove").DataBound("onDataBound"))
+        .Filterable()
+        .Pageable(page => page.Refresh(true).PageSizes(true).ButtonCount(5))
+        .Resizable(resize => resize.Columns(true))
+        .Sortable()
+        .DataSource(dataSource => dataSource
+           .Ajax()
+           .PageSize(10)
+           .Events(events => events.Error("error_handler"))
+           .Read("GetStockTakeItems", "StockTakeItems", new {stockTakeId = Model.StockTakeId})
+           .Create(update => update.Action("CreateStockTakeItem", "StockTakeItems"))
+           .Destroy(destroy => destroy.Action("Remove", "StockTakeItems"))
+           .Model(model =>
+           {
+              model.Id(m => m.StockTakeItemId);
+              model.Field(m => m.Description);
+              model.Field(m => m.StockLevel).DefaultValue(1);
+              model.Field(m => m.ProductId);
+              model.Field<int>(m => m.StockTakeId).DefaultValue((int) Model.StockTakeId);
+           })
+        ))
+</div>
+
+<div id="CreateProductWindow"></div>
+
+@section scripts
+{
+   <script src="~/Areas/Inventory/Scripts/CreateProduct.js"></script>
+   <script src="~/Areas/Inventory/Scripts/ScanCodeControl.js"></script>
+
+   <script src="~/Scripts/Inventory.js"></script>
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+         createQuickCreateWindow();
+         initialiseScanCodeControl();
+         $('#Name').prop('disabled', 'disabled');
+
+         var grid = $('#StockTakeItems').data('kendoGrid');
+         grid.element.on('click', '.grid-delete-button', function(e) {
+            var button = $(e.currentTarget);
+            if (button.hasClass('k-state-disabled')) {
+               return;
+            }
+            grid.removeRow($(e.currentTarget).closest('tr'));
+         });
+
+         $('#StockLevel').on('keypress', function(e) {
+            $('#alertPlaceholder').empty();
+
+            var code = e.charCode || e.keyCode;
+            if (code == 13) {
+               $('#SaveItem').trigger('click');
+            }
+         });
+      });
+
+      function error_handler(e) {
+         if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function(key, value) {
+               if ('errors' in value) {
+                  $.each(value.errors, function() {
+                     message += this + "\n";
+                  });
+               }
+            });
+            alert(message);
+         }
+      }
+
+      function isNumber(n) {
+         return !isNaN(parseFloat(n)) && isFinite(n);
+      }
+
+      function onEditClick(e) {
+         $('#alertPlaceholder').empty();
+         var editMode = $(e.sender.element).hasClass('k-primary');
+         if (editMode) {
+            // save location and stock take date
+            $.ajax({
+               contentType: 'application/json',
+               type: 'POST',
+               url: "@Url.Action("UpdateStockTakeDetails", "StockTakes")",
+               data: JSON.stringify({
+                  stockTakeId: @Model.StockTakeId,
+                  stockTakeLocationId: $('#LocationId').val(),
+                  stockTakeDate: $('#StockTakeDate').val(),
+                  name: $('#Name').val()
+               }),
+               success: function(data) {
+                  getAlertForId('stockTakeAlertPlaceholder', 'success', data.message);
+                  pageEditMode(false);
+               },
+               error: function(data) {
+                  getAlertForId('stockTakeAlertPlaceholder', 'danger', data.message);
+               }
+            });
+         } else {
+            pageEditMode(true);
+            $('#OriginalName').val($('#Name').val());
+            $('#OriginalLocationId').val($('#LocationId').val());
+            $('#OriginalStockTakeDate').val($('#StockTakeDate').val());
+         }
+      }
+
+      function onDataBound() {
+         applyGridTooltips();
+      }
+
+      function pageEditMode(boolValue) {
+         var editButton = $('#Edit');
+         var printButton = $('#Print');
+         //info boxes
+         boolValue ? $('#Name').removeAttr('disabled') : $('#Name').prop('disabled', 'disabled');
+         boolValue ? $('#Name').removeClass('k-state-disabled') : $('#Name').addClass('k-state-disabled');
+
+         $('#LocationId').data('kendoDropDownList').enable(boolValue);
+         $('#StockTakeDate').data('kendoDateTimePicker').enable(boolValue);
+
+         // buttons
+         //$('#Print').data('kendoButton').enable(!boolValue);
+         $('#SaveItem').data('kendoButton').enable(!boolValue);
+         $('#Submit').data('kendoButton').enable(!boolValue);
+         if (boolValue) {
+            editButton.text('Save');
+            editButton.addClass('k-primary');
+            printButton.text('Cancel');
+
+            $('#SaveItem').removeClass('k-primary');
+            $('#Submit').removeClass('k-primary');
+
+            $.each($('.grid-delete-button'), function(index, value) {
+               $(value).addClass('k-state-disabled');
+            });
+
+         } else {
+            editButton.text('Edit');
+            editButton.removeClass('k-primary');
+            printButton.text('Print');
+
+            $('#SaveItem').addClass('k-primary');
+            $('#Submit').addClass('k-primary');
+
+            $.each($('.grid-delete-button'), function(index, value) {
+               $(value).removeClass('k-state-disabled');
+            });
+         }
+
+         //item boxes
+         $('#Code').data('kendoComboBox').enable(!boolValue);
+         $('#StockLevel').data('kendoNumericTextBox').enable(!boolValue);
+      }
+
+      function onPrintClick(e) {
+         if ($('#Edit').hasClass('k-primary')) {
+            $('#Name').val($('#OriginalName').val());
+            var locationId = $('#LocationId').data('kendoDropDownList');
+            locationId.select(function(dataItem) {
+               return dataItem.Value === $('#OriginalLocationId').val();
+            });
+            $('#StockTakeDate').val($('#OriginalStockTakeDate').val());
+            pageEditMode(false);
+            return;
+         }
+
+         window.location.href = "@Url.Action("PrintStockTakeList", "StockTakes", new {stockTakeId = @Model.StockTakeId})";
+      }
+
+      function onSaveItemClick(e) {
+         $('#alertPlaceholder').empty();
+         var productId = $('#ProductId').val();
+         if (productId == "" || productId == 0) {
+            getAlert('warning', 'No product selected. Please scan or type a barcode into the "Scan code" box.');
+            $('#Code').select();
+            return;
+         }
+
+         var stockLevel = $('#StockLevel').val();
+         if (stockLevel < 0 || stockLevel == "") {
+            getAlert('danger', 'Please enter a stock level.');
+            return;
+         }
+
+         $.ajax({
+            contentType: 'application/json',
+            data: JSON.stringify({
+               stockTakeId: @Model.StockTakeId,
+               productId: productId,
+               stockLevel: stockLevel
+            }),
+            type: 'POST',
+            url: "@Url.Action("AddStockTakeItem", "StockTakeItems")",
+            success: function(data) {
+               getAlert('success', data);
+               resetProduct();
+               clearStockLevel();
+               var codeBox = $('#Code').data('kendoComboBox');
+               codeBox.value('');
+               codeBox.focus();
+               $('#StockTakeItems').data('kendoGrid').dataSource.read();
+            },
+            error: function(data) {
+               if (data.responseJSON != undefined) {
+                  getAlert('danger', data.responseJSON);
+                  return;
+               }
+               getAlert('danger', 'There was a problem with the request. Please make sure the values provided are accurate and try again.');
+            }
+         });
+      }
+
+      //http://www.telerik.com/forums/can-t-reset-value-of-numerictextbox
+      function clearStockLevel() {
+         var stockLevelBox = $('#StockLevel').data('kendoNumericTextBox');
+         stockLevelBox._old = stockLevelBox._value;
+         stockLevelBox._value = null;
+         stockLevelBox._text.val(stockLevelBox._value);
+         stockLevelBox.element.val(stockLevelBox._value);
+      }
+
+      function onBackToListClick(e) {
+         location.href = "@Url.Action("Index", "StockTakes")";
+      }
+
+      function onSubmitClick(e) {
+         var grid = $('#StockTakeItems').data('kendoGrid');
+         var totalItems = grid.dataSource._pristineTotal;
+         if (totalItems < 1) {
+            getAlertForId('stockTakeAlertPlaceholder', 'danger', 'Unable to submit empty stock take. Please add items before submitting.');
+         } else {
+            location.href = '@Url.Action("Submit", "StockTakes", new {stockTakeId = @Model.StockTakeId})';
+         }
+      }
+
+      function onStockTakeItemRemove(e) {
+         if ($('#Edit').hasClass('k-primary')) {
+            e.preventDefault();
+            return;
+         }
+      }
+
+      function showProductInformation(e) {
+         $('#StockLevel').data('kendoNumericTextBox').focus();
+      }
+   </script>
+}
+
+<style>
+   
+   #stockTakeItemProductDetails { margin-bottom: 20px; }
+
+   .row {
+      margin-top: 0.5em;
+      display: block;
+   }
+
+   .panel-body .row { padding-bottom: 0.5em; }
+
+   .dl-horizontal dt {
+      width: 100px;
+      margin-right: 7px;
+   }
+
+   .dl-horizontal dd { margin-left: 100px; }
+
+   .top-panel { height: 12em; }
+
+   .windowValue {
+      font-style: italic;
+      font-weight: bolder;
+   }
+
+   #replaceValueWindow {
+      background-color: #fcf8e3;
+      color: #8a6d3b;
+      border-color: #faebcc;
+   }
+
+   .panel-heading a:after {
+      font-family: 'Glyphicons Halflings';
+      content: "\e114";
+      float: right;
+      color: grey;
+   }
+
+   .panel-heading a.collapsed:after { content: "\e080"; }
+
+   .panel-heading a { color: #333; }
+
+   
+   a.tooltipLink {
+      color: #2e2e2e;
+      cursor: default;
+   }
+
+   .stacked-column-space { height: 3em; }
+
+</style>

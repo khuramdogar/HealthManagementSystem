@@ -1,0 +1,13 @@
+﻿@using Kendo.Mvc.UI
+@model dynamic
+          
+@{
+   if (@Model.Value == null)
+   {
+      @Html.Kendo().NumericTextBox().Name("NumericTextBox").Format("#.##").HtmlAttributes(new { @class = "page-input", @Model.PropertyName, @Model.Warning })
+   }
+   else
+   {
+      @Html.Kendo().NumericTextBox().Name("NumericTextBox").Format("#.##").HtmlAttributes(new {@class = "page-input", @Model.PropertyName, @Model.Warning}).Min(@Model.Value)
+   }
+}

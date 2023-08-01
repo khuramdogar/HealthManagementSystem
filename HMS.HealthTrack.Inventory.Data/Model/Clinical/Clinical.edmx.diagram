@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="7f49a069cec74c0ca8d6bb9884b140b0" Name="Diagram1" ZoomLevel="63">
+        <EntityTypeShape EntityType="Clinical.MR_Container" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <AssociationConnector Association="Clinical.FK_MR_Container_MR_Container" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="Clinical.Booking" Width="1.5" PointX="3.375" PointY="0.75" />
+        <AssociationConnector Association="Clinical.FK_Booking_Booking" />
+        <EntityTypeShape EntityType="Clinical.List_Core" Width="1.5" PointX="5.375" PointY="0.75" />
+        <EntityTypeShape EntityType="Clinical.Patient" Width="1.5" PointX="11" PointY="3.375" />
+        <AssociationConnector Association="Clinical.FK_Booking_Patient" />
+        <AssociationConnector Association="Clinical.FK_MR_Container_Patient" />
+        <AssociationConnector Association="Clinical.FK_Patient_Patient" />
+        <EntityTypeShape EntityType="Clinical.ExternalFeed" Width="1.5" PointX="5.375" PointY="7.375" />
+        <EntityTypeShape EntityType="Clinical.PatientMapping" Width="1.5" PointX="8.125" PointY="8.75" />
+        <AssociationConnector Association="Clinical.FK_HL7_PatientMapping_External_Feed_Config" />
+        <AssociationConnector Association="Clinical.FK_HL7_PatientMapping_Patient" />
+        <EntityTypeShape EntityType="Clinical.PatientContainerMRN" Width="1.5" PointX="7.375" PointY="0.75" />
+        <EntityTypeShape EntityType="Clinical.ContainerPaymentClass" Width="1.5" PointX="7.375" PointY="3.75" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

@@ -1,0 +1,1577 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+   <!-- EF Runtime content -->
+   <edmx:Runtime>
+      <!-- SSDL content -->
+      <edmx:StorageModels>
+         <Schema Namespace="Clinical.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self"
+                 xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator"
+                 xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation"
+                 xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+            <EntityType Name="Booking">
+               <Key>
+                  <PropertyRef Name="booking_ID" />
+               </Key>
+               <Property Name="booking_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+               <Property Name="patient_ID" Type="int" />
+               <Property Name="dateTimeStart" Type="datetime" Nullable="false" />
+               <Property Name="dateTimeEnd" Type="datetime" Nullable="false" />
+               <Property Name="duration" Type="int" Nullable="false" />
+               <Property Name="type" Type="varchar" MaxLength="20" />
+               <Property Name="status" Type="varchar" MaxLength="20" Nullable="false" />
+               <Property Name="resource_ID" Type="int" />
+               <Property Name="location_ID" Type="int" />
+               <Property Name="room_ID" Type="int" />
+               <Property Name="drIDBooked" Type="int" />
+               <Property Name="drIDActual" Type="int" />
+               <Property Name="referral_ID" Type="int" />
+               <Property Name="note_ID" Type="int" />
+               <Property Name="bookingPriority" Type="int" />
+               <Property Name="dateTimePreviousBooking" Type="datetime" />
+               <Property Name="dateTimeConfirmed" Type="datetime" />
+               <Property Name="dateTimeArrived" Type="datetime" />
+               <Property Name="dateTimeInSession" Type="datetime" />
+               <Property Name="dateTimeOutSession" Type="datetime" />
+               <Property Name="dateTimeClosed" Type="datetime" />
+               <Property Name="dateTimeSeen" Type="datetime" />
+               <Property Name="dateTimeCompleted" Type="datetime" />
+               <Property Name="cntBookingChange" Type="int" />
+               <Property Name="userCreated" Type="varchar" MaxLength="50" />
+               <Property Name="dateCreated" Type="datetime" />
+               <Property Name="userLastModified" Type="varchar" MaxLength="50" />
+               <Property Name="dateLastModified" Type="datetime" />
+               <Property Name="deleted" Type="bit" Nullable="false" />
+               <Property Name="deletionDate" Type="datetime" />
+               <Property Name="deletionUser" Type="varchar" MaxLength="20" />
+               <Property Name="rcIdentifier1" Type="varchar" MaxLength="50" />
+               <Property Name="rcIdentifier2" Type="int" />
+               <Property Name="ctimestamp" Type="timestamp" StoreGeneratedPattern="Computed" Nullable="false" />
+               <Property Name="unregistered" Type="bit" Nullable="false" />
+               <Property Name="firstname" Type="varchar" MaxLength="50" />
+               <Property Name="surname" Type="varchar" MaxLength="50" />
+               <Property Name="contactNumber" Type="varchar" MaxLength="50" />
+               <Property Name="category" Type="tinyint" Nullable="false" />
+               <Property Name="isFirstBooking" Type="bit" Nullable="false" />
+               <Property Name="lastInvoiceID" Type="int" />
+               <Property Name="programAttachedTo" Type="int" />
+               <Property Name="inpatientBooking" Type="bit" Nullable="false" />
+               <Property Name="inpatientWard" Type="varchar" MaxLength="20" />
+               <Property Name="availableToExternal" Type="tinyint" Nullable="false" />
+               <Property Name="Transport" Type="int" />
+               <Property Name="TransportDate" Type="datetime" />
+               <Property Name="BillLocation_ID" Type="int" />
+               <Property Name="ProvNum_ID" Type="int" />
+               <Property Name="BillTo" Type="tinyint" />
+               <Property Name="BillingType" Type="int" />
+               <Property Name="HospitalBillingClass" Type="varchar" MaxLength="10" />
+               <Property Name="PublishToRepository" Type="bit" Nullable="false" />
+               <Property Name="Associate" Type="int" />
+               <Property Name="TriageType" Type="char" MaxLength="1" />
+               <Property Name="TriageOptions" Type="bigint" />
+               <Property Name="FollowUpDetails" Type="varchar" MaxLength="200" />
+               <Property Name="PreventSMSReminder" Type="bit" Nullable="false" />
+               <Property Name="userConfirmed" Type="varchar" MaxLength="50" />
+               <Property Name="userArrived" Type="varchar" MaxLength="50" />
+               <Property Name="userInSession" Type="varchar" MaxLength="50" />
+               <Property Name="userOutSession" Type="varchar" MaxLength="50" />
+               <Property Name="userClosed" Type="varchar" MaxLength="50" />
+               <Property Name="Link_ID" Type="int" />
+               <Property Name="Admission_ID" Type="int" />
+               <Property Name="Urgent" Type="bit" Nullable="false" />
+               <Property Name="RequestEarlier" Type="bit" Nullable="false" />
+               <Property Name="QuoteNo" Type="int" />
+               <Property Name="PaymentClass" Type="tinyint" />
+               <Property Name="PaymentClassUserUpdated" Type="varchar" MaxLength="50" />
+               <Property Name="PaymentClassDateUpdated" Type="datetime" />
+               <Property Name="SelectedStaff1" Type="int" />
+               <Property Name="SelectedStaff2" Type="int" />
+               <Property Name="SelectedStaff3" Type="int" />
+               <Property Name="SelectedStaff4" Type="int" />
+               <Property Name="DateTimeNoShowed" Type="datetime" />
+               <Property Name="UserNoShowed" Type="varchar" MaxLength="50" />
+               <Property Name="DeletionReason" Type="varchar" MaxLength="100" />
+               <Property Name="SelectedDeletionReason" Type="tinyint" />
+            </EntityType>
+            <EntityType Name="External_Feed_Config">
+               <Key>
+                  <PropertyRef Name="feed_ID" />
+               </Key>
+               <Property Name="feed_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+               <Property Name="service_Category" Type="int" />
+               <Property Name="service_Name" Type="varchar" MaxLength="50" Nullable="false" />
+               <Property Name="service_ID" Type="int" Nullable="false" />
+               <Property Name="feed_Type" Type="int" Nullable="false" />
+               <Property Name="feed_InDirectory" Type="varchar" MaxLength="256" />
+               <Property Name="feed_OutDirectory" Type="varchar" MaxLength="256" />
+               <Property Name="feed_OutHostname" Type="varchar" MaxLength="50" />
+               <Property Name="feed_OutPort" Type="int" />
+               <Property Name="location_ID" Type="int" />
+               <Property Name="doctor_ID" Type="int" />
+               <Property Name="embedded_Files" Type="bit" Nullable="false" />
+               <Property Name="feed_Provider" Type="int" />
+               <Property Name="feed_Enabled" Type="bit" Nullable="false" />
+               <Property Name="requestForm_Enabled" Type="bit" Nullable="false" />
+               <Property Name="feed_BackupDirectory" Type="varchar" MaxLength="256" />
+               <Property Name="modifiedDate" Type="datetime" />
+               <Property Name="modifiedUser" Type="varchar" MaxLength="50" />
+               <Property Name="requestForm" Type="varchar" MaxLength="50" />
+               <Property Name="lastActivityDateTime" Type="datetime" />
+               <Property Name="lastWarningDateTime" Type="datetime" />
+               <Property Name="warnOperatorIfNoActivity" Type="bit" Nullable="false" />
+               <Property Name="warnThresholdHours" Type="int" />
+               <Property Name="warnHoursBetweenWarnings" Type="int" />
+               <Property Name="warnStartHour" Type="tinyint" />
+               <Property Name="warnStopHour" Type="tinyint" />
+               <Property Name="warnEmailAddresses" Type="varchar" MaxLength="500" />
+               <Property Name="SynopsisPrefix" Type="varchar" MaxLength="50" />
+               <Property Name="d_type" Type="int" />
+               <Property Name="OnPatientFind" Type="varchar" MaxLength="10" />
+               <Property Name="OnPatientFindQuery" Type="varchar" MaxLength="250" />
+               <Property Name="OnClinicalRecord" Type="varchar" MaxLength="10" />
+               <Property Name="SQLConnectionString" Type="varchar" MaxLength="100" />
+               <Property Name="Feed_ReprocessDirectory" Type="varchar" MaxLength="256" />
+               <Property Name="MappingFeed_ID" Type="int" />
+               <Property Name="UserDefined" Type="bit" Nullable="false" />
+               <Property Name="Logging_Enabled" Type="bit" Nullable="false" />
+               <Property Name="KeepMessagesDays" Type="int" />
+               <Property Name="PreviewLOINCS" Type="varchar" MaxLength="250" />
+               <Property Name="MRNPatientMatch" Type="bit" Nullable="false" />
+               <Property Name="GenerateFillerCode" Type="bit" Nullable="false" />
+               <Property Name="IgnoreSystemMatch" Type="bit" Nullable="false" />
+               <Property Name="Disable_ClinicalRecordMove" Type="bit" Nullable="false" />
+               <Property Name="SupportsHMSOrder" Type="bit" Nullable="false" />
+               <Property Name="AssigningAuthority" Type="varchar" MaxLength="50" />
+               <Property Name="OutboundAssigningAuthority" Type="varchar" MaxLength="50" />
+               <Property Name="GroupFeed_ID" Type="int" />
+               <Property Name="HT_MRN" Type="bit" Nullable="false" />
+               <Property Name="FileLayout" Type="varchar" MaxLength="200" />
+               <Property Name="DemographicsMRN" Type="bit" Nullable="false" />
+               <Property Name="SupportsMultipleTestTypes" Type="bit" Nullable="false" />
+               <Property Name="CanBeVerified" Type="bit" Nullable="false" />
+            </EntityType>
+            <EntityType Name="HL7_PatientMapping">
+               <Key>
+                  <PropertyRef Name="Feed_ID" />
+                  <PropertyRef Name="RemotePatient_ID" />
+               </Key>
+               <Property Name="Feed_ID" Type="int" Nullable="false" />
+               <Property Name="RemotePatient_ID" Type="varchar" MaxLength="50" Nullable="false" />
+               <Property Name="PatientIdentifierList" Type="varchar" MaxLength="2000" />
+               <Property Name="LocalPatient_ID" Type="int" />
+               <Property Name="Owner" Type="bit" Nullable="false" />
+               <Property Name="AssigningAuthority" Type="varchar" MaxLength="50" />
+               <Property Name="Medicare" Type="varchar" MaxLength="16" />
+               <Property Name="FirstName" Type="varchar" MaxLength="50" />
+               <Property Name="Surname" Type="varchar" MaxLength="50" />
+               <Property Name="MiddleName" Type="varchar" MaxLength="50" />
+               <Property Name="Gender" Type="varchar" MaxLength="10" />
+               <Property Name="DateOfBirth" Type="datetime" />
+               <Property Name="BirthOrder" Type="smallint" Nullable="false" />
+               <Property Name="AddrStreet" Type="varchar" MaxLength="184" />
+               <Property Name="AddrCity" Type="varchar" MaxLength="50" />
+               <Property Name="AddrState" Type="varchar" MaxLength="50" />
+               <Property Name="AddrPostCode" Type="varchar" MaxLength="12" />
+               <Property Name="HomePhone" Type="varchar" MaxLength="40" />
+               <Property Name="WorkPhone" Type="varchar" MaxLength="40" />
+               <Property Name="MessageCode" Type="varchar" MaxLength="3" />
+               <Property Name="TriggerEvent" Type="varchar" MaxLength="3" />
+               <Property Name="SystemMatched" Type="bit" Nullable="false" />
+               <Property Name="UserMatched" Type="bit" Nullable="false" />
+               <Property Name="Username" Type="varchar" MaxLength="50" />
+               <Property Name="UserCannotMatch" Type="bit" Nullable="false" />
+               <Property Name="PossibleDuplicate" Type="bit" />
+               <Property Name="Merged" Type="bit" Nullable="false" />
+               <Property Name="InErrorCode" Type="smallint" Nullable="false" />
+               <Property Name="DateCreated" Type="datetime" />
+               <Property Name="DateModified" Type="datetime" />
+               <Property Name="Deleted" Type="bit" Nullable="false" />
+               <Property Name="DeletedUser" Type="varchar" MaxLength="50" />
+               <Property Name="DeletedDate" Type="datetime" />
+            </EntityType>
+            <EntityType Name="List_Core">
+               <Key>
+                  <PropertyRef Name="List_ID" />
+               </Key>
+               <Property Name="List_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+               <Property Name="ListGroup" Type="varchar" MaxLength="30" Nullable="false" />
+               <Property Name="ListName" Type="varchar" MaxLength="30" Nullable="false" />
+               <Property Name="ItemID" Type="int" Nullable="false" />
+               <Property Name="ItemValue" Type="varchar" MaxLength="200" />
+               <Property Name="Deleted" Type="bit" Nullable="false" />
+               <Property Name="DisplayOrder" Type="tinyint" />
+               <Property Name="AdditionalNotes" Type="varchar" MaxLength="200" />
+               <Property Name="Comment" Type="varchar" MaxLength="100" />
+               <Property Name="DefaultItem" Type="bit" Nullable="false" />
+               <Property Name="HMS_ID" Type="int" />
+               <Property Name="ModifiedBySite" Type="bit" Nullable="false" />
+               <Property Name="UserCreated" Type="varchar" MaxLength="50" />
+               <Property Name="DateCreated" Type="datetime" />
+               <Property Name="UserLastModified" Type="varchar" MaxLength="50" />
+               <Property Name="DateLastModified" Type="datetime" />
+               <Property Name="UserDeleted" Type="varchar" MaxLength="50" />
+               <Property Name="DateDeleted" Type="datetime" />
+               <Property Name="SystemItem" Type="bit" Nullable="false" />
+            </EntityType>
+            <EntityType Name="MR_Container">
+               <Key>
+                  <PropertyRef Name="container_ID" />
+               </Key>
+               <Property Name="container_ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+               <Property Name="cversion" Type="tinyint" Nullable="false" />
+               <Property Name="patient_ID" Type="int" Nullable="false" />
+               <Property Name="groupBy" Type="char" MaxLength="1" />
+               <Property Name="booking_ID" Type="int" />
+               <Property Name="admission_ID" Type="int" />
+               <Property Name="episode" Type="int" />
+               <Property Name="d_status" Type="int" />
+               <Property Name="tableName" Type="varchar" MaxLength="50" Nullable="false" />
+               <Property Name="formDisplay" Type="varchar" MaxLength="50" />
+               <Property Name="RecordSubCategory" Type="int" />
+               <Property Name="dataSource" Type="tinyint" />
+               <Property Name="whoReported" Type="tinyint" />
+               <Property Name="recordType" Type="varchar" MaxLength="10" />
+               <Property Name="versionsCount" Type="tinyint" />
+               <Property Name="userCreated" Type="varchar" MaxLength="50" />
+               <Property Name="dateCreated" Type="datetime" Nullable="false" />
+               <Property Name="testDate" Type="datetime" />
+               <Property Name="userLastModified" Type="varchar" MaxLength="50" />
+               <Property Name="dateLastModified" Type="datetime" />
+               <Property Name="temporaryRecord" Type="bit" Nullable="false" />
+               <Property Name="note_ID" Type="int" />
+               <Property Name="deleted" Type="bit" Nullable="false" />
+               <Property Name="deletionReason" Type="int" />
+               <Property Name="deletionUser" Type="varchar" MaxLength="20" />
+               <Property Name="deletionNote" Type="int" />
+               <Property Name="deletionDate" Type="datetime" />
+               <Property Name="archive" Type="bit" />
+               <Property Name="referral_ID" Type="int" />
+               <Property Name="HasCurrentWorkflow" Type="bit" />
+               <Property Name="securityKeyword" Type="varchar" MaxLength="50" />
+               <Property Name="Location_ID" Type="int" />
+               <Property Name="ReferringMO" Type="int" />
+               <Property Name="Ward" Type="varchar" MaxLength="50" />
+               <Property Name="Bed" Type="varchar" MaxLength="20" />
+               <Property Name="InPatient" Type="bit" />
+               <Property Name="Classification" Type="int" />
+               <Property Name="AdditionalInfo" Type="varchar" MaxLength="20" />
+               <Property Name="DocumentAttached" Type="bit" Nullable="false" />
+               <Property Name="Assignee" Type="varchar" MaxLength="50" />
+               <Property Name="CapturedBy" Type="varchar" MaxLength="50" />
+               <Property Name="Originator" Type="varchar" MaxLength="50" />
+               <Property Name="OriginatorDisplayName" Type="varchar" MaxLength="50" />
+               <Property Name="originatorType" Type="varchar" MaxLength="1" />
+               <Property Name="originator_ID" Type="int" />
+               <Property Name="ApprovedBy" Type="varchar" MaxLength="50" />
+               <Property Name="D_copies" Type="tinyint" Nullable="false" />
+               <Property Name="D_attachments" Type="bit" Nullable="false" />
+               <Property Name="D_creatorToApprove" Type="varchar" MaxLength="1" Nullable="false" />
+               <Property Name="D_priority" Type="int" Nullable="false" />
+               <Property Name="D_statusDate" Type="datetime" />
+               <Property Name="D_LastDocState" Type="int" />
+               <Property Name="LastDocStateDate" Type="datetime" />
+               <Property Name="Printed" Type="bit" Nullable="false" />
+               <Property Name="PrintedDate" Type="datetime" />
+               <Property Name="D_stateSet" Type="varchar" MaxLength="50" />
+               <Property Name="D_workflow" Type="varchar" MaxLength="1" />
+               <Property Name="D_WorkflowComplete" Type="bit" Nullable="false" />
+               <Property Name="AutomatedWorkflowHistoryAvailable" Type="bit" Nullable="false" />
+               <Property Name="ExtContainer_ID" Type="varchar" MaxLength="100" />
+               <Property Name="Feed_ID" Type="int" />
+               <Property Name="HasClinicalAttachement" Type="bit" Nullable="false" />
+               <Property Name="ProcedureEndDate" Type="datetime" />
+               <Property Name="BillLocation_ID" Type="int" Nullable="false" />
+               <Property Name="ProvNum_ID" Type="int" />
+               <Property Name="BillTo" Type="tinyint" />
+               <Property Name="BillingType" Type="int" />
+               <Property Name="HospitalBillingClass" Type="varchar" MaxLength="10" />
+               <Property Name="TabUsage" Type="int" />
+               <Property Name="NotForDistribution" Type="bit" Nullable="false" />
+               <Property Name="ByDateDescription" Type="varchar" MaxLength="50" />
+               <Property Name="ExtMeasurementLoadDate" Type="datetime" />
+               <Property Name="ExtMeasurementCount" Type="int" />
+            </EntityType>
+            <EntityType Name="Patient">
+               <Key>
+                  <PropertyRef Name="patient_ID" />
+               </Key>
+               <Property Name="patient_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+               <Property Name="company_ID" Type="int" />
+               <Property Name="firstName" Type="varchar" MaxLength="50" Nullable="false" />
+               <Property Name="surname" Type="varchar" MaxLength="50" Nullable="false" />
+               <Property Name="knownAs" Type="varchar" MaxLength="40" />
+               <Property Name="initials" Type="varchar" MaxLength="5" />
+               <Property Name="title" Type="varchar" MaxLength="15" />
+               <Property Name="sex" Type="char" MaxLength="1" />
+               <Property Name="dob" Type="datetime" />
+               <Property Name="ethnicity" Type="varchar" MaxLength="50" />
+               <Property Name="family_ID" Type="int" />
+               <Property Name="inFamily" Type="bit" Nullable="false" />
+               <Property Name="HasAlias" Type="bit" Nullable="false" />
+               <Property Name="mrn" Type="varchar" MaxLength="50" />
+               <Property Name="occupation" Type="varchar" MaxLength="100" />
+               <Property Name="patientType" Type="int" />
+               <Property Name="homePhone" Type="varchar" MaxLength="20" />
+               <Property Name="workPhone" Type="varchar" MaxLength="20" />
+               <Property Name="mobile" Type="varchar" MaxLength="20" />
+               <Property Name="homeFax" Type="varchar" MaxLength="20" />
+               <Property Name="workFax" Type="varchar" MaxLength="20" />
+               <Property Name="email" Type="varchar" MaxLength="100" />
+               <Property Name="pStatus" Type="varchar" MaxLength="20" />
+               <Property Name="dateDeceased" Type="datetime" />
+               <Property Name="dateCreated" Type="datetime" />
+               <Property Name="userCreated" Type="varchar" MaxLength="50" />
+               <Property Name="dateLastModified" Type="datetime" />
+               <Property Name="userLastModified" Type="varchar" MaxLength="50" />
+               <Property Name="note_ID" Type="int" />
+               <Property Name="snd_name" Type="char" MaxLength="4" />
+               <Property Name="cntBookingNoShow" Type="int" />
+               <Property Name="cntBookingCancel" Type="int" />
+               <Property Name="cntBookingChange" Type="int" />
+               <Property Name="medicare" Type="varchar" MaxLength="20" />
+               <Property Name="medicareRefNo" Type="varchar" MaxLength="2" />
+               <Property Name="MediExpYYYY" Type="int" />
+               <Property Name="MediExpMM" Type="tinyint" />
+               <Property Name="medicareVerifyDate" Type="datetime" />
+               <Property Name="vetAffairs" Type="varchar" MaxLength="20" />
+               <Property Name="healthFundID" Type="int" />
+               <Property Name="fundNumber" Type="varchar" MaxLength="20" />
+               <Property Name="fundNumberUPI" Type="varchar" MaxLength="2" />
+               <Property Name="fundExpYYYY" Type="int" />
+               <Property Name="fundExpMM" Type="tinyint" />
+               <Property Name="fundPlan" Type="int" />
+               <Property Name="feeTable_ID" Type="int" />
+               <Property Name="attendingMO" Type="int" />
+               <Property Name="primaryHealthProvider" Type="int" />
+               <Property Name="lastVisitGP" Type="datetime" />
+               <Property Name="treatmentLocation" Type="int" />
+               <Property Name="fullReg" Type="bit" />
+               <Property Name="billingType" Type="int" />
+               <Property Name="HospitalBillingClass" Type="varchar" MaxLength="10" />
+               <Property Name="privacyDisclaimer" Type="bit" />
+               <Property Name="archive" Type="bit" />
+               <Property Name="pensionNumber" Type="varchar" MaxLength="20" />
+               <Property Name="commenced" Type="datetime" />
+               <Property Name="ceased" Type="datetime" />
+               <Property Name="userIdentifier1" Type="varchar" MaxLength="50" />
+               <Property Name="userIdentifier2" Type="varchar" MaxLength="50" />
+               <Property Name="extPatient_ID" Type="varchar" MaxLength="50" />
+               <Property Name="possibleDuplicate" Type="bit" Nullable="false" />
+               <Property Name="deleted" Type="bit" Nullable="false" />
+               <Property Name="deletionReason" Type="int" />
+               <Property Name="deletionNote" Type="int" />
+               <Property Name="deletionDate" Type="datetime" />
+               <Property Name="deletionUser" Type="varchar" MaxLength="50" />
+               <Property Name="jobtitle" Type="varchar" MaxLength="100" />
+               <Property Name="primaryPhone" Type="tinyint" />
+               <Property Name="dateFirstBooking" Type="datetime" />
+               <Property Name="dateFirstInvoice" Type="datetime" />
+               <Property Name="alertBilling" Type="bit" Nullable="false" />
+               <Property Name="alertPatientNote" Type="bit" Nullable="false" />
+               <Property Name="alertUser1" Type="tinyint" Nullable="false" />
+               <Property Name="alertUser2" Type="tinyint" Nullable="false" />
+               <Property Name="ctimestamp" Type="timestamp" StoreGeneratedPattern="Computed" Nullable="false" />
+               <Property Name="patientInfoForm" Type="bit" Nullable="false" />
+               <Property Name="inpatient" Type="bit" Nullable="false" />
+               <Property Name="ward" Type="varchar" MaxLength="50" />
+               <Property Name="dateLatestBooking" Type="datetime" />
+               <Property Name="noStatementDate" Type="datetime" />
+               <Property Name="noStatementReason" Type="varchar" MaxLength="50" />
+               <Property Name="accountHoldDate" Type="datetime" />
+               <Property Name="accountHoldReason" Type="varchar" MaxLength="50" />
+               <Property Name="programLatestExpiryDate" Type="datetime" />
+               <Property Name="chartDoNotMove" Type="bit" Nullable="false" />
+               <Property Name="LastSuccessfulPVM" Type="smalldatetime" />
+               <Property Name="LastSuccessfulPVF" Type="smalldatetime" />
+               <Property Name="LastSuccessfulOVV" Type="smalldatetime" />
+               <Property Name="FamilyHistoryPresent" Type="bit" Nullable="false" />
+               <Property Name="AllergiesPresent" Type="bit" Nullable="false" />
+               <Property Name="Transport" Type="int" />
+               <Property Name="MRN_Feed" Type="int" />
+               <Property Name="BirthOrder" Type="smallint" Nullable="false" />
+               <Property Name="AllowAutomatedSMS" Type="bit" Nullable="false" />
+               <Property Name="SurnameSoundex" Type="varchar" MaxLength="5" StoreGeneratedPattern="Computed" />
+               <Property Name="PreferredPhone" Type="varchar" MaxLength="20" StoreGeneratedPattern="Computed" />
+               <Property Name="DevicesNotRecorded" Type="int" />
+            </EntityType>
+            <!--Errors Found During Generation:
+warning 6002: The table/view 'HealthTrack_Web.Inventory.ContainerPaymentClass' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+            <EntityType Name="ContainerPaymentClass">
+               <Key>
+                  <PropertyRef Name="container_ID" />
+               </Key>
+               <Property Name="container_ID" Type="bigint" Nullable="false" />
+               <Property Name="ItemValue" Type="varchar" MaxLength="200" />
+            </EntityType>
+            <!--Errors Found During Generation:
+warning 6002: The table/view 'HealthTrack_Web.Inventory.PatientContainerMRN' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+            <EntityType Name="PatientContainerMRN">
+               <Key>
+                  <PropertyRef Name="container_ID" />
+                  <PropertyRef Name="patient_ID" />
+               </Key>
+               <Property Name="RemotePatient_ID" Type="varchar" MaxLength="64" />
+               <Property Name="container_ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+               <Property Name="patient_ID" Type="int" Nullable="false" />
+            </EntityType>
+            <Association Name="FK_Booking_Booking">
+               <End Role="Booking" Type="Self.Booking" Multiplicity="1" />
+               <End Role="Booking1" Type="Self.Booking" Multiplicity="0..1" />
+               <ReferentialConstraint>
+                  <Principal Role="Booking">
+                     <PropertyRef Name="booking_ID" />
+                  </Principal>
+                  <Dependent Role="Booking1">
+                     <PropertyRef Name="booking_ID" />
+                  </Dependent>
+               </ReferentialConstraint>
+            </Association>
+            <Association Name="FK_Booking_Patient">
+               <End Role="Patient" Type="Self.Patient" Multiplicity="0..1" />
+               <End Role="Booking" Type="Self.Booking" Multiplicity="*" />
+               <ReferentialConstraint>
+                  <Principal Role="Patient">
+                     <PropertyRef Name="patient_ID" />
+                  </Principal>
+                  <Dependent Role="Booking">
+                     <PropertyRef Name="patient_ID" />
+                  </Dependent>
+               </ReferentialConstraint>
+            </Association>
+            <Association Name="FK_HL7_PatientMapping_External_Feed_Config">
+               <End Role="External_Feed_Config" Type="Self.External_Feed_Config" Multiplicity="1" />
+               <End Role="HL7_PatientMapping" Type="Self.HL7_PatientMapping" Multiplicity="*" />
+               <ReferentialConstraint>
+                  <Principal Role="External_Feed_Config">
+                     <PropertyRef Name="feed_ID" />
+                  </Principal>
+                  <Dependent Role="HL7_PatientMapping">
+                     <PropertyRef Name="Feed_ID" />
+                  </Dependent>
+               </ReferentialConstraint>
+            </Association>
+            <Association Name="FK_HL7_PatientMapping_Patient">
+               <End Role="Patient" Type="Self.Patient" Multiplicity="0..1" />
+               <End Role="HL7_PatientMapping" Type="Self.HL7_PatientMapping" Multiplicity="*" />
+               <ReferentialConstraint>
+                  <Principal Role="Patient">
+                     <PropertyRef Name="patient_ID" />
+                  </Principal>
+                  <Dependent Role="HL7_PatientMapping">
+                     <PropertyRef Name="LocalPatient_ID" />
+                  </Dependent>
+               </ReferentialConstraint>
+            </Association>
+            <Association Name="FK_MR_Container_MR_Container">
+               <End Role="MR_Container" Type="Self.MR_Container" Multiplicity="1" />
+               <End Role="MR_Container1" Type="Self.MR_Container" Multiplicity="0..1" />
+               <ReferentialConstraint>
+                  <Principal Role="MR_Container">
+                     <PropertyRef Name="container_ID" />
+                  </Principal>
+                  <Dependent Role="MR_Container1">
+                     <PropertyRef Name="container_ID" />
+                  </Dependent>
+               </ReferentialConstraint>
+            </Association>
+            <Association Name="FK_MR_Container_Patient">
+               <End Role="Patient" Type="Self.Patient" Multiplicity="1" />
+               <End Role="MR_Container" Type="Self.MR_Container" Multiplicity="*" />
+               <ReferentialConstraint>
+                  <Principal Role="Patient">
+                     <PropertyRef Name="patient_ID" />
+                  </Principal>
+                  <Dependent Role="MR_Container">
+                     <PropertyRef Name="patient_ID" />
+                  </Dependent>
+               </ReferentialConstraint>
+            </Association>
+            <Association Name="FK_Patient_Patient">
+               <End Role="Patient" Type="Self.Patient" Multiplicity="0..1" />
+               <End Role="Patient1" Type="Self.Patient" Multiplicity="*" />
+               <ReferentialConstraint>
+                  <Principal Role="Patient">
+                     <PropertyRef Name="patient_ID" />
+                  </Principal>
+                  <Dependent Role="Patient1">
+                     <PropertyRef Name="family_ID" />
+                  </Dependent>
+               </ReferentialConstraint>
+            </Association>
+            <EntityContainer Name="ClinicalStoreContainer">
+               <EntitySet Name="Booking" EntityType="Self.Booking" Schema="dbo" store:Type="Tables" />
+               <EntitySet Name="External_Feed_Config" EntityType="Self.External_Feed_Config" Schema="dbo"
+                          store:Type="Tables" />
+               <EntitySet Name="HL7_PatientMapping" EntityType="Self.HL7_PatientMapping" Schema="dbo"
+                          store:Type="Tables" />
+               <EntitySet Name="List_Core" EntityType="Self.List_Core" Schema="dbo" store:Type="Tables" />
+               <EntitySet Name="MR_Container" EntityType="Self.MR_Container" Schema="dbo" store:Type="Tables" />
+               <EntitySet Name="Patient" EntityType="Self.Patient" Schema="dbo" store:Type="Tables" />
+               <EntitySet Name="ContainerPaymentClass" EntityType="Self.ContainerPaymentClass" store:Type="Views"
+                          store:Schema="Inventory">
+                  <DefiningQuery>
+                     SELECT
+                     [ContainerPaymentClass].[container_ID] AS [container_ID],
+                     [ContainerPaymentClass].[ItemValue] AS [ItemValue]
+                     FROM [Inventory].[ContainerPaymentClass] AS [ContainerPaymentClass]
+                  </DefiningQuery>
+               </EntitySet>
+               <EntitySet Name="PatientContainerMRN" EntityType="Self.PatientContainerMRN" store:Type="Views"
+                          store:Schema="Inventory">
+                  <DefiningQuery>
+                     SELECT
+                     [PatientContainerMRN].[RemotePatient_ID] AS [RemotePatient_ID],
+                     [PatientContainerMRN].[container_ID] AS [container_ID],
+                     [PatientContainerMRN].[patient_ID] AS [patient_ID]
+                     FROM [Inventory].[PatientContainerMRN] AS [PatientContainerMRN]
+                  </DefiningQuery>
+               </EntitySet>
+               <AssociationSet Name="FK_Booking_Booking" Association="Self.FK_Booking_Booking">
+                  <End Role="Booking" EntitySet="Booking" />
+                  <End Role="Booking1" EntitySet="Booking" />
+               </AssociationSet>
+               <AssociationSet Name="FK_Booking_Patient" Association="Self.FK_Booking_Patient">
+                  <End Role="Patient" EntitySet="Patient" />
+                  <End Role="Booking" EntitySet="Booking" />
+               </AssociationSet>
+               <AssociationSet Name="FK_HL7_PatientMapping_External_Feed_Config"
+                               Association="Self.FK_HL7_PatientMapping_External_Feed_Config">
+                  <End Role="External_Feed_Config" EntitySet="External_Feed_Config" />
+                  <End Role="HL7_PatientMapping" EntitySet="HL7_PatientMapping" />
+               </AssociationSet>
+               <AssociationSet Name="FK_HL7_PatientMapping_Patient" Association="Self.FK_HL7_PatientMapping_Patient">
+                  <End Role="Patient" EntitySet="Patient" />
+                  <End Role="HL7_PatientMapping" EntitySet="HL7_PatientMapping" />
+               </AssociationSet>
+               <AssociationSet Name="FK_MR_Container_MR_Container" Association="Self.FK_MR_Container_MR_Container">
+                  <End Role="MR_Container" EntitySet="MR_Container" />
+                  <End Role="MR_Container1" EntitySet="MR_Container" />
+               </AssociationSet>
+               <AssociationSet Name="FK_MR_Container_Patient" Association="Self.FK_MR_Container_Patient">
+                  <End Role="Patient" EntitySet="Patient" />
+                  <End Role="MR_Container" EntitySet="MR_Container" />
+               </AssociationSet>
+               <AssociationSet Name="FK_Patient_Patient" Association="Self.FK_Patient_Patient">
+                  <End Role="Patient" EntitySet="Patient" />
+                  <End Role="Patient1" EntitySet="Patient" />
+               </AssociationSet>
+            </EntityContainer>
+         </Schema>
+      </edmx:StorageModels>
+      <!-- CSDL content -->
+      <edmx:ConceptualModels>
+         <Schema Namespace="Clinical" Alias="Self" annotation:UseStrongSpatialTypes="false"
+                 xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation"
+                 xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation"
+                 xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+            <EntityType Name="MR_Container">
+               <Key>
+                  <PropertyRef Name="container_ID" />
+               </Key>
+               <Property Name="container_ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+               <Property Name="cversion" Type="Byte" Nullable="false" />
+               <Property Name="patient_ID" Type="Int32" Nullable="false" />
+               <Property Name="groupBy" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+               <Property Name="booking_ID" Type="Int32" />
+               <Property Name="admission_ID" Type="Int32" />
+               <Property Name="episode" Type="Int32" />
+               <Property Name="d_status" Type="Int32" />
+               <Property Name="tableName" Type="String" MaxLength="50" FixedLength="false" Unicode="false"
+                         Nullable="false" />
+               <Property Name="formDisplay" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="RecordSubCategory" Type="Int32" />
+               <Property Name="dataSource" Type="Byte" />
+               <Property Name="whoReported" Type="Byte" />
+               <Property Name="recordType" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+               <Property Name="versionsCount" Type="Byte" />
+               <Property Name="userCreated" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="dateCreated" Type="DateTime" Nullable="false" Precision="3" />
+               <Property Name="testDate" Type="DateTime" Precision="3" />
+               <Property Name="userLastModified" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="dateLastModified" Type="DateTime" Precision="3" />
+               <Property Name="temporaryRecord" Type="Boolean" Nullable="false" />
+               <Property Name="note_ID" Type="Int32" />
+               <Property Name="deleted" Type="Boolean" Nullable="false" />
+               <Property Name="deletionReason" Type="Int32" />
+               <Property Name="deletionUser" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+               <Property Name="deletionNote" Type="Int32" />
+               <Property Name="deletionDate" Type="DateTime" Precision="3" />
+               <Property Name="archive" Type="Boolean" />
+               <Property Name="referral_ID" Type="Int32" />
+               <Property Name="HasCurrentWorkflow" Type="Boolean" />
+               <Property Name="securityKeyword" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="Location_ID" Type="Int32" />
+               <Property Name="ReferringMO" Type="Int32" />
+               <Property Name="Ward" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="Bed" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+               <Property Name="InPatient" Type="Boolean" />
+               <Property Name="Classification" Type="Int32" />
+               <Property Name="AdditionalInfo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+               <Property Name="DocumentAttached" Type="Boolean" Nullable="false" />
+               <Property Name="Assignee" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="CapturedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="Originator" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="OriginatorDisplayName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="originatorType" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+               <Property Name="originator_ID" Type="Int32" />
+               <Property Name="ApprovedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="D_copies" Type="Byte" Nullable="false" />
+               <Property Name="D_attachments" Type="Boolean" Nullable="false" />
+               <Property Name="D_creatorToApprove" Type="String" MaxLength="1" FixedLength="false" Unicode="false"
+                         Nullable="false" />
+               <Property Name="D_priority" Type="Int32" Nullable="false" />
+               <Property Name="D_statusDate" Type="DateTime" Precision="3" />
+               <Property Name="D_LastDocState" Type="Int32" />
+               <Property Name="LastDocStateDate" Type="DateTime" Precision="3" />
+               <Property Name="Printed" Type="Boolean" Nullable="false" />
+               <Property Name="PrintedDate" Type="DateTime" Precision="3" />
+               <Property Name="D_stateSet" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="D_workflow" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+               <Property Name="D_WorkflowComplete" Type="Boolean" Nullable="false" />
+               <Property Name="AutomatedWorkflowHistoryAvailable" Type="Boolean" Nullable="false" />
+               <Property Name="ExtContainer_ID" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+               <Property Name="Feed_ID" Type="Int32" />
+               <Property Name="HasClinicalAttachement" Type="Boolean" Nullable="false" />
+               <Property Name="ProcedureEndDate" Type="DateTime" Precision="3" />
+               <Property Name="BillLocation_ID" Type="Int32" Nullable="false" />
+               <Property Name="ProvNum_ID" Type="Int32" />
+               <Property Name="BillTo" Type="Byte" />
+               <Property Name="BillingType" Type="Int32" />
+               <Property Name="HospitalBillingClass" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+               <Property Name="TabUsage" Type="Int32" />
+               <Property Name="NotForDistribution" Type="Boolean" Nullable="false" />
+               <Property Name="ByDateDescription" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="ExtMeasurementLoadDate" Type="DateTime" Precision="3" />
+               <Property Name="ExtMeasurementCount" Type="Int32" />
+               <NavigationProperty Name="MR_Container1" Relationship="Self.FK_MR_Container_MR_Container"
+                                   FromRole="MR_Container" ToRole="MR_Container1" />
+               <NavigationProperty Name="MR_Container2" Relationship="Self.FK_MR_Container_MR_Container"
+                                   FromRole="MR_Container1" ToRole="MR_Container" />
+               <NavigationProperty Name="Patient" Relationship="Clinical.FK_MR_Container_Patient"
+                                   FromRole="MR_Container" ToRole="Patient" />
+            </EntityType>
+            <Association Name="FK_MR_Container_MR_Container">
+               <End Role="MR_Container" Type="Self.MR_Container" Multiplicity="1" />
+               <End Role="MR_Container1" Type="Self.MR_Container" Multiplicity="0..1" />
+               <ReferentialConstraint>
+                  <Principal Role="MR_Container">
+                     <PropertyRef Name="container_ID" />
+                  </Principal>
+                  <Dependent Role="MR_Container1">
+                     <PropertyRef Name="container_ID" />
+                  </Dependent>
+               </ReferentialConstraint>
+            </Association>
+            <EntityContainer Name="ClinicalContext" annotation:LazyLoadingEnabled="true">
+               <EntitySet Name="MR_Container" EntityType="Self.MR_Container" />
+               <AssociationSet Name="FK_MR_Container_MR_Container" Association="Self.FK_MR_Container_MR_Container">
+                  <End Role="MR_Container" EntitySet="MR_Container" />
+                  <End Role="MR_Container1" EntitySet="MR_Container" />
+               </AssociationSet>
+               <EntitySet Name="Bookings" EntityType="Clinical.Booking" />
+               <AssociationSet Name="FK_Booking_Booking" Association="Clinical.FK_Booking_Booking">
+                  <End Role="Booking" EntitySet="Bookings" />
+                  <End Role="Booking1" EntitySet="Bookings" />
+               </AssociationSet>
+               <EntitySet Name="List_Core" EntityType="Clinical.List_Core" />
+               <EntitySet Name="Patients" EntityType="Clinical.Patient" />
+               <AssociationSet Name="FK_Booking_Patient" Association="Clinical.FK_Booking_Patient">
+                  <End Role="Patient" EntitySet="Patients" />
+                  <End Role="Booking" EntitySet="Bookings" />
+               </AssociationSet>
+               <AssociationSet Name="FK_MR_Container_Patient" Association="Clinical.FK_MR_Container_Patient">
+                  <End Role="Patient" EntitySet="Patients" />
+                  <End Role="MR_Container" EntitySet="MR_Container" />
+               </AssociationSet>
+               <AssociationSet Name="FK_Patient_Patient" Association="Clinical.FK_Patient_Patient">
+                  <End Role="Patient" EntitySet="Patients" />
+                  <End Role="Patient1" EntitySet="Patients" />
+               </AssociationSet>
+               <EntitySet Name="ExternalFeeds" EntityType="Clinical.ExternalFeed" />
+               <EntitySet Name="PatientMappings" EntityType="Clinical.PatientMapping" />
+               <AssociationSet Name="FK_HL7_PatientMapping_External_Feed_Config"
+                               Association="Clinical.FK_HL7_PatientMapping_External_Feed_Config">
+                  <End Role="External_Feed_Config" EntitySet="ExternalFeeds" />
+                  <End Role="HL7_PatientMapping" EntitySet="PatientMappings" />
+               </AssociationSet>
+               <AssociationSet Name="FK_HL7_PatientMapping_Patient"
+                               Association="Clinical.FK_HL7_PatientMapping_Patient">
+                  <End Role="Patient" EntitySet="Patients" />
+                  <End Role="HL7_PatientMapping" EntitySet="PatientMappings" />
+               </AssociationSet>
+               <EntitySet Name="PatientContainerMRNs" EntityType="Clinical.PatientContainerMRN" />
+               <EntitySet Name="ContainerPaymentClasses" EntityType="Clinical.ContainerPaymentClass" />
+            </EntityContainer>
+            <EntityType Name="Booking">
+               <Key>
+                  <PropertyRef Name="booking_ID" />
+               </Key>
+               <Property Name="booking_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+               <Property Name="patient_ID" Type="Int32" />
+               <Property Name="dateTimeStart" Type="DateTime" Nullable="false" Precision="3" />
+               <Property Name="dateTimeEnd" Type="DateTime" Nullable="false" Precision="3" />
+               <Property Name="duration" Type="Int32" Nullable="false" />
+               <Property Name="type" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+               <Property Name="status" Type="String" Nullable="false" MaxLength="20" FixedLength="false"
+                         Unicode="false" />
+               <Property Name="resource_ID" Type="Int32" />
+               <Property Name="location_ID" Type="Int32" />
+               <Property Name="room_ID" Type="Int32" />
+               <Property Name="drIDBooked" Type="Int32" />
+               <Property Name="drIDActual" Type="Int32" />
+               <Property Name="referral_ID" Type="Int32" />
+               <Property Name="note_ID" Type="Int32" />
+               <Property Name="bookingPriority" Type="Int32" />
+               <Property Name="dateTimePreviousBooking" Type="DateTime" Precision="3" />
+               <Property Name="dateTimeConfirmed" Type="DateTime" Precision="3" />
+               <Property Name="dateTimeArrived" Type="DateTime" Precision="3" />
+               <Property Name="dateTimeInSession" Type="DateTime" Precision="3" />
+               <Property Name="dateTimeOutSession" Type="DateTime" Precision="3" />
+               <Property Name="dateTimeClosed" Type="DateTime" Precision="3" />
+               <Property Name="dateTimeSeen" Type="DateTime" Precision="3" />
+               <Property Name="dateTimeCompleted" Type="DateTime" Precision="3" />
+               <Property Name="cntBookingChange" Type="Int32" />
+               <Property Name="userCreated" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="dateCreated" Type="DateTime" Precision="3" />
+               <Property Name="userLastModified" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="dateLastModified" Type="DateTime" Precision="3" />
+               <Property Name="deleted" Type="Boolean" Nullable="false" />
+               <Property Name="deletionDate" Type="DateTime" Precision="3" />
+               <Property Name="deletionUser" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+               <Property Name="rcIdentifier1" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="rcIdentifier2" Type="Int32" />
+               <Property Name="ctimestamp" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true"
+                         annotation:StoreGeneratedPattern="Computed" />
+               <Property Name="unregistered" Type="Boolean" Nullable="false" />
+               <Property Name="firstname" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="surname" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="contactNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="category" Type="Byte" Nullable="false" />
+               <Property Name="isFirstBooking" Type="Boolean" Nullable="false" />
+               <Property Name="lastInvoiceID" Type="Int32" />
+               <Property Name="programAttachedTo" Type="Int32" />
+               <Property Name="inpatientBooking" Type="Boolean" Nullable="false" />
+               <Property Name="inpatientWard" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+               <Property Name="availableToExternal" Type="Byte" Nullable="false" />
+               <Property Name="Transport" Type="Int32" />
+               <Property Name="TransportDate" Type="DateTime" Precision="3" />
+               <Property Name="BillLocation_ID" Type="Int32" />
+               <Property Name="ProvNum_ID" Type="Int32" />
+               <Property Name="BillTo" Type="Byte" />
+               <Property Name="BillingType" Type="Int32" />
+               <Property Name="HospitalBillingClass" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+               <Property Name="PublishToRepository" Type="Boolean" Nullable="false" />
+               <Property Name="Associate" Type="Int32" />
+               <Property Name="TriageType" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+               <Property Name="TriageOptions" Type="Int64" />
+               <Property Name="FollowUpDetails" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+               <Property Name="PreventSMSReminder" Type="Boolean" Nullable="false" />
+               <Property Name="userConfirmed" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="userArrived" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="userInSession" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="userOutSession" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="userClosed" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="Link_ID" Type="Int32" />
+               <Property Name="Admission_ID" Type="Int32" />
+               <Property Name="Urgent" Type="Boolean" Nullable="false" />
+               <Property Name="RequestEarlier" Type="Boolean" Nullable="false" />
+               <Property Name="DeletionReason" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+               <Property Name="QuoteNo" Type="Int32" />
+               <Property Name="PaymentClass" Type="Byte" />
+               <Property Name="PaymentClassUserUpdated" Type="String" MaxLength="50" FixedLength="false"
+                         Unicode="false" />
+               <Property Name="PaymentClassDateUpdated" Type="DateTime" Precision="3" />
+               <Property Name="SelectedStaff1" Type="Int32" />
+               <Property Name="SelectedStaff2" Type="Int32" />
+               <Property Name="SelectedStaff3" Type="Int32" />
+               <Property Name="SelectedStaff4" Type="Int32" />
+               <Property Name="DateTimeNoShowed" Type="DateTime" Precision="3" />
+               <Property Name="UserNoShowed" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <NavigationProperty Name="Booking1" Relationship="Clinical.FK_Booking_Booking" FromRole="Booking"
+                                   ToRole="Booking1" />
+               <NavigationProperty Name="Booking2" Relationship="Clinical.FK_Booking_Booking" FromRole="Booking1"
+                                   ToRole="Booking" />
+               <NavigationProperty Name="Patient" Relationship="Clinical.FK_Booking_Patient" FromRole="Booking"
+                                   ToRole="Patient" />
+               <Property Name="SelectedDeletionReason" Type="Byte" />
+            </EntityType>
+            <Association Name="FK_Booking_Booking">
+               <End Type="Clinical.Booking" Role="Booking" Multiplicity="1" />
+               <End Type="Clinical.Booking" Role="Booking1" Multiplicity="0..1" />
+               <ReferentialConstraint>
+                  <Principal Role="Booking">
+                     <PropertyRef Name="booking_ID" />
+                  </Principal>
+                  <Dependent Role="Booking1">
+                     <PropertyRef Name="booking_ID" />
+                  </Dependent>
+               </ReferentialConstraint>
+            </Association>
+            <EntityType Name="List_Core">
+               <Key>
+                  <PropertyRef Name="List_ID" />
+               </Key>
+               <Property Name="List_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+               <Property Name="ListGroup" Type="String" Nullable="false" MaxLength="30" FixedLength="false"
+                         Unicode="false" />
+               <Property Name="ListName" Type="String" Nullable="false" MaxLength="30" FixedLength="false"
+                         Unicode="false" />
+               <Property Name="ItemID" Type="Int32" Nullable="false" />
+               <Property Name="ItemValue" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+               <Property Name="Deleted" Type="Boolean" Nullable="false" />
+               <Property Name="DisplayOrder" Type="Byte" />
+               <Property Name="AdditionalNotes" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+               <Property Name="Comment" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+               <Property Name="DefaultItem" Type="Boolean" Nullable="false" />
+               <Property Name="HMS_ID" Type="Int32" />
+               <Property Name="ModifiedBySite" Type="Boolean" Nullable="false" />
+               <Property Name="UserCreated" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="DateCreated" Type="DateTime" Precision="3" />
+               <Property Name="UserLastModified" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="DateLastModified" Type="DateTime" Precision="3" />
+               <Property Name="UserDeleted" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="DateDeleted" Type="DateTime" Precision="3" />
+               <Property Name="SystemItem" Type="Boolean" Nullable="false" />
+            </EntityType>
+            <EntityType Name="Patient">
+               <Key>
+                  <PropertyRef Name="patient_ID" />
+               </Key>
+               <Property Name="patient_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+               <Property Name="company_ID" Type="Int32" />
+               <Property Name="firstName" Type="String" Nullable="false" MaxLength="50" FixedLength="false"
+                         Unicode="false" />
+               <Property Name="surname" Type="String" Nullable="false" MaxLength="50" FixedLength="false"
+                         Unicode="false" />
+               <Property Name="knownAs" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+               <Property Name="initials" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
+               <Property Name="title" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+               <Property Name="sex" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+               <Property Name="dob" Type="DateTime" Precision="3" />
+               <Property Name="ethnicity" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="family_ID" Type="Int32" />
+               <Property Name="inFamily" Type="Boolean" Nullable="false" />
+               <Property Name="HasAlias" Type="Boolean" Nullable="false" />
+               <Property Name="mrn" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="occupation" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+               <Property Name="patientType" Type="Int32" />
+               <Property Name="homePhone" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+               <Property Name="workPhone" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+               <Property Name="mobile" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+               <Property Name="homeFax" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+               <Property Name="workFax" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+               <Property Name="email" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+               <Property Name="pStatus" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+               <Property Name="dateDeceased" Type="DateTime" Precision="3" />
+               <Property Name="dateCreated" Type="DateTime" Precision="3" />
+               <Property Name="userCreated" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="dateLastModified" Type="DateTime" Precision="3" />
+               <Property Name="userLastModified" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="note_ID" Type="Int32" />
+               <Property Name="snd_name" Type="String" MaxLength="4" FixedLength="true" Unicode="false" />
+               <Property Name="cntBookingNoShow" Type="Int32" />
+               <Property Name="cntBookingCancel" Type="Int32" />
+               <Property Name="cntBookingChange" Type="Int32" />
+               <Property Name="medicare" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+               <Property Name="medicareRefNo" Type="String" MaxLength="2" FixedLength="false" Unicode="false" />
+               <Property Name="MediExpYYYY" Type="Int32" />
+               <Property Name="MediExpMM" Type="Byte" />
+               <Property Name="medicareVerifyDate" Type="DateTime" Precision="3" />
+               <Property Name="vetAffairs" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+               <Property Name="healthFundID" Type="Int32" />
+               <Property Name="fundNumber" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+               <Property Name="fundNumberUPI" Type="String" MaxLength="2" FixedLength="false" Unicode="false" />
+               <Property Name="fundExpYYYY" Type="Int32" />
+               <Property Name="fundExpMM" Type="Byte" />
+               <Property Name="fundPlan" Type="Int32" />
+               <Property Name="feeTable_ID" Type="Int32" />
+               <Property Name="attendingMO" Type="Int32" />
+               <Property Name="primaryHealthProvider" Type="Int32" />
+               <Property Name="lastVisitGP" Type="DateTime" Precision="3" />
+               <Property Name="treatmentLocation" Type="Int32" />
+               <Property Name="fullReg" Type="Boolean" />
+               <Property Name="billingType" Type="Int32" />
+               <Property Name="HospitalBillingClass" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+               <Property Name="privacyDisclaimer" Type="Boolean" />
+               <Property Name="archive" Type="Boolean" />
+               <Property Name="pensionNumber" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+               <Property Name="commenced" Type="DateTime" Precision="3" />
+               <Property Name="ceased" Type="DateTime" Precision="3" />
+               <Property Name="userIdentifier1" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="userIdentifier2" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="extPatient_ID" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="possibleDuplicate" Type="Boolean" Nullable="false" />
+               <Property Name="deleted" Type="Boolean" Nullable="false" />
+               <Property Name="deletionReason" Type="Int32" />
+               <Property Name="deletionNote" Type="Int32" />
+               <Property Name="deletionDate" Type="DateTime" Precision="3" />
+               <Property Name="deletionUser" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="jobtitle" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+               <Property Name="primaryPhone" Type="Byte" />
+               <Property Name="dateFirstBooking" Type="DateTime" Precision="3" />
+               <Property Name="dateFirstInvoice" Type="DateTime" Precision="3" />
+               <Property Name="alertBilling" Type="Boolean" Nullable="false" />
+               <Property Name="alertPatientNote" Type="Boolean" Nullable="false" />
+               <Property Name="alertUser1" Type="Byte" Nullable="false" />
+               <Property Name="alertUser2" Type="Byte" Nullable="false" />
+               <Property Name="ctimestamp" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true"
+                         annotation:StoreGeneratedPattern="Computed" />
+               <Property Name="patientInfoForm" Type="Boolean" Nullable="false" />
+               <Property Name="inpatient" Type="Boolean" Nullable="false" />
+               <Property Name="ward" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="dateLatestBooking" Type="DateTime" Precision="3" />
+               <Property Name="noStatementDate" Type="DateTime" Precision="3" />
+               <Property Name="noStatementReason" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="accountHoldDate" Type="DateTime" Precision="3" />
+               <Property Name="accountHoldReason" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="programLatestExpiryDate" Type="DateTime" Precision="3" />
+               <Property Name="chartDoNotMove" Type="Boolean" Nullable="false" />
+               <Property Name="LastSuccessfulPVM" Type="DateTime" Precision="0" />
+               <Property Name="LastSuccessfulPVF" Type="DateTime" Precision="0" />
+               <Property Name="LastSuccessfulOVV" Type="DateTime" Precision="0" />
+               <Property Name="FamilyHistoryPresent" Type="Boolean" Nullable="false" />
+               <Property Name="AllergiesPresent" Type="Boolean" Nullable="false" />
+               <Property Name="Transport" Type="Int32" />
+               <Property Name="MRN_Feed" Type="Int32" />
+               <Property Name="BirthOrder" Type="Int16" Nullable="false" />
+               <Property Name="AllowAutomatedSMS" Type="Boolean" Nullable="false" />
+               <Property Name="SurnameSoundex" Type="String" MaxLength="5" FixedLength="false" Unicode="false"
+                         annotation:StoreGeneratedPattern="Computed" />
+               <Property Name="PreferredPhone" Type="String" MaxLength="20" FixedLength="false" Unicode="false"
+                         annotation:StoreGeneratedPattern="Computed" />
+               <Property Name="DevicesNotRecorded" Type="Int32" />
+               <NavigationProperty Name="Bookings" Relationship="Clinical.FK_Booking_Patient" FromRole="Patient"
+                                   ToRole="Booking" />
+               <NavigationProperty Name="MR_Container" Relationship="Clinical.FK_MR_Container_Patient"
+                                   FromRole="Patient" ToRole="MR_Container" />
+               <NavigationProperty Name="Patient1" Relationship="Clinical.FK_Patient_Patient" FromRole="Patient"
+                                   ToRole="Patient1" />
+               <NavigationProperty Name="Patient2" Relationship="Clinical.FK_Patient_Patient" FromRole="Patient1"
+                                   ToRole="Patient" />
+               <NavigationProperty Name="HL7_PatientMapping" Relationship="Clinical.FK_HL7_PatientMapping_Patient"
+                                   FromRole="Patient" ToRole="HL7_PatientMapping" />
+            </EntityType>
+            <Association Name="FK_Booking_Patient">
+               <End Type="Clinical.Patient" Role="Patient" Multiplicity="0..1" />
+               <End Type="Clinical.Booking" Role="Booking" Multiplicity="*" />
+               <ReferentialConstraint>
+                  <Principal Role="Patient">
+                     <PropertyRef Name="patient_ID" />
+                  </Principal>
+                  <Dependent Role="Booking">
+                     <PropertyRef Name="patient_ID" />
+                  </Dependent>
+               </ReferentialConstraint>
+            </Association>
+            <Association Name="FK_MR_Container_Patient">
+               <End Type="Clinical.Patient" Role="Patient" Multiplicity="1" />
+               <End Type="Clinical.MR_Container" Role="MR_Container" Multiplicity="*" />
+               <ReferentialConstraint>
+                  <Principal Role="Patient">
+                     <PropertyRef Name="patient_ID" />
+                  </Principal>
+                  <Dependent Role="MR_Container">
+                     <PropertyRef Name="patient_ID" />
+                  </Dependent>
+               </ReferentialConstraint>
+            </Association>
+            <Association Name="FK_Patient_Patient">
+               <End Type="Clinical.Patient" Role="Patient" Multiplicity="0..1" />
+               <End Type="Clinical.Patient" Role="Patient1" Multiplicity="*" />
+               <ReferentialConstraint>
+                  <Principal Role="Patient">
+                     <PropertyRef Name="patient_ID" />
+                  </Principal>
+                  <Dependent Role="Patient1">
+                     <PropertyRef Name="family_ID" />
+                  </Dependent>
+               </ReferentialConstraint>
+            </Association>
+            <EntityType Name="ExternalFeed">
+               <Key>
+                  <PropertyRef Name="feed_ID" />
+               </Key>
+               <Property Name="feed_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+               <Property Name="service_Category" Type="Int32" />
+               <Property Name="service_Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false"
+                         Unicode="false" />
+               <Property Name="service_ID" Type="Int32" Nullable="false" />
+               <Property Name="feed_Type" Type="Int32" Nullable="false" />
+               <Property Name="feed_InDirectory" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+               <Property Name="feed_OutDirectory" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+               <Property Name="feed_OutHostname" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="feed_OutPort" Type="Int32" />
+               <Property Name="location_ID" Type="Int32" />
+               <Property Name="doctor_ID" Type="Int32" />
+               <Property Name="embedded_Files" Type="Boolean" Nullable="false" />
+               <Property Name="feed_Provider" Type="Int32" />
+               <Property Name="feed_Enabled" Type="Boolean" Nullable="false" />
+               <Property Name="requestForm_Enabled" Type="Boolean" Nullable="false" />
+               <Property Name="feed_BackupDirectory" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+               <Property Name="modifiedDate" Type="DateTime" Precision="3" />
+               <Property Name="modifiedUser" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="requestForm" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="lastActivityDateTime" Type="DateTime" Precision="3" />
+               <Property Name="lastWarningDateTime" Type="DateTime" Precision="3" />
+               <Property Name="warnOperatorIfNoActivity" Type="Boolean" Nullable="false" />
+               <Property Name="warnThresholdHours" Type="Int32" />
+               <Property Name="warnHoursBetweenWarnings" Type="Int32" />
+               <Property Name="warnStartHour" Type="Byte" />
+               <Property Name="warnStopHour" Type="Byte" />
+               <Property Name="warnEmailAddresses" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+               <Property Name="SynopsisPrefix" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="d_type" Type="Int32" />
+               <Property Name="OnPatientFind" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+               <Property Name="OnPatientFindQuery" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+               <Property Name="OnClinicalRecord" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+               <Property Name="SQLConnectionString" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+               <Property Name="Feed_ReprocessDirectory" Type="String" MaxLength="256" FixedLength="false"
+                         Unicode="false" />
+               <Property Name="MappingFeed_ID" Type="Int32" />
+               <Property Name="UserDefined" Type="Boolean" Nullable="false" />
+               <Property Name="Logging_Enabled" Type="Boolean" Nullable="false" />
+               <Property Name="KeepMessagesDays" Type="Int32" />
+               <Property Name="PreviewLOINCS" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+               <Property Name="MRNPatientMatch" Type="Boolean" Nullable="false" />
+               <Property Name="GenerateFillerCode" Type="Boolean" Nullable="false" />
+               <Property Name="IgnoreSystemMatch" Type="Boolean" Nullable="false" />
+               <Property Name="Disable_ClinicalRecordMove" Type="Boolean" Nullable="false" />
+               <Property Name="SupportsHMSOrder" Type="Boolean" Nullable="false" />
+               <Property Name="AssigningAuthority" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="OutboundAssigningAuthority" Type="String" MaxLength="50" FixedLength="false"
+                         Unicode="false" />
+               <Property Name="GroupFeed_ID" Type="Int32" />
+               <Property Name="HT_MRN" Type="Boolean" Nullable="false" />
+               <Property Name="FileLayout" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+               <Property Name="DemographicsMRN" Type="Boolean" Nullable="false" />
+               <Property Name="SupportsMultipleTestTypes" Type="Boolean" Nullable="false" />
+               <Property Name="CanBeVerified" Type="Boolean" Nullable="false" />
+               <NavigationProperty Name="PatientMappings"
+                                   Relationship="Clinical.FK_HL7_PatientMapping_External_Feed_Config"
+                                   FromRole="External_Feed_Config" ToRole="HL7_PatientMapping" />
+            </EntityType>
+            <EntityType Name="PatientMapping">
+               <Key>
+                  <PropertyRef Name="Feed_ID" />
+                  <PropertyRef Name="RemotePatient_ID" />
+               </Key>
+               <Property Name="Feed_ID" Type="Int32" Nullable="false" />
+               <Property Name="RemotePatient_ID" Type="String" Nullable="false" MaxLength="50" FixedLength="false"
+                         Unicode="false" />
+               <Property Name="PatientIdentifierList" Type="String" MaxLength="2000" FixedLength="false"
+                         Unicode="false" />
+               <Property Name="LocalPatient_ID" Type="Int32" />
+               <Property Name="Owner" Type="Boolean" Nullable="false" />
+               <Property Name="AssigningAuthority" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="Medicare" Type="String" MaxLength="16" FixedLength="false" Unicode="false" />
+               <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="Surname" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="MiddleName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="Gender" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+               <Property Name="DateOfBirth" Type="DateTime" Precision="3" />
+               <Property Name="BirthOrder" Type="Int16" Nullable="false" />
+               <Property Name="AddrStreet" Type="String" MaxLength="184" FixedLength="false" Unicode="false" />
+               <Property Name="AddrCity" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="AddrState" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="AddrPostCode" Type="String" MaxLength="12" FixedLength="false" Unicode="false" />
+               <Property Name="HomePhone" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+               <Property Name="WorkPhone" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+               <Property Name="MessageCode" Type="String" MaxLength="3" FixedLength="false" Unicode="false" />
+               <Property Name="TriggerEvent" Type="String" MaxLength="3" FixedLength="false" Unicode="false" />
+               <Property Name="SystemMatched" Type="Boolean" Nullable="false" />
+               <Property Name="UserMatched" Type="Boolean" Nullable="false" />
+               <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="UserCannotMatch" Type="Boolean" Nullable="false" />
+               <Property Name="PossibleDuplicate" Type="Boolean" />
+               <Property Name="Merged" Type="Boolean" Nullable="false" />
+               <Property Name="InErrorCode" Type="Int16" Nullable="false" />
+               <Property Name="DateCreated" Type="DateTime" Precision="3" />
+               <Property Name="DateModified" Type="DateTime" Precision="3" />
+               <Property Name="Deleted" Type="Boolean" Nullable="false" />
+               <Property Name="DeletedUser" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+               <Property Name="DeletedDate" Type="DateTime" Precision="3" />
+               <NavigationProperty Name="ExternalFeed"
+                                   Relationship="Clinical.FK_HL7_PatientMapping_External_Feed_Config"
+                                   FromRole="HL7_PatientMapping" ToRole="External_Feed_Config" />
+               <NavigationProperty Name="Patient" Relationship="Clinical.FK_HL7_PatientMapping_Patient"
+                                   FromRole="HL7_PatientMapping" ToRole="Patient" />
+            </EntityType>
+            <Association Name="FK_HL7_PatientMapping_External_Feed_Config">
+               <End Type="Clinical.ExternalFeed" Role="External_Feed_Config" Multiplicity="1" />
+               <End Type="Clinical.PatientMapping" Role="HL7_PatientMapping" Multiplicity="*" />
+               <ReferentialConstraint>
+                  <Principal Role="External_Feed_Config">
+                     <PropertyRef Name="feed_ID" />
+                  </Principal>
+                  <Dependent Role="HL7_PatientMapping">
+                     <PropertyRef Name="Feed_ID" />
+                  </Dependent>
+               </ReferentialConstraint>
+            </Association>
+            <Association Name="FK_HL7_PatientMapping_Patient">
+               <End Type="Clinical.Patient" Role="Patient" Multiplicity="0..1" />
+               <End Type="Clinical.PatientMapping" Role="HL7_PatientMapping" Multiplicity="*" />
+               <ReferentialConstraint>
+                  <Principal Role="Patient">
+                     <PropertyRef Name="patient_ID" />
+                  </Principal>
+                  <Dependent Role="HL7_PatientMapping">
+                     <PropertyRef Name="LocalPatient_ID" />
+                  </Dependent>
+               </ReferentialConstraint>
+            </Association>
+            <EntityType Name="PatientContainerMRN">
+               <Key>
+                  <PropertyRef Name="container_ID" />
+                  <PropertyRef Name="patient_ID" />
+               </Key>
+               <Property Name="RemotePatient_ID" Type="String" MaxLength="64" FixedLength="false" Unicode="false" />
+               <Property Name="container_ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+               <Property Name="patient_ID" Type="Int32" Nullable="false" />
+            </EntityType>
+            <EntityType Name="ContainerPaymentClass">
+               <Key>
+                  <PropertyRef Name="container_ID" />
+               </Key>
+               <Property Name="container_ID" Type="Int64" Nullable="false" />
+               <Property Name="ItemValue" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+            </EntityType>
+         </Schema>
+      </edmx:ConceptualModels>
+      <!-- C-S mapping content -->
+      <edmx:Mappings>
+         <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+            <EntityContainerMapping StorageEntityContainer="ClinicalStoreContainer"
+                                    CdmEntityContainer="ClinicalContext">
+               <EntitySetMapping Name="MR_Container">
+                  <EntityTypeMapping TypeName="Clinical.MR_Container">
+                     <MappingFragment StoreEntitySet="MR_Container">
+                        <ScalarProperty Name="container_ID" ColumnName="container_ID" />
+                        <ScalarProperty Name="cversion" ColumnName="cversion" />
+                        <ScalarProperty Name="patient_ID" ColumnName="patient_ID" />
+                        <ScalarProperty Name="groupBy" ColumnName="groupBy" />
+                        <ScalarProperty Name="booking_ID" ColumnName="booking_ID" />
+                        <ScalarProperty Name="admission_ID" ColumnName="admission_ID" />
+                        <ScalarProperty Name="episode" ColumnName="episode" />
+                        <ScalarProperty Name="d_status" ColumnName="d_status" />
+                        <ScalarProperty Name="tableName" ColumnName="tableName" />
+                        <ScalarProperty Name="formDisplay" ColumnName="formDisplay" />
+                        <ScalarProperty Name="RecordSubCategory" ColumnName="RecordSubCategory" />
+                        <ScalarProperty Name="dataSource" ColumnName="dataSource" />
+                        <ScalarProperty Name="whoReported" ColumnName="whoReported" />
+                        <ScalarProperty Name="recordType" ColumnName="recordType" />
+                        <ScalarProperty Name="versionsCount" ColumnName="versionsCount" />
+                        <ScalarProperty Name="userCreated" ColumnName="userCreated" />
+                        <ScalarProperty Name="dateCreated" ColumnName="dateCreated" />
+                        <ScalarProperty Name="testDate" ColumnName="testDate" />
+                        <ScalarProperty Name="userLastModified" ColumnName="userLastModified" />
+                        <ScalarProperty Name="dateLastModified" ColumnName="dateLastModified" />
+                        <ScalarProperty Name="temporaryRecord" ColumnName="temporaryRecord" />
+                        <ScalarProperty Name="note_ID" ColumnName="note_ID" />
+                        <ScalarProperty Name="deleted" ColumnName="deleted" />
+                        <ScalarProperty Name="deletionReason" ColumnName="deletionReason" />
+                        <ScalarProperty Name="deletionUser" ColumnName="deletionUser" />
+                        <ScalarProperty Name="deletionNote" ColumnName="deletionNote" />
+                        <ScalarProperty Name="deletionDate" ColumnName="deletionDate" />
+                        <ScalarProperty Name="archive" ColumnName="archive" />
+                        <ScalarProperty Name="referral_ID" ColumnName="referral_ID" />
+                        <ScalarProperty Name="HasCurrentWorkflow" ColumnName="HasCurrentWorkflow" />
+                        <ScalarProperty Name="securityKeyword" ColumnName="securityKeyword" />
+                        <ScalarProperty Name="Location_ID" ColumnName="Location_ID" />
+                        <ScalarProperty Name="ReferringMO" ColumnName="ReferringMO" />
+                        <ScalarProperty Name="Ward" ColumnName="Ward" />
+                        <ScalarProperty Name="Bed" ColumnName="Bed" />
+                        <ScalarProperty Name="InPatient" ColumnName="InPatient" />
+                        <ScalarProperty Name="Classification" ColumnName="Classification" />
+                        <ScalarProperty Name="AdditionalInfo" ColumnName="AdditionalInfo" />
+                        <ScalarProperty Name="DocumentAttached" ColumnName="DocumentAttached" />
+                        <ScalarProperty Name="Assignee" ColumnName="Assignee" />
+                        <ScalarProperty Name="CapturedBy" ColumnName="CapturedBy" />
+                        <ScalarProperty Name="Originator" ColumnName="Originator" />
+                        <ScalarProperty Name="OriginatorDisplayName" ColumnName="OriginatorDisplayName" />
+                        <ScalarProperty Name="originatorType" ColumnName="originatorType" />
+                        <ScalarProperty Name="originator_ID" ColumnName="originator_ID" />
+                        <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
+                        <ScalarProperty Name="D_copies" ColumnName="D_copies" />
+                        <ScalarProperty Name="D_attachments" ColumnName="D_attachments" />
+                        <ScalarProperty Name="D_creatorToApprove" ColumnName="D_creatorToApprove" />
+                        <ScalarProperty Name="D_priority" ColumnName="D_priority" />
+                        <ScalarProperty Name="D_statusDate" ColumnName="D_statusDate" />
+                        <ScalarProperty Name="D_LastDocState" ColumnName="D_LastDocState" />
+                        <ScalarProperty Name="LastDocStateDate" ColumnName="LastDocStateDate" />
+                        <ScalarProperty Name="Printed" ColumnName="Printed" />
+                        <ScalarProperty Name="PrintedDate" ColumnName="PrintedDate" />
+                        <ScalarProperty Name="D_stateSet" ColumnName="D_stateSet" />
+                        <ScalarProperty Name="D_workflow" ColumnName="D_workflow" />
+                        <ScalarProperty Name="D_WorkflowComplete" ColumnName="D_WorkflowComplete" />
+                        <ScalarProperty Name="AutomatedWorkflowHistoryAvailable"
+                                        ColumnName="AutomatedWorkflowHistoryAvailable" />
+                        <ScalarProperty Name="ExtContainer_ID" ColumnName="ExtContainer_ID" />
+                        <ScalarProperty Name="Feed_ID" ColumnName="Feed_ID" />
+                        <ScalarProperty Name="HasClinicalAttachement" ColumnName="HasClinicalAttachement" />
+                        <ScalarProperty Name="ProcedureEndDate" ColumnName="ProcedureEndDate" />
+                        <ScalarProperty Name="BillLocation_ID" ColumnName="BillLocation_ID" />
+                        <ScalarProperty Name="ProvNum_ID" ColumnName="ProvNum_ID" />
+                        <ScalarProperty Name="BillTo" ColumnName="BillTo" />
+                        <ScalarProperty Name="BillingType" ColumnName="BillingType" />
+                        <ScalarProperty Name="HospitalBillingClass" ColumnName="HospitalBillingClass" />
+                        <ScalarProperty Name="TabUsage" ColumnName="TabUsage" />
+                        <ScalarProperty Name="NotForDistribution" ColumnName="NotForDistribution" />
+                        <ScalarProperty Name="ByDateDescription" ColumnName="ByDateDescription" />
+                        <ScalarProperty Name="ExtMeasurementLoadDate" ColumnName="ExtMeasurementLoadDate" />
+                        <ScalarProperty Name="ExtMeasurementCount" ColumnName="ExtMeasurementCount" />
+                     </MappingFragment>
+                  </EntityTypeMapping>
+               </EntitySetMapping>
+               <EntitySetMapping Name="Bookings">
+                  <EntityTypeMapping TypeName="Clinical.Booking">
+                     <MappingFragment StoreEntitySet="Booking">
+                        <ScalarProperty Name="SelectedDeletionReason" ColumnName="SelectedDeletionReason" />
+                        <ScalarProperty Name="UserNoShowed" ColumnName="UserNoShowed" />
+                        <ScalarProperty Name="DateTimeNoShowed" ColumnName="DateTimeNoShowed" />
+                        <ScalarProperty Name="SelectedStaff4" ColumnName="SelectedStaff4" />
+                        <ScalarProperty Name="SelectedStaff3" ColumnName="SelectedStaff3" />
+                        <ScalarProperty Name="SelectedStaff2" ColumnName="SelectedStaff2" />
+                        <ScalarProperty Name="SelectedStaff1" ColumnName="SelectedStaff1" />
+                        <ScalarProperty Name="PaymentClassDateUpdated" ColumnName="PaymentClassDateUpdated" />
+                        <ScalarProperty Name="PaymentClassUserUpdated" ColumnName="PaymentClassUserUpdated" />
+                        <ScalarProperty Name="PaymentClass" ColumnName="PaymentClass" />
+                        <ScalarProperty Name="QuoteNo" ColumnName="QuoteNo" />
+                        <ScalarProperty Name="DeletionReason" ColumnName="DeletionReason" />
+                        <ScalarProperty Name="RequestEarlier" ColumnName="RequestEarlier" />
+                        <ScalarProperty Name="Urgent" ColumnName="Urgent" />
+                        <ScalarProperty Name="Admission_ID" ColumnName="Admission_ID" />
+                        <ScalarProperty Name="Link_ID" ColumnName="Link_ID" />
+                        <ScalarProperty Name="userClosed" ColumnName="userClosed" />
+                        <ScalarProperty Name="userOutSession" ColumnName="userOutSession" />
+                        <ScalarProperty Name="userInSession" ColumnName="userInSession" />
+                        <ScalarProperty Name="userArrived" ColumnName="userArrived" />
+                        <ScalarProperty Name="userConfirmed" ColumnName="userConfirmed" />
+                        <ScalarProperty Name="PreventSMSReminder" ColumnName="PreventSMSReminder" />
+                        <ScalarProperty Name="FollowUpDetails" ColumnName="FollowUpDetails" />
+                        <ScalarProperty Name="TriageOptions" ColumnName="TriageOptions" />
+                        <ScalarProperty Name="TriageType" ColumnName="TriageType" />
+                        <ScalarProperty Name="Associate" ColumnName="Associate" />
+                        <ScalarProperty Name="PublishToRepository" ColumnName="PublishToRepository" />
+                        <ScalarProperty Name="HospitalBillingClass" ColumnName="HospitalBillingClass" />
+                        <ScalarProperty Name="BillingType" ColumnName="BillingType" />
+                        <ScalarProperty Name="BillTo" ColumnName="BillTo" />
+                        <ScalarProperty Name="ProvNum_ID" ColumnName="ProvNum_ID" />
+                        <ScalarProperty Name="BillLocation_ID" ColumnName="BillLocation_ID" />
+                        <ScalarProperty Name="TransportDate" ColumnName="TransportDate" />
+                        <ScalarProperty Name="Transport" ColumnName="Transport" />
+                        <ScalarProperty Name="availableToExternal" ColumnName="availableToExternal" />
+                        <ScalarProperty Name="inpatientWard" ColumnName="inpatientWard" />
+                        <ScalarProperty Name="inpatientBooking" ColumnName="inpatientBooking" />
+                        <ScalarProperty Name="programAttachedTo" ColumnName="programAttachedTo" />
+                        <ScalarProperty Name="lastInvoiceID" ColumnName="lastInvoiceID" />
+                        <ScalarProperty Name="isFirstBooking" ColumnName="isFirstBooking" />
+                        <ScalarProperty Name="category" ColumnName="category" />
+                        <ScalarProperty Name="contactNumber" ColumnName="contactNumber" />
+                        <ScalarProperty Name="surname" ColumnName="surname" />
+                        <ScalarProperty Name="firstname" ColumnName="firstname" />
+                        <ScalarProperty Name="unregistered" ColumnName="unregistered" />
+                        <ScalarProperty Name="ctimestamp" ColumnName="ctimestamp" />
+                        <ScalarProperty Name="rcIdentifier2" ColumnName="rcIdentifier2" />
+                        <ScalarProperty Name="rcIdentifier1" ColumnName="rcIdentifier1" />
+                        <ScalarProperty Name="deletionUser" ColumnName="deletionUser" />
+                        <ScalarProperty Name="deletionDate" ColumnName="deletionDate" />
+                        <ScalarProperty Name="deleted" ColumnName="deleted" />
+                        <ScalarProperty Name="dateLastModified" ColumnName="dateLastModified" />
+                        <ScalarProperty Name="userLastModified" ColumnName="userLastModified" />
+                        <ScalarProperty Name="dateCreated" ColumnName="dateCreated" />
+                        <ScalarProperty Name="userCreated" ColumnName="userCreated" />
+                        <ScalarProperty Name="cntBookingChange" ColumnName="cntBookingChange" />
+                        <ScalarProperty Name="dateTimeCompleted" ColumnName="dateTimeCompleted" />
+                        <ScalarProperty Name="dateTimeSeen" ColumnName="dateTimeSeen" />
+                        <ScalarProperty Name="dateTimeClosed" ColumnName="dateTimeClosed" />
+                        <ScalarProperty Name="dateTimeOutSession" ColumnName="dateTimeOutSession" />
+                        <ScalarProperty Name="dateTimeInSession" ColumnName="dateTimeInSession" />
+                        <ScalarProperty Name="dateTimeArrived" ColumnName="dateTimeArrived" />
+                        <ScalarProperty Name="dateTimeConfirmed" ColumnName="dateTimeConfirmed" />
+                        <ScalarProperty Name="dateTimePreviousBooking" ColumnName="dateTimePreviousBooking" />
+                        <ScalarProperty Name="bookingPriority" ColumnName="bookingPriority" />
+                        <ScalarProperty Name="note_ID" ColumnName="note_ID" />
+                        <ScalarProperty Name="referral_ID" ColumnName="referral_ID" />
+                        <ScalarProperty Name="drIDActual" ColumnName="drIDActual" />
+                        <ScalarProperty Name="drIDBooked" ColumnName="drIDBooked" />
+                        <ScalarProperty Name="room_ID" ColumnName="room_ID" />
+                        <ScalarProperty Name="location_ID" ColumnName="location_ID" />
+                        <ScalarProperty Name="resource_ID" ColumnName="resource_ID" />
+                        <ScalarProperty Name="status" ColumnName="status" />
+                        <ScalarProperty Name="type" ColumnName="type" />
+                        <ScalarProperty Name="duration" ColumnName="duration" />
+                        <ScalarProperty Name="dateTimeEnd" ColumnName="dateTimeEnd" />
+                        <ScalarProperty Name="dateTimeStart" ColumnName="dateTimeStart" />
+                        <ScalarProperty Name="patient_ID" ColumnName="patient_ID" />
+                        <ScalarProperty Name="booking_ID" ColumnName="booking_ID" />
+                     </MappingFragment>
+                  </EntityTypeMapping>
+               </EntitySetMapping>
+               <EntitySetMapping Name="List_Core">
+                  <EntityTypeMapping TypeName="Clinical.List_Core">
+                     <MappingFragment StoreEntitySet="List_Core">
+                        <ScalarProperty Name="SystemItem" ColumnName="SystemItem" />
+                        <ScalarProperty Name="DateDeleted" ColumnName="DateDeleted" />
+                        <ScalarProperty Name="UserDeleted" ColumnName="UserDeleted" />
+                        <ScalarProperty Name="DateLastModified" ColumnName="DateLastModified" />
+                        <ScalarProperty Name="UserLastModified" ColumnName="UserLastModified" />
+                        <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                        <ScalarProperty Name="UserCreated" ColumnName="UserCreated" />
+                        <ScalarProperty Name="ModifiedBySite" ColumnName="ModifiedBySite" />
+                        <ScalarProperty Name="HMS_ID" ColumnName="HMS_ID" />
+                        <ScalarProperty Name="DefaultItem" ColumnName="DefaultItem" />
+                        <ScalarProperty Name="Comment" ColumnName="Comment" />
+                        <ScalarProperty Name="AdditionalNotes" ColumnName="AdditionalNotes" />
+                        <ScalarProperty Name="DisplayOrder" ColumnName="DisplayOrder" />
+                        <ScalarProperty Name="Deleted" ColumnName="Deleted" />
+                        <ScalarProperty Name="ItemValue" ColumnName="ItemValue" />
+                        <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+                        <ScalarProperty Name="ListName" ColumnName="ListName" />
+                        <ScalarProperty Name="ListGroup" ColumnName="ListGroup" />
+                        <ScalarProperty Name="List_ID" ColumnName="List_ID" />
+                     </MappingFragment>
+                  </EntityTypeMapping>
+               </EntitySetMapping>
+               <EntitySetMapping Name="Patients">
+                  <EntityTypeMapping TypeName="Clinical.Patient">
+                     <MappingFragment StoreEntitySet="Patient">
+                        <ScalarProperty Name="DevicesNotRecorded" ColumnName="DevicesNotRecorded" />
+                        <ScalarProperty Name="PreferredPhone" ColumnName="PreferredPhone" />
+                        <ScalarProperty Name="SurnameSoundex" ColumnName="SurnameSoundex" />
+                        <ScalarProperty Name="AllowAutomatedSMS" ColumnName="AllowAutomatedSMS" />
+                        <ScalarProperty Name="BirthOrder" ColumnName="BirthOrder" />
+                        <ScalarProperty Name="MRN_Feed" ColumnName="MRN_Feed" />
+                        <ScalarProperty Name="Transport" ColumnName="Transport" />
+                        <ScalarProperty Name="AllergiesPresent" ColumnName="AllergiesPresent" />
+                        <ScalarProperty Name="FamilyHistoryPresent" ColumnName="FamilyHistoryPresent" />
+                        <ScalarProperty Name="LastSuccessfulOVV" ColumnName="LastSuccessfulOVV" />
+                        <ScalarProperty Name="LastSuccessfulPVF" ColumnName="LastSuccessfulPVF" />
+                        <ScalarProperty Name="LastSuccessfulPVM" ColumnName="LastSuccessfulPVM" />
+                        <ScalarProperty Name="chartDoNotMove" ColumnName="chartDoNotMove" />
+                        <ScalarProperty Name="programLatestExpiryDate" ColumnName="programLatestExpiryDate" />
+                        <ScalarProperty Name="accountHoldReason" ColumnName="accountHoldReason" />
+                        <ScalarProperty Name="accountHoldDate" ColumnName="accountHoldDate" />
+                        <ScalarProperty Name="noStatementReason" ColumnName="noStatementReason" />
+                        <ScalarProperty Name="noStatementDate" ColumnName="noStatementDate" />
+                        <ScalarProperty Name="dateLatestBooking" ColumnName="dateLatestBooking" />
+                        <ScalarProperty Name="ward" ColumnName="ward" />
+                        <ScalarProperty Name="inpatient" ColumnName="inpatient" />
+                        <ScalarProperty Name="patientInfoForm" ColumnName="patientInfoForm" />
+                        <ScalarProperty Name="ctimestamp" ColumnName="ctimestamp" />
+                        <ScalarProperty Name="alertUser2" ColumnName="alertUser2" />
+                        <ScalarProperty Name="alertUser1" ColumnName="alertUser1" />
+                        <ScalarProperty Name="alertPatientNote" ColumnName="alertPatientNote" />
+                        <ScalarProperty Name="alertBilling" ColumnName="alertBilling" />
+                        <ScalarProperty Name="dateFirstInvoice" ColumnName="dateFirstInvoice" />
+                        <ScalarProperty Name="dateFirstBooking" ColumnName="dateFirstBooking" />
+                        <ScalarProperty Name="primaryPhone" ColumnName="primaryPhone" />
+                        <ScalarProperty Name="jobtitle" ColumnName="jobtitle" />
+                        <ScalarProperty Name="deletionUser" ColumnName="deletionUser" />
+                        <ScalarProperty Name="deletionDate" ColumnName="deletionDate" />
+                        <ScalarProperty Name="deletionNote" ColumnName="deletionNote" />
+                        <ScalarProperty Name="deletionReason" ColumnName="deletionReason" />
+                        <ScalarProperty Name="deleted" ColumnName="deleted" />
+                        <ScalarProperty Name="possibleDuplicate" ColumnName="possibleDuplicate" />
+                        <ScalarProperty Name="extPatient_ID" ColumnName="extPatient_ID" />
+                        <ScalarProperty Name="userIdentifier2" ColumnName="userIdentifier2" />
+                        <ScalarProperty Name="userIdentifier1" ColumnName="userIdentifier1" />
+                        <ScalarProperty Name="ceased" ColumnName="ceased" />
+                        <ScalarProperty Name="commenced" ColumnName="commenced" />
+                        <ScalarProperty Name="pensionNumber" ColumnName="pensionNumber" />
+                        <ScalarProperty Name="archive" ColumnName="archive" />
+                        <ScalarProperty Name="privacyDisclaimer" ColumnName="privacyDisclaimer" />
+                        <ScalarProperty Name="HospitalBillingClass" ColumnName="HospitalBillingClass" />
+                        <ScalarProperty Name="billingType" ColumnName="billingType" />
+                        <ScalarProperty Name="fullReg" ColumnName="fullReg" />
+                        <ScalarProperty Name="treatmentLocation" ColumnName="treatmentLocation" />
+                        <ScalarProperty Name="lastVisitGP" ColumnName="lastVisitGP" />
+                        <ScalarProperty Name="primaryHealthProvider" ColumnName="primaryHealthProvider" />
+                        <ScalarProperty Name="attendingMO" ColumnName="attendingMO" />
+                        <ScalarProperty Name="feeTable_ID" ColumnName="feeTable_ID" />
+                        <ScalarProperty Name="fundPlan" ColumnName="fundPlan" />
+                        <ScalarProperty Name="fundExpMM" ColumnName="fundExpMM" />
+                        <ScalarProperty Name="fundExpYYYY" ColumnName="fundExpYYYY" />
+                        <ScalarProperty Name="fundNumberUPI" ColumnName="fundNumberUPI" />
+                        <ScalarProperty Name="fundNumber" ColumnName="fundNumber" />
+                        <ScalarProperty Name="healthFundID" ColumnName="healthFundID" />
+                        <ScalarProperty Name="vetAffairs" ColumnName="vetAffairs" />
+                        <ScalarProperty Name="medicareVerifyDate" ColumnName="medicareVerifyDate" />
+                        <ScalarProperty Name="MediExpMM" ColumnName="MediExpMM" />
+                        <ScalarProperty Name="MediExpYYYY" ColumnName="MediExpYYYY" />
+                        <ScalarProperty Name="medicareRefNo" ColumnName="medicareRefNo" />
+                        <ScalarProperty Name="medicare" ColumnName="medicare" />
+                        <ScalarProperty Name="cntBookingChange" ColumnName="cntBookingChange" />
+                        <ScalarProperty Name="cntBookingCancel" ColumnName="cntBookingCancel" />
+                        <ScalarProperty Name="cntBookingNoShow" ColumnName="cntBookingNoShow" />
+                        <ScalarProperty Name="snd_name" ColumnName="snd_name" />
+                        <ScalarProperty Name="note_ID" ColumnName="note_ID" />
+                        <ScalarProperty Name="userLastModified" ColumnName="userLastModified" />
+                        <ScalarProperty Name="dateLastModified" ColumnName="dateLastModified" />
+                        <ScalarProperty Name="userCreated" ColumnName="userCreated" />
+                        <ScalarProperty Name="dateCreated" ColumnName="dateCreated" />
+                        <ScalarProperty Name="dateDeceased" ColumnName="dateDeceased" />
+                        <ScalarProperty Name="pStatus" ColumnName="pStatus" />
+                        <ScalarProperty Name="email" ColumnName="email" />
+                        <ScalarProperty Name="workFax" ColumnName="workFax" />
+                        <ScalarProperty Name="homeFax" ColumnName="homeFax" />
+                        <ScalarProperty Name="mobile" ColumnName="mobile" />
+                        <ScalarProperty Name="workPhone" ColumnName="workPhone" />
+                        <ScalarProperty Name="homePhone" ColumnName="homePhone" />
+                        <ScalarProperty Name="patientType" ColumnName="patientType" />
+                        <ScalarProperty Name="occupation" ColumnName="occupation" />
+                        <ScalarProperty Name="mrn" ColumnName="mrn" />
+                        <ScalarProperty Name="HasAlias" ColumnName="HasAlias" />
+                        <ScalarProperty Name="inFamily" ColumnName="inFamily" />
+                        <ScalarProperty Name="family_ID" ColumnName="family_ID" />
+                        <ScalarProperty Name="ethnicity" ColumnName="ethnicity" />
+                        <ScalarProperty Name="dob" ColumnName="dob" />
+                        <ScalarProperty Name="sex" ColumnName="sex" />
+                        <ScalarProperty Name="title" ColumnName="title" />
+                        <ScalarProperty Name="initials" ColumnName="initials" />
+                        <ScalarProperty Name="knownAs" ColumnName="knownAs" />
+                        <ScalarProperty Name="surname" ColumnName="surname" />
+                        <ScalarProperty Name="firstName" ColumnName="firstName" />
+                        <ScalarProperty Name="company_ID" ColumnName="company_ID" />
+                        <ScalarProperty Name="patient_ID" ColumnName="patient_ID" />
+                     </MappingFragment>
+                  </EntityTypeMapping>
+               </EntitySetMapping>
+               <EntitySetMapping Name="ExternalFeeds">
+                  <EntityTypeMapping TypeName="Clinical.ExternalFeed">
+                     <MappingFragment StoreEntitySet="External_Feed_Config">
+                        <ScalarProperty Name="CanBeVerified" ColumnName="CanBeVerified" />
+                        <ScalarProperty Name="SupportsMultipleTestTypes" ColumnName="SupportsMultipleTestTypes" />
+                        <ScalarProperty Name="DemographicsMRN" ColumnName="DemographicsMRN" />
+                        <ScalarProperty Name="FileLayout" ColumnName="FileLayout" />
+                        <ScalarProperty Name="HT_MRN" ColumnName="HT_MRN" />
+                        <ScalarProperty Name="GroupFeed_ID" ColumnName="GroupFeed_ID" />
+                        <ScalarProperty Name="OutboundAssigningAuthority" ColumnName="OutboundAssigningAuthority" />
+                        <ScalarProperty Name="AssigningAuthority" ColumnName="AssigningAuthority" />
+                        <ScalarProperty Name="SupportsHMSOrder" ColumnName="SupportsHMSOrder" />
+                        <ScalarProperty Name="Disable_ClinicalRecordMove" ColumnName="Disable_ClinicalRecordMove" />
+                        <ScalarProperty Name="IgnoreSystemMatch" ColumnName="IgnoreSystemMatch" />
+                        <ScalarProperty Name="GenerateFillerCode" ColumnName="GenerateFillerCode" />
+                        <ScalarProperty Name="MRNPatientMatch" ColumnName="MRNPatientMatch" />
+                        <ScalarProperty Name="PreviewLOINCS" ColumnName="PreviewLOINCS" />
+                        <ScalarProperty Name="KeepMessagesDays" ColumnName="KeepMessagesDays" />
+                        <ScalarProperty Name="Logging_Enabled" ColumnName="Logging_Enabled" />
+                        <ScalarProperty Name="UserDefined" ColumnName="UserDefined" />
+                        <ScalarProperty Name="MappingFeed_ID" ColumnName="MappingFeed_ID" />
+                        <ScalarProperty Name="Feed_ReprocessDirectory" ColumnName="Feed_ReprocessDirectory" />
+                        <ScalarProperty Name="SQLConnectionString" ColumnName="SQLConnectionString" />
+                        <ScalarProperty Name="OnClinicalRecord" ColumnName="OnClinicalRecord" />
+                        <ScalarProperty Name="OnPatientFindQuery" ColumnName="OnPatientFindQuery" />
+                        <ScalarProperty Name="OnPatientFind" ColumnName="OnPatientFind" />
+                        <ScalarProperty Name="d_type" ColumnName="d_type" />
+                        <ScalarProperty Name="SynopsisPrefix" ColumnName="SynopsisPrefix" />
+                        <ScalarProperty Name="warnEmailAddresses" ColumnName="warnEmailAddresses" />
+                        <ScalarProperty Name="warnStopHour" ColumnName="warnStopHour" />
+                        <ScalarProperty Name="warnStartHour" ColumnName="warnStartHour" />
+                        <ScalarProperty Name="warnHoursBetweenWarnings" ColumnName="warnHoursBetweenWarnings" />
+                        <ScalarProperty Name="warnThresholdHours" ColumnName="warnThresholdHours" />
+                        <ScalarProperty Name="warnOperatorIfNoActivity" ColumnName="warnOperatorIfNoActivity" />
+                        <ScalarProperty Name="lastWarningDateTime" ColumnName="lastWarningDateTime" />
+                        <ScalarProperty Name="lastActivityDateTime" ColumnName="lastActivityDateTime" />
+                        <ScalarProperty Name="requestForm" ColumnName="requestForm" />
+                        <ScalarProperty Name="modifiedUser" ColumnName="modifiedUser" />
+                        <ScalarProperty Name="modifiedDate" ColumnName="modifiedDate" />
+                        <ScalarProperty Name="feed_BackupDirectory" ColumnName="feed_BackupDirectory" />
+                        <ScalarProperty Name="requestForm_Enabled" ColumnName="requestForm_Enabled" />
+                        <ScalarProperty Name="feed_Enabled" ColumnName="feed_Enabled" />
+                        <ScalarProperty Name="feed_Provider" ColumnName="feed_Provider" />
+                        <ScalarProperty Name="embedded_Files" ColumnName="embedded_Files" />
+                        <ScalarProperty Name="doctor_ID" ColumnName="doctor_ID" />
+                        <ScalarProperty Name="location_ID" ColumnName="location_ID" />
+                        <ScalarProperty Name="feed_OutPort" ColumnName="feed_OutPort" />
+                        <ScalarProperty Name="feed_OutHostname" ColumnName="feed_OutHostname" />
+                        <ScalarProperty Name="feed_OutDirectory" ColumnName="feed_OutDirectory" />
+                        <ScalarProperty Name="feed_InDirectory" ColumnName="feed_InDirectory" />
+                        <ScalarProperty Name="feed_Type" ColumnName="feed_Type" />
+                        <ScalarProperty Name="service_ID" ColumnName="service_ID" />
+                        <ScalarProperty Name="service_Name" ColumnName="service_Name" />
+                        <ScalarProperty Name="service_Category" ColumnName="service_Category" />
+                        <ScalarProperty Name="feed_ID" ColumnName="feed_ID" />
+                     </MappingFragment>
+                  </EntityTypeMapping>
+               </EntitySetMapping>
+               <EntitySetMapping Name="PatientMappings">
+                  <EntityTypeMapping TypeName="Clinical.PatientMapping">
+                     <MappingFragment StoreEntitySet="HL7_PatientMapping">
+                        <ScalarProperty Name="DeletedDate" ColumnName="DeletedDate" />
+                        <ScalarProperty Name="DeletedUser" ColumnName="DeletedUser" />
+                        <ScalarProperty Name="Deleted" ColumnName="Deleted" />
+                        <ScalarProperty Name="DateModified" ColumnName="DateModified" />
+                        <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                        <ScalarProperty Name="InErrorCode" ColumnName="InErrorCode" />
+                        <ScalarProperty Name="Merged" ColumnName="Merged" />
+                        <ScalarProperty Name="PossibleDuplicate" ColumnName="PossibleDuplicate" />
+                        <ScalarProperty Name="UserCannotMatch" ColumnName="UserCannotMatch" />
+                        <ScalarProperty Name="Username" ColumnName="Username" />
+                        <ScalarProperty Name="UserMatched" ColumnName="UserMatched" />
+                        <ScalarProperty Name="SystemMatched" ColumnName="SystemMatched" />
+                        <ScalarProperty Name="TriggerEvent" ColumnName="TriggerEvent" />
+                        <ScalarProperty Name="MessageCode" ColumnName="MessageCode" />
+                        <ScalarProperty Name="WorkPhone" ColumnName="WorkPhone" />
+                        <ScalarProperty Name="HomePhone" ColumnName="HomePhone" />
+                        <ScalarProperty Name="AddrPostCode" ColumnName="AddrPostCode" />
+                        <ScalarProperty Name="AddrState" ColumnName="AddrState" />
+                        <ScalarProperty Name="AddrCity" ColumnName="AddrCity" />
+                        <ScalarProperty Name="AddrStreet" ColumnName="AddrStreet" />
+                        <ScalarProperty Name="BirthOrder" ColumnName="BirthOrder" />
+                        <ScalarProperty Name="DateOfBirth" ColumnName="DateOfBirth" />
+                        <ScalarProperty Name="Gender" ColumnName="Gender" />
+                        <ScalarProperty Name="MiddleName" ColumnName="MiddleName" />
+                        <ScalarProperty Name="Surname" ColumnName="Surname" />
+                        <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                        <ScalarProperty Name="Medicare" ColumnName="Medicare" />
+                        <ScalarProperty Name="AssigningAuthority" ColumnName="AssigningAuthority" />
+                        <ScalarProperty Name="Owner" ColumnName="Owner" />
+                        <ScalarProperty Name="LocalPatient_ID" ColumnName="LocalPatient_ID" />
+                        <ScalarProperty Name="PatientIdentifierList" ColumnName="PatientIdentifierList" />
+                        <ScalarProperty Name="RemotePatient_ID" ColumnName="RemotePatient_ID" />
+                        <ScalarProperty Name="Feed_ID" ColumnName="Feed_ID" />
+                     </MappingFragment>
+                  </EntityTypeMapping>
+               </EntitySetMapping>
+               <EntitySetMapping Name="PatientContainerMRNs">
+                  <EntityTypeMapping TypeName="Clinical.PatientContainerMRN">
+                     <MappingFragment StoreEntitySet="PatientContainerMRN">
+                        <ScalarProperty Name="patient_ID" ColumnName="patient_ID" />
+                        <ScalarProperty Name="container_ID" ColumnName="container_ID" />
+                        <ScalarProperty Name="RemotePatient_ID" ColumnName="RemotePatient_ID" />
+                     </MappingFragment>
+                  </EntityTypeMapping>
+               </EntitySetMapping>
+               <EntitySetMapping Name="ContainerPaymentClasses">
+                  <EntityTypeMapping TypeName="Clinical.ContainerPaymentClass">
+                     <MappingFragment StoreEntitySet="ContainerPaymentClass">
+                        <ScalarProperty Name="ItemValue" ColumnName="ItemValue" />
+                        <ScalarProperty Name="container_ID" ColumnName="container_ID" />
+                     </MappingFragment>
+                  </EntityTypeMapping>
+               </EntitySetMapping>
+            </EntityContainerMapping>
+         </Mapping>
+      </edmx:Mappings>
+   </edmx:Runtime>
+   <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+   <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+      <Connection>
+         <DesignerInfoPropertySet>
+            <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+         </DesignerInfoPropertySet>
+      </Connection>
+      <Options>
+         <DesignerInfoPropertySet>
+            <DesignerProperty Name="ValidateOnBuild" Value="true" />
+            <DesignerProperty Name="EnablePluralization" Value="true" />
+            <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+            <DesignerProperty Name="UseLegacyProvider" Value="false" />
+            <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+         </DesignerInfoPropertySet>
+      </Options>
+      <!-- Diagram content (shape and connector positions) -->
+      <Diagrams></Diagrams>
+   </Designer>
+</edmx:Edmx>

@@ -1,0 +1,10 @@
+﻿@{
+   Layout = null;
+}
+@using Kendo.Mvc.UI
+
+@(Html.Kendo().DropDownList().Name("PriceTypeId")
+   .DataTextField("Text").DataValueField("Value")
+         .DataSource(ds => ds.Read("GetPriceTypes", "PriceTypes"))
+         .OptionLabel(" ")
+)

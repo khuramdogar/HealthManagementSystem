@@ -1,0 +1,127 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.Stock
+@using Kendo.Mvc.UI
+@{
+   ViewBag.Title = "Received stock";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Shipping Box 1 Edit.png" class="img-responsive"/>
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Received stock</h2>
+         </div>   
+      </div>
+   </div>
+</div>
+<div id="alertPlaceholder"></div>
+<div>
+   @(Html.Kendo().Grid<ReceivedStockViewModel>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+           columns.Bound(c => c.SPC).ClientTemplate("<a href='" + @Url.Action("Details", "Products", new {Area = "Inventory"}) + "/#=ProductId#'>#=SPC#</a>");
+           columns.Bound(c => c.Description);
+           //columns.Bound(c => c.SerialNumber);
+           //columns.Bound(c => c.BatchNumber);
+           columns.Bound(c => c.ReceivedBy);
+           columns.Bound(c => c.ReceivedOn).Format("{0:dd/MM/yyyy HH:mm}").Width(160);
+           columns.Bound(c => c.OrderName);
+           columns.Bound(c => c.Location);
+           columns.Bound(c => c.Quantity).Title("Qty").Width(70);
+        })
+        .DataSource(ds => ds.WebApi().PageSize(20)
+           .Read(read => read.Url(Url.Action("GetReceivedStock", "Stock"))).Sort(sort => sort.Add(s => s.ReceivedOn).Descending()))
+        .Events(events => events.DataBound("onDataBound"))
+        .Filterable(filter => filter.Extra(false)).Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+        .Resizable(resize => resize.Columns(true))
+        .Sortable()
+        .ToolBar(toolbar => toolbar.Template(@<text>
+                                                 <span class="toolbar">
+                                                    <span class="toolbar-left">
+                                                       @(Html.Kendo().Button().Name("groupByLocation").Content("Group by location"))
+                                                       @(Html.Kendo().Button().Name("groupByProduct").Content("Group by product"))
+                                                    </span>
+                                                 </span>
+                                                 <span class="toolbar-right">
+                                                    <label class="filter-label" for="description">Description:</label>
+                                                    @(Html.Kendo().TextBox().Name("description").HtmlAttributes(new {@class = "filter-control"}))
+                                                    @(Html.Kendo().Button().Name("applyFilter").Content("Filter"))
+                                                    @(Html.Kendo().Button().Name("clearFilter").Content("Clear"))
+                                                 </span>
+                                              </text>)))
+</div>
+
+@section scripts
+{
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+   <script src="~/Scripts/Inventory.js"></script>
+   <script src="~/Scripts/ConsumeItem.js"></script>
+   @Scripts.Render("~/bundles/jqueryval")
+
+   <script type="text/javascript">
+      var description;
+      $(document).ready(function() {
+         InitFilterControls();
+         var newStock = "@ViewBag.NewStock";
+         if (newStock != "") {
+            getAlert('success', 'Successfully received stock for <strong>' + newStock + '</strong>.');
+         }
+
+         var grid = $('#grid').data('kendoGrid');
+
+         $('#groupByLocation').click(function() {
+            if ($(this).hasClass('k-primary')) {
+               $(this).removeClass('k-primary');
+               grid.dataSource.group([]);
+            } else {
+               $(this).addClass('k-primary');
+               $('#groupByProduct').removeClass('k-primary');
+               grid.dataSource.group({ field: "Location" });
+            }
+         });
+
+         $('#groupByProduct').click(function() {
+            if ($(this).hasClass('k-primary')) {
+               $(this).removeClass('k-primary');
+               grid.dataSource.group([]);
+            } else {
+               $(this).addClass('k-primary');
+               $('#groupByLocation').removeClass('k-primary');
+               grid.dataSource.group({ field: "SPC" });
+            }
+         });
+
+         $('#clearFilter').click(function() {
+            $('#description').val('');
+            ClearFilters(grid);
+         });
+
+         $('#applyFilter').click(function() {
+            var filters = GetFilters(grid);
+            filters = UpdateSearchFilters(filters, "Description", "contains", $('#description').val(), "and");
+            grid.dataSource.filter(filters);
+         });
+      });
+
+      function error_handler(e) {
+         getAlert('danger', e.xhr.responseJSON.Message);
+      }
+
+      function onDataBound() {
+         applyGridTooltips();
+      }
+   </script>
+}
+
+<style>
+   .k-window div.k-window-content { overflow: hidden; }
+</style>
+<style scoped="scoped">
+
+   /* Toolbar formatting */
+
+   #descriptionFilter { width: 12em; }
+</style>

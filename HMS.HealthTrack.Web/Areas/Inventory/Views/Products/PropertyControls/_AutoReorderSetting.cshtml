@@ -1,0 +1,8 @@
+﻿@using HMS.HealthTrack.Web.Data.Model.Inventory
+@using Kendo.Mvc.UI
+@model dynamic
+@(Html.Kendo().DropDownList().Name("ReorderSettingDropDown")
+                                            .BindTo(EnumHelper.GetSelectList(typeof(ReorderSettings)))
+                                            .DataValueField("Value").DataTextField("Text")
+                                            .HtmlAttributes(new { @class = "page-input", @Model.PropertyName, @Model.Warning })
+)

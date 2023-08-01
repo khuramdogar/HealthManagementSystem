@@ -1,0 +1,500 @@
+﻿@{
+   ViewBag.Title = "Approve orders";
+}
+@using System.Web.UI.WebControls
+@using HMS.HealthTrack.Web.Data.Model.Inventory
+@using HMS.HealthTrack.Web.Views
+@using Kendo.Mvc.UI
+@model IEnumerable<OrderableItem>
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Delivery Truck 2.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Items for approval</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+@{
+   if (@ViewBag.ConsumptionsMissingPaymentClassCount > 0)
+   {
+      <div id="alertdiv" class="alert alert-warning container-fluid">
+         <a class="close" data-dismiss="alert">&times;</a>
+         <div id="unorderable">
+            <img src="@Url.Content("~/content/images/Icons/72x72/Barcode Warning.png")" />
+            <h5>Please note @ViewBag.ConsumptionsMissingPaymentClassCount items will not appear as they have missing or invalid information. Please refer to the <a href="@Url.Action("Index", "Inventory")">Inventory Dashboard</a> for more details.</h5>
+         </div>
+      </div>
+   }
+}
+<div id="alertPlaceholder"></div>
+<div>
+   @(Html.Kendo().Grid<OrderableItem>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+           columns.Bound(c => c.SPC).ClientTemplate("<a href='" + @Url.Action("Details", "Products", new {Area = "Inventory"}) + "/#=ProductId#'>#=SPC#</a>");
+           columns.Bound(c => c.Description).Title("Description");
+           columns.Bound(c => c.Quantity).Title("Qty").Width(70);
+           columns.Bound(c => c.BuyPrice).Title("Unit Price").Format("{0:c}").Width(150);
+           columns.Bound(c => c.Source).Title("Type");
+        })
+        .Events(events => events.DataBound("onDataBound"))
+        .ToolBar(toolbar => toolbar.Template(@<text>
+                                                 <span class="toolbar">
+                                                    <span class="toolbar-left">
+                                                       @(Html.Kendo().Button().Name("CreateOrderFromSelected").Content("Order selected"))
+                                                       @(Html.Separator())
+                                                       @(Html.Kendo().Button().Name("OrderAll").Content("Order all"))
+                                                       @(Html.Separator())
+                                                       @(Html.Separator())
+                                                       @(Html.Kendo().Button().Name("IgnoreReplacement").Content("Ignore"))
+                                                    </span>
+                                                    <span class="toolbar-right">
+                                                       @(Html.Kendo().Button().Name("ExpandAll").Content("Expand all"))
+                                                       @(Html.Separator())
+                                                       @(Html.Label("Description", new {id = "descriptionLabel", @class = "filter-label"}))
+                                                       @(Html.Kendo().TextBox().Name("description").HtmlAttributes(new {@class = "filter-control"}))
+                                                       @(Html.Separator())
+                                                       @(Html.Kendo().Button().Name("applyFilter").Content("Filter"))
+                                                       @(Html.Kendo().Button().Name("clearFilter").Content("Clear"))
+                                                       @(Html.Separator())
+                                                       @(Html.Kendo().Button().Name("Print").Content("Print").HtmlAttributes(new { id = "printGrid" }))
+                                                    </span>
+                                                 </span>
+                                              </text>))
+        .ClientDetailTemplateId("template")
+        .Selectable(selectable => selectable.Mode(GridSelectionMode.Multiple))
+        .Filterable(filterable => filterable.Extra(false))
+        .Sortable()
+        .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+        .DataSource(ds => ds.WebApi()
+           .PageSize(20)
+           .Read(read => read.Url(Url.HttpRouteUrl("DefaultApi", new {controller = "OrderableItems"})))
+           .Group(g => g.Add(s => s.Supplier))
+        ))
+</div>
+
+<script id="template" type="text/kendo-tmpl">
+   @(Html.Kendo().TabStrip()
+        .Name("tabStrip_#=ConsumptionId#")
+        .SelectedIndex(0)
+        .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+        .Items(items =>
+        {
+           items.Add().Text("Patient details").Content("<div id='patient_#=ConsumptionId#'></div><script>getPatientDetails(#=ConsumptionId#,#=ConsumptionId#)</script>");
+           items.Add().Text("Additional details").Content("<div id='result_#=ConsumptionId#'></div><script>getDetails(#=ConsumptionId#)</script>");
+        }).ToClientTemplate())
+</script>
+
+<div id="window">
+   <div class="container-fluid">
+      <div id="orderAlertPlaceholder"></div>
+      <div class="row row-high" id="orderNameRow">
+         <div class="col-sm-4 control-label text-right">
+            <label for="OrderName">Order number</label>
+         </div>
+         <div class="col-sm-7">
+            <input type="text" id="OrderName" class="k-textbox page-input" name="OrderName" autofocus />
+         </div>
+      </div>
+      <div class="row row-high">
+         <div class="col-sm-4 control-label text-right">
+            <label for="Location">Delivery location</label>
+         </div>
+         <div class="col-sm-7">
+            @(Html.Kendo().DropDownList().Name("Location")
+                 .DataSource(ds => ds.Read("GetStockLocations", "StockLocations").ServerFiltering(true))
+                 .DataTextField("Text").DataValueField("Value")
+                 .HtmlAttributes(new {@class = "page-input"})
+                 .Value(@Html.Encode(@ViewBag.UserPreferredLocation.ToString()))
+                 )
+         </div>
+      </div>
+      <div class="row row-high">
+         <div class="col-sm-4 control-label text-right">
+            <label for="GLC">GLC</label>
+         </div>
+         <div class="col-sm-7">
+            @(Html.Hidden("LedgerId"))
+            <span class="k-textbox k-space-right page-input">
+               @(Html.Kendo().TextBox().Name("GLC").HtmlAttributes(new {@class = "page-input", @readonly = "readonly"}))
+               <a href="#" class="k-icon k-i-search" id="BrowseLedgers">&nbsp;</a>
+            </span>
+         </div>
+      </div>
+      <div class="row row-high">
+         <div class="col-sm-12 pull-right text-right">
+            <button type="button" class="k-button k-primary" id="SubmitOrder">Create Order</button>
+            <button type="button" class="k-button" id="closeWindow">Cancel</button>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div id="ledgerTreeWindow"></div>
+
+<input type="hidden" id="orderSelected" value=""/>
+@section Scripts {
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+   <script src="~/Scripts/Inventory.js"></script>
+   <script type="text/javascript">
+      function onDataBound(e) {
+         applyGridTooltips();
+         var dataSource = this.dataSource;
+         this.element.find('tr.k-master-row').each(function() {
+            var row = $(this);
+            var data = dataSource.getByUid(row.data('uid'));
+            if (!data.get('ConsumptionId')) {
+               row.find('.k-hierarchy-cell a').css({ opacity: 0.3, cursor: 'default' }).click(function(e) {
+                  e.stopImmediatePropagation();
+                  return false;
+               });
+            }
+         });
+      }
+
+      function getDetails(consumptionId) {
+         $("#result_" + consumptionId).load("@Url.Action("AdditionalDetails", "Consumptions", new {Area = "Inventory"})?consumptionId=" + consumptionId);
+      };
+
+      function getPatientDetails(consumptionId) {
+         $("#patient_" + consumptionId).load("@Url.Action("ConsumptionPatientDetails", "Patient", new {Area = "Inventory"})?consumptionId=" + consumptionId);
+      };
+
+      $(document).ready(function() {
+         InitFilterControls();
+         var grid = $('#grid').data('kendoGrid');
+
+         createPopupWindow();
+         var dialog = $('#window').data('kendoWindow');
+
+         // Setup suppliers combo box
+         var supplierDataSource = new kendo.data.DataSource({
+            transport: {
+               read: {
+                  url: "@Url.HttpRouteUrl("DefaultApi", new {controller = "Suppliers"})",
+                  dataType: 'json'
+               }
+            },
+            schema: {
+               data: 'IndexSuppliersViewModel',
+            },
+         });
+
+         $('#suppliers').kendoComboBox({
+            autobind: false,
+            dataTextField: 'Name',
+            dataValueField: 'company_ID',
+            dataSource: supplierDataSource,
+            filter: 'contains',
+            suggest: true,
+         });
+
+         createLedgerTreeWindow(@ViewBag.LedgerType);
+         $('#BrowseLedgers').click(function() {
+            $('#ledgerTreeWindow').data('kendoWindow').center().open();
+         });
+
+         // POST submit order
+         $('#SubmitOrder').click(function() {
+            var selectedRows = grid.select();
+            var window = $('#window').data('kendoWindow');
+
+            var deliveryLocationId = $('#Location').val();
+            var chargeAccountId = $('#ChargeAccountId').val();
+            var ledgerId = $('#LedgerId').val();
+
+            var orderUrl;
+            var orderName;
+            var orderableItems = [];
+            var orderSelected = $('#orderSelected').val();
+            if (orderSelected == "true") {
+               orderName = $('#OrderName').val();
+               if (orderName == "") {
+                  getAlertForId('orderAlertPlaceholder', 'warning', 'Please provide an order number.');
+                  return;
+               }
+               orderUrl = "@Url.HttpRouteUrl("DefaultApi", new {controller = "OrderableItems"})";
+
+               $.each(selectedRows, function(key, value) {
+                  var dataItem = grid.dataItem(value);
+                  var orderableItem;
+                  if (dataItem.Source == '@((int) OrderableItemSource.Request)') {
+                     orderableItem = { OrderableItemSource: dataItem.Source, Ids: dataItem.RequestIds, ProductId: dataItem.ProductId, Quantity: dataItem.Quantity };
+                  } else if (dataItem.Source == '@((int) OrderableItemSource.Topup)') {
+                     orderableItem = { OrderableItemSource: dataItem.Source, Quantity: dataItem.Quantity, ProductId: dataItem.ProductId };
+                  } else if (dataItem.Source == '@((int) OrderableItemSource.Invoice)' || dataItem.Source == '@((int)OrderableItemSource.Replacement)') {
+                     orderableItem = { OrderableItemSource: dataItem.Source, Ids: [dataItem.ConsumptionId], Quantity: dataItem.Quantity, ProductId: dataItem.ProductId };
+                  } else {
+                     orderableItem = null;
+                  }
+                  orderableItems.push(orderableItem);
+               });
+            } else {
+               orderUrl = "@Url.Action("OrderAll", "OrderableItems")";
+            }
+
+            $.ajax({
+               type: 'POST',
+               async: false,
+               data: JSON.stringify({
+                  ChargeAccountId: chargeAccountId,
+                  DeliveryLocationId: deliveryLocationId,
+                  LedgerId: ledgerId,
+                  OrderableItems: orderableItems,
+                  OrderName: orderName,
+               }),
+               contentType: 'application/json',
+               url: orderUrl,
+               dataType: 'json',
+               success: function(data) {
+                  if (data.CreationSuccess) {
+                     if (orderSelected == "true") {
+                        getAlert('success', 'The order <strong>' + orderName + '</strong> has been created successfully.');
+                        if (data.SubmittedToChannel) {
+                           getAlert('success',"You order has automatically been submitted");
+                        }
+                     } else {
+                        getAlert('success', 'Orders were placed for all items.');
+                     }
+                     window.close();
+                     $('#grid').data('kendoGrid').dataSource.read();
+                  }
+                  else {
+                     getAlertForId('orderAlertPlaceholder', 'danger', data.AdditionalInfo);
+                  }
+               },
+               error: function(data) {
+                  getAlertForId('orderAlertPlaceholder', 'danger', data);
+               }
+            });
+         });
+
+         // Submit order on Enter
+         $('#OrderName').on('keypress', function(e) {
+            if (e.keyCode == kendo.keys.ENTER) {
+               $('#SubmitOrder').trigger('click');
+            }
+         });
+
+         $('#CreateOrderFromSelected').click(function() {
+            var row = grid.select();
+
+            // ensure row is selected
+            if (row.length == 0) {
+               getAlert('warning', 'Please select a row to be ordered.');
+               return;
+            }
+            $('#orderSelected').val(true);
+            $('#orderNameRow').show();
+            dialog.center().open();
+         });
+
+         $('#OrderAll').click(function() {
+            if (grid._data.length == 0) {
+               getAlert('warning', 'There are no items to order at this point in time');
+               return;
+            }
+            grid.select(grid.tbody.find('* > tr'));
+            $('#orderSelected').val(false);
+            $('#orderNameRow').hide();
+            dialog.center();
+            dialog.open();
+         });
+
+         $('#applyFilter').click(function() {
+            var filters = GetFilters(grid);
+            filters = UpdateSearchFilters(filters, "Description", "contains", $('#description').val(), "and");
+            grid.dataSource.filter(filters);
+         });
+
+         $('#clearFilter').click(function() {
+            $('#description').val('');
+            ClearFilters(grid);
+         });
+
+         $('#IgnoreReplacement').click(function() {
+            var selected = grid.select();
+            var error;
+            var idsToIgnore = $.map(selected, function(item) {
+               var dataItem = grid.dataItem($(item));
+               if (dataItem.Source != '@((int)OrderableItemSource.Replacement)') {
+                  error = true;
+               }
+               return grid.dataItem($(item)).ConsumptionId;
+            });
+
+            if (idsToIgnore == null || idsToIgnore.length == 0 || error) {
+               getAlert('warning', 'Only Replacement items can be Ignored. Please select only Replacements and try again.');
+               return;
+            }
+
+            $.ajax({
+               async: true,
+               type: 'POST',
+               contentType: 'application/json',
+               data: JSON.stringify({
+                  consumptionIds : idsToIgnore
+               }),
+               url: '@Url.Action("ArchiveOrderableItems", "OrderableItems")',
+               success: function(data) {
+                  getAlert('success', 'Items for approval successfully ignored.');
+                  grid.dataSource.read();
+                  grid.refresh();
+               },
+               error: function(data) {
+                  if (data.Status == 400) {
+                     getAlert('danger', data.statusText);
+                  }
+                  getAlert('danger', 'Unable to complete request.');
+               }
+
+            });
+         });
+      });
+
+      // Create popup window
+      function createPopupWindow() {
+         if (!$('#window').data('kendoWindow')) {
+            $('#window').kendoWindow({
+               modal: true,
+               resizable: false,
+               scrollable: false,
+               title: 'Enter order details',
+               width: 600,
+               visible: false,
+               activate: function() {
+                  $('#OrderName').select();
+               },
+               open: function() {
+                  var win = this;
+                  $('#closeWindow').click(function() {
+                     $('#grid').data('kendoGrid').clearSelection();
+                     win.close();
+                  });
+                  //clear order name in the case where an order has already been created from this screen
+                  $('#OrderName').val('');
+                  $('#LedgerId').val('');
+                  $('#GLC').val('');
+               }
+            });
+         }
+      }
+
+      function onExpandAll(e) {
+         var grid = $('#grid').data('kendoGrid');
+         var dataSource = grid.dataSource;
+         $('#grid').find('tr.k-master-row').each(function() {
+            var row = $(this);
+            var data = dataSource.getByUid(row.data('uid'));
+            if (data.get('ConsumptionId')) {
+               if (e.checked) {
+                  grid.expandRow(row);
+               } else {
+                  grid.collapseRow(row);
+               }
+            }
+         });
+      }
+
+      function onGroupBySelect(e) {
+         var grid = $('#grid').data('kendoGrid');
+         if (e.item.text() == 'Supplier') {
+            grid.dataSource.group({ field: 'Supplier' });
+            grid.dataSource.read();
+         }
+      }
+
+   </script>
+}
+<style>
+   #unorderable img {
+      display: inline;
+      float: left;
+      height: 75px;
+      vertical-align: bottom;
+      width: 75px;
+   }
+
+   #unorderable h5 {
+      left: 2em;
+      position: relative;
+      top: 2em;
+   }
+</style>
+
+<script src="~/Scripts/kendo/2018.2.516/jszip.min.js"></script>
+<script type="text/javascript">
+      $(document).ready(function () {
+         $('#printGrid').click(function () {
+            printGrid();
+         });
+      });
+
+      function printGrid() {
+         var gridElement = $('#grid'),
+            printableContent = '',
+            win = window.open('', ''),
+            doc = win.document.open();
+
+         var htmlStart =
+            '<!DOCTYPE html>' +
+            '<html>' +
+            '<head>' +
+            '<meta charset="utf-8" />' +
+            '<title>Items for approval</title>' +
+            '<script src="@Url.Content("~/Scripts/kendo/2018.2.516/jquery.min.js")"><' +
+            '/script>' +
+            '<script src="@Url.Content("~/Scripts/kendo/2018.2.516/kendo.all.min.js")"><' +
+            '/script>' +
+            '<link href="@Url.Content("~/Content/kendo/2018.2.516/kendo.common.min.css")" rel="stylesheet" />' +
+            '<style>' +
+            'html { font: 8pt sans-serif; }' +
+            '.k-grid { border-top-width: 0; }' +
+            '.k-grid, .k-grid-content { height: auto !important; }' +
+            '.k-grid-content { overflow: visible !important; }' +
+            '.k-grid .k-grid-header th { border-top: 1px solid; }' +
+            '.k-grid td { line-height: 2em; }' +
+            '.k-grid-pager {display:none}' +
+            '.k-grouping-header { display: none;}' +
+            '.k-grid-toolbar, .k-grid-pager > .k-link { display: none; }' +
+            '</style>' +
+            '</head>' +
+            '<body>';
+
+
+         var htmlEnd = '</body><script>' +
+            'var grid = $("#grid").data("kendoGrid");grid.dataSource.pageSize(30);grid.refresh();window.print() <'
+            + '/script ></html > ';
+         
+         var gridHeader = gridElement.children('.k-grid-header');
+         if (gridHeader[0]) {
+            var thead = gridHeader.find('thead').clone().addClass('k-grid-header');
+            printableContent = gridElement
+               .clone()
+               .children('.k-grid-header').remove()
+               .end()
+               .children('.k-grid-content')
+               .find('table')
+               .first()
+               .children('tbody').before(thead)
+               .end()
+               .end()
+               .end()
+               .end()[0].outerHTML;
+         } else {
+            printableContent = gridElement.clone()[0].outerHTML;
+         }
+
+         doc.write(htmlStart + printableContent + htmlEnd);
+         doc.close();
+
+      }
+
+</script>

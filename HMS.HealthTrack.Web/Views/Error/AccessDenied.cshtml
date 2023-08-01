@@ -1,0 +1,14 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+
+@{
+	ViewBag.Title = "Access Denied";
+}
+
+<h2>Access Denied</h2>
+
+@if (Model != null)
+{
+	<p>
+		<span>@Model.ControllerName</span><span>/</span><span>@Model.ActionName</span>
+	</p>
+}

@@ -1,0 +1,7 @@
+﻿@using Kendo.Mvc.UI
+@model dynamic
+@(Html.Kendo().ComboBox().Name("RebateCode")
+     .AutoBind(true)
+     .DataTextField("Text").DataValueField("Value")
+     .DataSource(ds => ds.Read(read => read.Action("GetAll", "MedicareProducts")).ServerFiltering(true))
+     .Filter(FilterType.Contains).HtmlAttributes(new {@class = "page-input", @Model.PropertyName}))

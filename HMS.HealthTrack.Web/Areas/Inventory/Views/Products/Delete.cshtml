@@ -1,0 +1,182 @@
+﻿@using HMS.HealthTrack.Web.Views
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.Products.DetailsProductsViewModel
+
+@{
+	ViewBag.Title = "Delete product";
+}
+<div class="row">
+   <div class="col-md-1">
+      <img src="~/Content/images/Icons/72x72/Scale And Box Delete.png" />
+   </div>
+   <div class="col-md-11">
+      <div class="alert alert-danger" role="alert">Confirm deletion of <mark>@Model.Description</mark></div>
+   </div>
+</div>
+
+<div>
+	<div class="row">
+		<div class="col-lg-12">
+			<hr />
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="row">
+				<div class="col-md-2">
+					@Html.DisplayNameFor(model => model.SPC)
+				</div>
+
+				<div class="col-md-2" data-toggle="tooltip" title="@Html.DescriptionFor(model => model.SPC)">
+					@Html.DisplayFor(model => model.SPC)
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">
+					@Html.DisplayNameFor(model => model.LPC)
+				</div>
+
+				<div class="col-md-2">
+					@Html.DisplayFor(model => model.LPC)
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">
+					@Html.DisplayNameFor(model => model.UPN)
+				</div>
+
+				<div class="col-md-2">
+					@Html.DisplayFor(model => model.UPN)
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">
+					@Html.DisplayNameFor(model => model.Description)
+				</div>
+
+				<div class="col-md-10">
+					@Html.DisplayFor(model => model.Description)
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">
+					@Html.DisplayNameFor(model => model.BuyPrice)
+				</div>
+
+				<div class="col-md-2">
+					@Html.DisplayFor(model => model.BuyPrice)
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">
+					@Html.DisplayNameFor(model => model.BuyCurrency)
+				</div>
+
+				<div class="col-md-2">
+					@Html.DisplayFor(model => model.BuyCurrency)
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">
+					@Html.DisplayNameFor(model => model.BuyCurrencyRate)
+				</div>
+
+				<div class="col-md-2">
+					@Html.DisplayFor(model => model.BuyCurrencyRate)
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">
+					@Html.DisplayNameFor(model => model.SellPrice)
+				</div>
+
+				<div class="col-md-2">
+					@Html.DisplayFor(model => model.SellPrice)
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">
+					@Html.DisplayNameFor(model => model.Manufacturer)
+				</div>
+
+				<div class="col-md-2">
+					@Html.DisplayFor(model => model.Manufacturer)
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">
+					@Html.DisplayNameFor(model => model.UseExpired)
+				</div>
+
+				<div class="col-md-2">
+					@Html.DisplayFor(model => model.UseExpired)
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">
+					@Html.DisplayNameFor(model => model.UseSterile)
+				</div>
+				<div class="col-md-2">
+					@Html.DisplayFor(model => model.UseSterile)
+				</div>
+			</div>
+		    <div class="row">
+		        <div class="col-md-2">
+		            @Html.DisplayNameFor(model => model.Notes)
+		        </div>
+
+		        <div class="col-md-2">
+		            @Html.DisplayFor(model => model.Notes)
+		        </div>
+		    </div>
+		    <div class="row">
+		        <div class="col-md-2">
+		            @Html.DisplayNameFor(model => model.PrimarySupplier)
+		        </div>
+
+		        <div class="col-md-2">
+		            @Html.DisplayFor(model => model.PrimarySupplier)
+		        </div>
+		    </div>
+			<div class="row">
+				<div class="col-md-2">
+					@Html.DisplayNameFor(model => model.SecondarySupplier)
+				</div>
+
+				<div class="col-md-2">
+					@Html.DisplayFor(model => model.SecondarySupplier)
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">
+					@Html.DisplayNameFor(model => model.MaxUses)
+				</div>
+
+				<div class="col-md-2">
+					@Html.DisplayFor(model => model.MaxUses)
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-lg-12">
+				<hr/>
+			</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">
+					@Html.ActionLink("Back to list", "Index")
+				</div>
+				<div class="col-md-3">
+					@using (Html.BeginForm())
+					{
+						@Html.AntiForgeryToken()
+
+						<div class="form-group">
+							<input type="submit" value="Delete" class="btn btn-primary" />
+						</div>
+					}
+				</div>
+			</div>
+
+		</div>
+</div>

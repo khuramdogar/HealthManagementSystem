@@ -1,0 +1,40 @@
+﻿@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.StockAdjustmentReasons.StockAdjustmentReasonViewModel
+
+<div id="stockDeductionReasonForm">
+   <div class="container-fluid">
+      <div class="row">
+         @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+         @Html.HiddenFor(m => m.StockAdjustmentReasonId)
+         <div class="form-horizontal">
+            <div class="form-group">
+               <div class="col-md-3 control-label">
+                  @Html.LabelFor(model => model.Name)
+               </div>
+               <div class="col-sm-8">
+                  @Html.Kendo().TextBoxFor(model => model.Name).HtmlAttributes(new { @class = "page-input"})
+                  @Html.ValidationMessageFor(model => model.Name)
+               </div>
+            </div>
+            <div class="form-group">
+               <div class="col-md-3 control-label">
+                  @Html.LabelFor(model => model.Description)
+               </div>
+               <div class="col-sm-8">
+                  @Html.TextAreaFor(model => model.Description, new { @class = "page-input k-textbox", rows = 5})
+                  @Html.ValidationMessageFor(model => model.Description)
+               </div>
+            </div>
+            <div class="form-group">
+               <div class="col-md-3 control-label">
+                  @Html.LabelFor(model => model.Disabled)
+               </div>
+               <div class="col-sm-8">
+                  @Html.Kendo().CheckBoxFor(model => model.Disabled)
+                  @Html.ValidationMessageFor(model => model.Disabled)
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

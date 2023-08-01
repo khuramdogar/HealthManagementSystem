@@ -1,0 +1,383 @@
+﻿@using HMS.HealthTrack.Web.Data.Model.Inventory
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.Orders
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.Stock
+@using Kendo.Mvc.UI
+@model ReceiveOrderViewModel
+
+@{
+   ViewBag.Title = "Receive order";
+}
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Dolly.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Receive order - @(Model.Name)</h2>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-lg-12" id="subtitle">
+            For delivery to <i>@(Model.Location)</i><br />
+            Order currently has a status of <i>@Model.Status</i>
+         </div>
+      </div>
+   </div>
+</div>
+<div id="alertPlaceholder"></div>
+<div class="panel panel-default">
+   <div class="panel-heading">
+      <a data-toggle="collapse" data-target="#scanCodePanel" href="#scanCodePanel">
+         Scan product
+      </a>
+   </div>
+   <div id="scanCodePanel" class="panel-collapse collapse in">
+      <div class="panel-body">
+         <div class="row">
+            <div class="col-sm-4 control-label text-right">
+               <label for="scanCodeSearch">Scan code</label>
+            </div>
+            <div class="col-sm-3">
+               @Html.Hidden("ProductId")
+               <span id="scanCodeSearch">
+                  @(Html.Kendo().ComboBox().Name("Code")
+                       .AutoBind(true)
+                       .DataSource(source => source.Read(read => read.Action("GetProductByCode", "Products")).ServerFiltering(true))
+                       .DataTextField("Key").DataValueField("Key")
+                       .Events(events => events.DataBound("onCodeDataBound").Filtering("onCodeFiltering").Open("onCodeOpen").Select("onCodeSelect"))
+                       .Filter("contains")
+                       .HtmlAttributes(new {@class = "page-input"})
+                       )
+               </span>
+            </div>
+         </div>
+      </div>
+   </div>
+
+</div>
+<div>
+   @(Html.Kendo().Grid<OrderItemsViewModel>().Name("grid")
+        .ClientDetailTemplateId("orderItemTemplate")
+        .Columns(columns =>
+        {
+           columns.Bound(c => c.ProductSPC).ClientTemplate("<a href='" + @Url.Action("Details", "Products", new {Area = "Inventory"}) + "/#=ProductId#'>#=ProductSPC#</a>").Title("SPC");
+           columns.Bound(c => c.ProductDescription).Title("Description");
+           columns.Bound(c => c.Quantity).Title("Ordered").Width(110);
+           columns.Bound(c => c.ReceivedQuantity).Title("Received").Width(120);
+           columns.Bound(c => c.Status).Width(150).Title("Current status");
+           columns.Bound(c => c.Action).Width(200).HtmlAttributes(new {@class = "templateCell"}).Filterable(false)
+              .ClientTemplate(Html.Kendo().DropDownList().Name("orderLineAction_#=OrderItemId#")
+                 .BindTo(EnumHelper.GetSelectList(typeof (OrderItemAction)).OrderBy(sli => sli.Text)).DataTextField("Text").DataValueField("Value")
+                 .Events(e => e.Change("onOrderLineActionChange").DataBound("onOrderLineActionDataBound")).HtmlAttributes(new {@class = "order-line-action"}).Value("#=Action#").ToClientTemplate().ToHtmlString());
+           columns.Bound(c => c.OutstandingQuantity).Title("Quantity").ClientTemplate(Html.Kendo().TextBox().Name("outstandingQuantity_#=OrderItemId#").Value("#=OutstandingQuantity == null ? '' : OutstandingQuantity#").HtmlAttributes(new {style = "width: 50px;", @class = "outstandingQuantity"}).ToClientTemplate().ToHtmlString()).Width(100).Filterable(false);
+        })
+        .DataSource(ds => ds.Ajax()
+           .Events(events => events.Error("error_handler"))
+           .Model(m =>
+           {
+              m.Id(oi => oi.OrderItemId);
+              m.Field(oi => oi.ProductSPC).Editable(false);
+              m.Field(oi => oi.ProductDescription).Editable(false);
+              m.Field(oi => oi.Quantity).Editable(false);
+              m.Field(oi => oi.ReceivedQuantity).Editable(false);
+              m.Field(oi => oi.Status).Editable(false);
+              m.Field(oi => oi.OutstandingQuantity);
+           })
+           .PageSize(20)
+           .Read(read => read.Action("Get", "OrderItems").Data("orderItemsData")).ServerOperation(false)
+        )
+        .Events(events => events.DataBound("onDataBound").DetailExpand("onDetailExpand"))
+        .Filterable(filter => filter.Extra(false))
+        .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+        .Resizable(resize => resize.Columns(true))
+        .Sortable()
+        )
+</div>
+<script id="orderItemTemplate" type="text/kendo-tmpl">
+   @(Html.Kendo().TabStrip()
+        .Name("orderItemTabStrip_#=OrderItemId#")
+        .SelectedIndex(0)
+        .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+        .Items(items =>
+        {
+           items.Add().Text("Stock at Locations").Content(@<text>
+            @(Html.Kendo().Grid<StockAtLocationModel>()
+                 .Name("StockAtLocations_#=OrderItemId#")
+                 .Columns(columns =>
+                 {
+                    columns.Bound(c => c.Location);
+                    columns.Bound(c => c.Quantity);
+                 })
+                 .DataSource(ds => ds.WebApi().Read(read => read.Url("/Api" + Url.Action("GetStockByProductPerLocation", "Stock", new {productId = "#=ProductId#"}))))
+                 .ToClientTemplate()
+                 )
+         </text>);
+           items.Add().Text("Received Stock").Content(@<text>
+         @(Html.Kendo().Grid<ReceivedStockModel>()
+              .Name("ReceivedStock_#=OrderItemId#")
+              .Columns(columns =>
+              {
+                 columns.Bound(c => c.ReceivedBy);
+                 columns.Bound(c => c.ReceivedOn).Format("{0:dd/MM/yyyy HH:mm}");
+                 columns.Bound(c => c.ReceivedQuantity);
+                 columns.Bound(c => c.Location);
+              })
+              .DataSource(ds => ds.WebApi().Read(read => read.Url(Url.HttpRouteUrl("DefaultApi", new {controller = "ReceiveStock", orderItemId = "#=OrderItemId#"}))))
+              .ToClientTemplate())
+         </text>);
+        })
+        .ToClientTemplate()
+        )
+</script>
+
+
+<br />
+<div class="row">
+   <div class="col-sm-12">
+      <a class="k-button" href="@Url.Action("ReceivedStock", "Stock")">View received stock</a>
+      @(Html.Kendo().Button().Name("Cancel").Content("Cancel Order").Events(events => events.Click("onCancelClick")))
+      @(Html.Kendo().Button().Name("Receive").Content("Receive").Events(events => events.Click("onReceiveClick")).HtmlAttributes(new {@class = "k-primary"}))
+   </div>
+</div>
+
+@section Scripts{
+   <script src="~/Areas/Inventory/Scripts/ScanCodeControl.js"></script>
+   <script src="~/Areas/Inventory/Scripts/KendoGridHelpers.js"></script>
+
+   <script src="~/Scripts/Inventory.js"></script>
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+   <script type="text/javascript">
+
+      var firstLoad = true;
+      var gridName = "grid";
+      $(document).ready(function() {
+         initialiseScanCodeControl();
+
+         var grid = $('#grid').data('kendoGrid');
+
+         grid.tbody.on('change', '.outstandingQuantity', function(e) {
+            var item = getDataItemFromGrid(e, gridName);
+            var quantity = $('#outstandingQuantity_' + item.OrderItemId).val();
+            item.OutstandingQuantity = quantity;
+            if (quantity == '') {
+               return;
+            }
+
+            if (item.Action != "@((int) OrderItemAction.Complete)") {
+               var totalQuantity = parseInt(item.Quantity) - parseInt(item.ReceivedQuantity);
+               if (item.OutstandingQuantity >= totalQuantity) {
+                  var row = $(e.target).closest('tr');
+                  var dropDownList = $(row.find('.order-line-action input')[0]).data('kendoDropDownList');
+                  dropDownList.select(function(ee) {
+                     return ee.Value === "@((int) OrderItemAction.Complete)";
+                  });
+                  dropDownList.trigger('change');   
+               }
+            }
+         });
+      });
+
+      function error_handler(e) {
+         if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function(key, value) {
+               if ('errors' in value) {
+                  $.each(value.errors, function() {
+                     message += this + "\n";
+                  });
+               }
+            });
+            alert(message);
+         }
+      }
+
+      function onCancelClick(e) {
+         if (confirm("Are you sure you want to cancel this order? All items will be marked as cancelled.")) {
+            // cancel order
+            $.ajax({
+               async: false,
+               contentType: 'application/json',
+               type: 'GET',
+               url: "@(Url.Action("Cancel", "Orders"))/@Model.InventoryOrderId",
+               success: function(data) {
+                  window.location.href = "@(Url.Action("Details", "Orders"))/@Model.InventoryOrderId";
+               },
+               error: function(data) {
+                  if (data.status == 400) {
+                     getAlert('danger', data.statusText);
+                     return;
+                  }
+                  getAlert('danger', 'An error occurred. Please refresh and try again.');
+               }
+            });
+         }
+      }
+
+      function onDataBound(e) {
+         // disable quantity that isn't "ordered" status
+         applyGridTooltips();
+
+         // init drop down lists
+         $(".templateCell").each(function() {
+            eval($(this).children("script").last().html());
+         });
+
+         $('.outstandingQuantity').keypress(function(ee) {
+            var code = ee.keyCode ? ee.keyCode : ee.which;
+            if (code == 13) {
+               $('#Code').data('kendoComboBox').focus();
+            }
+         });
+
+         $('.outstandingQuantity').focusout(function(ee) {
+            var dataSource = $('#grid').data('kendoGrid').dataSource;
+            var id = ee.target.id.replace("outstandingQuantity_", "");
+            var item = dataSource.get(id);
+
+            var newValue = $(ee.target).val();
+            if (!isNumeric(newValue) && newValue != '') {
+               alert('Quantity must be a number');
+               $(ee.target).val(item.OutstandingQuantity);
+               $(ee.target).focus();
+               return;
+            }
+
+            item.OutstandingQuantity = newValue;
+            $('#grid tbody tr').removeClass('k-state-selected');
+         });
+
+         if (firstLoad && "@ViewBag.SelectProduct" != '') {
+            firstLoad = false;
+            setTimeout(function(e) {
+               $('#ProductId').val('@ViewBag.SelectProduct');
+               showProductInformation();
+            }, 200);
+         }
+      }
+
+      function onOrderLineActionChange(e) {
+         var row = e.sender.element.closest('tr');
+         var dataItem = $('#grid').data('kendoGrid').dataItem(row);
+         dataItem.Action = e.sender.value();
+      }
+
+      function onOrderLineActionDataBound(e) {
+         var dataItem = $('#grid').data('kendoGrid').dataItem(e.sender.wrapper.closest('tr'));
+         if (dataItem.Status == "@((int) OrderItemStatus.PartiallyReceived)") {
+            var data = e.sender.dataSource.data();
+            var length = data.length;
+            var item;
+            for (var ii = 0; ii < length; ii++) {
+               item = data[ii];
+               if (item.Value === "@((int) OrderItemAction.Cancel)") {
+                  e.sender.dataSource.remove(item);
+                  e.sender.refresh();
+                  return;
+               }
+            }
+         } else if (dataItem.Status != "@((int) OrderItemStatus.Ordered)") {
+            e.sender.select(function(ee) {
+               return ee.Value == "@((int) OrderItemAction.Complete)";
+            });
+            e.sender.enable(false);
+         }
+      }
+
+      function onDetailExpand(e) {
+         var grid = $('#grid').data('kendoGrid');
+         var item = grid.dataItem($(e.masterRow));
+         if (item.ReceivedQuantity == 0) {
+            $('#orderItemTabStrip_' + item.OrderItemId).data('kendoTabStrip').remove(1);
+         }
+      }
+
+      function onReceiveClick(e) {
+         $('#alertPlaceholder').empty();
+         var grid = $('#grid').data('kendoGrid');
+         var dataSource = grid.dataSource;
+         var orderItems = [];
+
+         var dataRows = dataSource.data();
+         $.each(dataRows, function(index, value) {
+            if (value.Status == "@((int) OrderItemStatus.PartiallyReceived)" || value.Status == "@((int) OrderItemStatus.Ordered)") {
+               orderItems.push({
+                  OrderItemId: value.OrderItemId,
+                  Quantity: value.OutstandingQuantity,
+                  Action: value.Action
+               });
+            }
+         });
+
+         $.ajax({
+            async: false,
+            contentType: 'application/json',
+            data: JSON.stringify({
+               orderId: '@Model.InventoryOrderId',
+               locationId: '@Model.DeliveryLocationId',
+               orderItems: orderItems
+            }),
+            type: 'POST',
+            url: '@Url.Action("ReceiveOrder", "Stock")',
+            success: function(data) {
+               window.location.href = '@Url.Action("Details", "Orders")/@Model.InventoryOrderId';
+            },
+            error: function(data) {
+               if (data.status == 400) {
+                  getAlert('danger', data.statusText);
+                  return;
+               }
+               getAlert('danger', 'An error occurred. Please refresh and try again.');
+            }
+         });
+      }
+
+      function orderItemsData(e) {
+         return {
+            orderId: @Model.InventoryOrderId,
+         }
+      }
+
+      // actually, we're going to set the quantity for the row in the grid
+      function showProductInformation() {
+         var productId = $('#ProductId').val();
+         var codeBox = $('#Code').data('kendoComboBox');
+         var grid = $('#grid').data('kendoGrid');
+         var dataSource = grid.dataSource;
+         var result = $.grep(dataSource.data(), function(e) { return e.ProductId == productId; });
+         if (result.length == 0) {
+            codeBox.value('');
+            getAlert('warning', 'Product not found in this order.');
+            return;
+         }
+         var model = result[0];
+         var index = dataSource.indexOf(result[0]);
+         dataSource.page(index / dataSource.pageSize() + 1);
+         var row = $("#grid").find("tbody>tr[data-uid=" + model.uid + "]");
+         $('.tr').removeClass('k-state-selected');
+         $(row).addClass('k-state-selected');
+         $(row).find('.outstandingQuantity')[0].select();
+         codeBox.value('');
+      }
+   </script>
+}
+
+<style>
+
+   .panel-heading a:after {
+      font-family: 'Glyphicons Halflings';
+      content: "\e114";
+      float: right;
+      color: grey;
+   }
+
+   .panel-heading a.collapsed:after { content: "\e080"; }
+
+   .panel-heading a { color: #333; }
+
+   a.tooltipLink {
+      color: #2e2e2e;
+      cursor: default;
+   }
+
+</style>

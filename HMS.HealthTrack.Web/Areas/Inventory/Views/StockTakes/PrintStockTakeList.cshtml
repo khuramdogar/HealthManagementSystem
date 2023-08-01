@@ -1,0 +1,83 @@
+﻿@using HMS.HealthTrack.Web.Data.Model.Inventory
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.StockTakes
+@using Kendo.Mvc.UI
+@model StockTakeList
+
+@{
+   ViewBag.Title = "Inventory stock take";
+}
+<div class="row">
+   <h4>Stock take <i>@Model.Name</i> at @Model.LocationName (@Model.StockTakeDate)</h4>
+   <br />
+   <div class="row do-not-print">
+      <div class="col-sm-4">
+         <a class="k-button k-primary" href="javascript:window.print()">Print</a>
+         
+         @{
+            if (@Model.StockTakeStatus == StockTakeStatus.Created)
+            {
+               <a class="k-button" href="@Url.Action("Edit")/@Model.StockTakeId">Edit</a>
+            }
+         }
+         <a class="k-button" href="@Url.Action("View")/@Model.StockTakeId">View</a>
+      </div>
+   </div>
+   <br />
+      <div class="form-horizontal">
+         <div class="form-group listRow">
+            <div class="col-xs-3">
+               <label>UPN</label>
+            </div>
+            <div class="col-xs-3">
+               <label>SPC</label>
+            </div>
+            <div class="col-xs-4">
+               <label>Description</label>
+            </div>
+            <div class="col-xs-2">
+               <label>Quantity</label>
+            </div>
+         </div>
+         @{
+            for (int ii = 0; ii < Model.ListItems.Count(); ii++)
+            {
+               var item = @Model.ListItems[ii];
+               <div class="form-group listRow">
+                  <div class="col-xs-3">
+                     @item.SPC
+                  </div>
+                  <div class="col-xs-4">
+                     @item.Description
+                  </div>
+                  <div class="col-xs-2">
+                     @item.StockLevel
+                  </div>
+               </div>
+            }
+            <div class="form-group listRow"></div>
+         }
+      </div>
+
+</div>
+
+<link rel="stylesheet" type="text/css" href="~/Content/print.css" media="print" />
+<style>
+   .listRow {
+      border-top: 1px solid;
+      border-width: 0.05em;
+      margin-bottom: 0.25em;
+      margin-right: 0 !important;
+      margin-left: 0 !important;
+      padding-top: 0.25em;
+   }
+
+   .spcRow { margin-left: 20px; }
+
+   .rowDetails { margin-right: 10px; }
+
+   .row {
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+   }
+
+</style>

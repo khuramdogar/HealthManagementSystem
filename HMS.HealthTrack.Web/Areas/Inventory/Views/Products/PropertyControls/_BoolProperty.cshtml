@@ -1,0 +1,30 @@
+﻿@using Kendo.Mvc.UI
+@model dynamic
+          
+@{
+   if (@Model.Nullable)
+   {
+      @(Html.Kendo().DropDownList()
+           .Name("BoolDropDownList")
+           .BindTo(new List<KeyValuePair<string, bool?>>()
+           {
+              new KeyValuePair<string, bool?>("", null),
+              new KeyValuePair<string, bool?>("Yes", true),
+              new KeyValuePair<string, bool?>("No", false),
+           })
+           .DataTextField("Key").DataValueField("Value")
+           .HtmlAttributes(new {@class = "page-input", @Model.PropertyName, @Model.Warning}))
+   }
+   else
+   {
+      @(Html.Kendo().DropDownList()
+           .Name("BoolDropDownList")
+           .BindTo(new List<KeyValuePair<string, bool>>()
+           {
+              new KeyValuePair<string, bool>("Yes", true),
+              new KeyValuePair<string, bool>("No", false),
+           })
+           .DataTextField("Key").DataValueField("Value")
+                   .HtmlAttributes(new { @class = "page-input", @Model.PropertyName, @Model.Warning }))
+   }
+}

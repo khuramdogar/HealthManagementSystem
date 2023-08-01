@@ -1,0 +1,268 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.Consumptions
+@using Kendo.Mvc.UI
+@model dynamic
+
+<style>
+   .k-grid {
+      font-size: 12px;
+      height: 800px;
+      width: 99.9%;
+   }
+</style>
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Barcode Doctor.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Consumption reporting</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+   <script src="~/Scripts/kendo/2018.2.516/jszip.min.js"></script>
+<script type="text/javascript">
+   $(document).ready(function() {
+      $('#printGrid').click(function() {
+         printGrid();
+      });
+   });
+
+   function printGrid() {
+      var gridElement = $('#grid'),
+         printableContent = '',
+         win = window.open('', ''),
+         doc = win.document.open();
+
+      var htmlStart =
+         '<!DOCTYPE html>' +
+            '<html>' +
+            '<head>' +
+            '<meta charset="utf-8" />' +
+            '<title>Consumption report</title>' +
+            '<script src="@Url.Content("~/Scripts/kendo/2018.2.516/jquery.min.js")"><' +
+            '/script>' +
+            '<script src="@Url.Content("~/Scripts/kendo/2018.2.516/kendo.all.min.js")"><' +
+            '/script>' +
+            '<link href="@Url.Content("~/Content/kendo/2018.2.516/kendo.common.min.css")" rel="stylesheet" />' +
+            '<style>' +
+            'html { font: 8pt sans-serif; }' +
+            '.k-grid { border-top-width: 0; }' +
+            '.k-grid, .k-grid-content { height: auto !important; }' +
+            '.k-grid-content { overflow: visible !important; }' +
+            '.k-grid .k-grid-header th { border-top: 1px solid; }' +
+            '.k-grid td { line-height: 2em; }' +
+            '.k-grouping-header { display: none;}' +
+            '.k-grid-toolbar, .k-grid-pager > .k-link { display: none; }' +
+            '</style>' +
+            '</head>' +
+            '<body>';
+
+      var htmlEnd = '</body><script>window.print()<' + '/script></html>';
+
+      var grid = $("#grid").data("kendoGrid");
+      grid.hideColumn("PatientId");
+      grid.hideColumn("DoctorName");
+
+      var gridHeader = gridElement.children('.k-grid-header');
+      if (gridHeader[0]) {
+         var thead = gridHeader.find('thead').clone().addClass('k-grid-header');
+         printableContent = gridElement
+            .clone()
+            .children('.k-grid-header').remove()
+            .end()
+            .children('.k-grid-content')
+            .find('table')
+            .first()
+            .children('tbody').before(thead)
+            .end()
+            .end()
+            .end()
+            .end()[0].outerHTML;
+      } else {
+         printableContent = gridElement.clone()[0].outerHTML;
+      }
+
+      doc.write(htmlStart + printableContent + htmlEnd);
+      doc.close();
+
+   }
+
+</script>
+<br />
+
+<div class="panel panel-default">
+   <div class="panel-heading">
+      <h3 class="panel-title">Filter report</h3>
+   </div>
+   <div class="panel-body">
+      <div class="form-horizontal form-widgets col-sm-6">
+         <div class="form-group">
+            <label class="control-label col-sm-4 col-form-label" for="surname">Surname</label>
+            <div class="col-sm-8 col-md-6">
+               <input id="surname" class="form-control searchInput">
+            </div>
+         </div>
+
+         <div class="form-group">
+            <label class="control-label col-sm-4" for="firstName">First name</label>
+            <div class="col-sm-8 col-md-6">
+               <input id="firstName" class="form-control searchInput">
+            </div>
+         </div>
+         <div class="form-group">
+            <label class="control-label col-sm-4" for="patientId">Patient Id</label>
+            <div class="col-sm-8 col-md-6">
+               <input id="patientId" class="form-control searchInput">
+            </div>
+         </div>
+         
+      </div>
+
+      <div class="form-horizontal form-widgets col-sm-6">
+         
+         <div class="form-group">
+            <label class="control-label col-sm-4" for="dateFrom">Date from</label>
+            <div class="col-sm-8 col-md-6">
+               @Html.Kendo().DatePicker().Name("dateFrom").HtmlAttributes(new { @class = "form-control searchInput" })
+            </div>
+         </div>
+         <div class="form-group">
+            <label class="control-label col-sm-4" for="dateTo">Date To</label>
+            <div class="col-sm-8 col-md-6">
+               @Html.Kendo().DatePicker().Name("dateTo").HtmlAttributes(new {@class = "form-control searchInput"})
+            </div>
+         </div>
+
+
+
+         <div class="form-group">
+            <label class="control-label col-sm-4"></label>
+            <div class="col-sm-8 col-md-6 text-right">
+               <input type="button" id="search" value="Search" class="btn btn-primary"/>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="panel-footer"><div id="alertPlaceholder"></div></div>
+</div>
+<script src="~/Scripts/kendoGridFilter.js"></script>
+<script>
+
+   function Search() {
+      var grid = $('#grid').data('kendoGrid');
+      var filters = GetFilters(grid);
+      filters = UpdateSearchFilters(filters, "FromDate", "gt", $('#dateFrom').val(), "and");
+      filters = UpdateSearchFilters(filters, "ToDate", "lt", $('#dateTo').val(), "and");
+      filters = UpdateSearchFilters(filters, "PatientId", "contains", $('#patientId').val(), "and");
+      filters = UpdateSearchFilters(filters, "Surname", "contains", $('#surname').val(), "and");
+      filters = UpdateSearchFilters(filters, "Firstname", "contains", $('#firstName').val(), "and");
+      
+      $('#alertPlaceholder').empty();
+      grid.dataSource.filter(filters);
+   }
+
+   function searchError(e) {
+      if (e.errors) {
+         var message = "Errors:\n";
+         $.each(e.errors,
+            function (key, value) {
+               if ('errors' in value) {
+                  $.each(value.errors,
+                     function () {
+                        message += this + "\n";
+                     });
+               }
+            });
+         bootstrap_alert.warning(message);
+      } else {
+         bootstrap_alert.warning(e.errorThrown);
+      }
+   }
+
+   $(document).ready(function () {
+      InitFilterControls();
+      var grid = $('#grid').data('kendoGrid');
+
+      $('#search').click(Search);
+
+      $('#clearFilters').click(function () {
+         ClearFilters(grid);
+         $('#alertPlaceholder').empty();
+      });
+
+      $(".searchInput").keyup(function (event) {
+         if (event.keyCode === 13) {
+            $("#search").click();
+         }
+      });
+
+   });
+</script>
+<div>
+   @(Html.Kendo().Grid<StockConsumptionByDoctor>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+           columns.Bound(consumption => consumption.PatientId);
+           columns.Bound(consumption => consumption.PatientSurnameFirst);
+           columns.Bound(consumption => consumption.ExamDate).ClientTemplate("#: kendo.format('{0: dd/MM/yyyy hh:mm}', ExamDate)#").Title("Exam time").Filterable(f => f.UI(GridFilterUIRole.DateTimePicker));
+           columns.Bound(consumption => consumption.ProductName);
+           columns.Bound(consumption => consumption.RebateCode);
+           columns.Bound(consumption => consumption.MinBenefit).Format("{0:c}");
+           columns.Bound(consumption => consumption.SupplierProductCode);
+           columns.Bound(consumption => consumption.Vendor);
+           columns.Bound(consumption => consumption.DoctorName);
+        })
+        .DataSource(dataSource => dataSource
+           .WebApi()
+           .Model(model => model.Id(consumption => consumption.ConsumptionId))
+           .Read(read => read.Url(Url.HttpRouteUrl("DefaultApi", new {controller = "DoctorConsumptions"}))).Group(g =>
+           {
+              g.Add(d => d.DoctorName);
+              g.Add(p => p.PatientId);
+           })
+        ).AutoBind(false)
+        .Groupable()
+        .Scrollable()
+        .Sortable()
+        .ToolBar(tools =>
+        {
+           tools.Excel();
+           tools.Custom().Name("Print").HtmlAttributes(new {id = "printGrid"});
+        })
+        .Excel(excel => excel
+           .FileName("Medical consumption.xlsx")
+           .Filterable(true)
+           .AllPages(true)
+           .ProxyURL(Url.Action("Excel_Export_Save", "StockAdjustments"))
+        )
+        .Pdf(pdf => pdf
+           .FileName("Medical consumption.pdf")
+           .PaperSize("A4")
+           .ProxyURL(Url.Action("Excel_Export_Save", "StockAdjustments"))
+        )
+        )
+</div>
+
+@*http://docs.telerik.com/kendo-ui/web/grid/how-to/excel/column-template-export*@
+<script type="text/javascript">
+   $(document).ready(function() {
+      var grid = $('#grid').data('kendoGrid');
+      grid.bind('excelExport', function(e) {
+         var sheet = e.workbook.sheets[0];
+         var template = kendo.template(this.columns[2].template);
+
+         for (var i = 0; i < sheet.rows.length; i++) {
+            var row = sheet.rows[i];
+            if (row.type != "data") {
+               continue;
+            }
+            var dataItem = { ExamDate: row.cells[5].value };
+            row.cells[5].value = template(dataItem);
+         }
+      });
+   });
+</script>

@@ -1,0 +1,97 @@
+﻿@using HMS.HealthTrack.Web.Data.Model.Inventory
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.Shared
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.StockRequests.DetailsProductStockRequestViewModel
+
+@{
+   Layout = null;
+}
+<div>
+   <br/>
+   <dl class="dl-horizontal">
+      <dt>
+         @Html.DisplayNameFor(model => model.ProductId)
+      </dt>
+
+      <dd>
+         @Html.DisplayFor(model => model.ProductId)
+      </dd>
+      <dt>
+         @Html.DisplayNameFor(model => model.ProductDescription)
+      </dt>
+
+      <dd>
+         @Html.DisplayFor(model => model.ProductDescription)
+      </dd>
+
+      <dt>
+         @Html.DisplayNameFor(model => model.RequestedQuantity)
+      </dt>
+
+      <dd>
+         @Html.DisplayFor(model => model.RequestedQuantity)
+      </dd>
+      @{
+         if (Model.RequestStatus != Enum.GetName(typeof(RequestStatus), RequestStatus.Open))
+         {
+            <dt>
+               @Html.DisplayNameFor(model => model.ApprovedQuantity)
+            </dt>
+
+            <dd>
+               @Html.DisplayFor(model => model.ApprovedQuantity)
+            </dd>
+         }
+      }
+      <dt>
+         @Html.DisplayNameFor(model => model.IsUrgent)
+      </dt>
+
+      <dd>
+         @Html.DisplayFor(model => model.IsUrgent)
+      </dd>
+
+      <dt>
+         @Html.DisplayNameFor(model => model.RequestStatus)
+      </dt>
+      <dd>
+         @Html.DisplayFor(model => model.RequestStatus)
+      </dd>
+
+      <dt>
+         @Html.DisplayNameFor(model => model.Fulfilled)
+      </dt>
+      <dd>
+         @Html.DisplayFor(model => model.Fulfilled)
+      </dd>
+
+      <dt>
+         @Html.DisplayNameFor(model => model.Location)
+      </dt>
+      <dd>
+         @Html.DisplayFor(model => model.Location)
+      </dd>
+
+      <dt>
+         @Html.DisplayNameFor(model => model.OrderId)
+      </dt>
+      <dd>
+         @{
+            if (Model.OrderId.HasValue)
+            {
+               <a href="@Url.Action("Details", "Orders", new { id = Model.OrderId })">@Model.OrderName</a>
+            }
+         }
+      </dd>
+      @{
+         if (Model.ConsumptionId.HasValue)
+         {
+            <dt>
+               @Html.DisplayNameFor(model => model.ConsumptionId)
+            </dt>
+            <dd>
+               <a href="@Url.Action("Details", "StockConsumptions", new {id = Model.ConsumptionId})">@Model.ConsumptionId</a>
+            </dd>
+         }
+      }
+   </dl>
+</div>

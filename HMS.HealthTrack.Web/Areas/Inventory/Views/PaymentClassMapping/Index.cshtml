@@ -1,0 +1,81 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.PaymentClassMappings
+@using Kendo.Mvc.UI
+@model dynamic
+
+@{
+   ViewBag.Title = "Payment Class Mappings";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Savings Account.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Payment class mappings</h2>
+         </div>
+      </div>
+   </div>
+</div>
+<div id="alertPlaceholder"></div>
+<div>
+   @(Html.Kendo().Grid<PaymentClassMappingModel>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+           columns.Bound(c => c.PaymentClass);
+           columns.Bound(c => c.PriceTypeName).EditorTemplateName("PriceType");
+           columns.Command(c =>
+           {
+              c.Edit();
+              c.Destroy();
+           }).HtmlAttributes(new { @class = "button-column"}).Width(180);
+        })
+        .Editable(editable => editable.Mode(GridEditMode.PopUp))
+        .Events(events => events.DataBound("onDataBound").Edit("onMappingEdit"))
+        .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+        .Resizable(resize => resize.Columns(true))
+        .Sortable()
+        .ToolBar(t => t.Create())
+        .DataSource(ds => ds.Ajax()
+           .PageSize(20)
+           .Events(events => events.Error("error_handler"))
+           .Model(model => model.Id(p => p.PaymentClass))
+           .Create(update => update.Action("Create", "PaymentClassMapping"))
+           .Read(read => read.Action("Read", "PaymentClassMapping"))
+           .Update(update => update.Action("Update", "PaymentClassMapping"))
+           .Destroy(update => update.Action("Remove", "PaymentClassMapping")))
+        )
+</div>
+@section Scripts {
+   <script src="~/Scripts/Inventory.js"></script>
+   <script type="text/javascript">
+      function error_handler(e) {
+         var errors = '';
+         if (e.errors) {
+            $.each(e.errors, function(key, value) {
+               if ('errors' in value) {
+                  $.each(value.errors, function() {
+                     errors += this + ', ';
+                  });
+               }
+            });
+            getErrorAlert(errors);
+         }
+      }
+
+      function getErrorAlert(errors) {
+         getAlert('danger', 'Unable to perform action on payment class mapping. The following errors were encountered: ' + errors.substr(0, errors.length - 2));
+      }
+
+      function onDataBound(e) {
+         applyGridTooltips();
+      }
+
+      function onMappingEdit(e) {
+         $('#PriceTypeName').hide();
+         $("label[for='PriceTypeName']").hide();
+      }
+   </script>
+}

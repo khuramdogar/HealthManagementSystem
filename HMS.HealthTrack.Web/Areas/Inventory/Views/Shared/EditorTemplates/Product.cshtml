@@ -1,0 +1,17 @@
+﻿@{
+   Layout = null;
+}
+@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.StockSets.StockSetItemModel
+
+@(Html.Kendo().ComboBox()
+              .Name("InternalId")
+                 .DataTextField("Text")
+              .DataValueField("Value")
+              .Filter(FilterType.Contains)
+                 .DataSource(source => source.Read(read => read.Action("ComplexSearch", "Products").Data("onAdditionalData"))
+                 .ServerFiltering(true))
+              .SelectedIndex(-1)
+              .Text("")
+              .Events(e => e.Change("onProductChange"))
+              .HtmlAttributes(new { style = "width:95%" }))

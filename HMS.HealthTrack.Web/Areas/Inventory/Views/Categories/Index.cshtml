@@ -1,0 +1,225 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.Categories
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.Shared
+@using Kendo.Mvc.UI
+@model dynamic
+
+@{
+   ViewBag.Title = "Categories";
+}
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Scale And Box Information.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Product categories</h2>
+         </div>
+      </div>
+   </div>
+</div>
+<div id="alertPlaceholder"></div>
+<div id="categoryTreeList">
+   @(Html.Kendo().TreeList<CategoryViewModel>()
+        .Name("Categories")
+        .Columns(columns =>
+        {
+           columns.Add().Field(f => f.CategoryName);
+           columns.Add().Command(command =>
+           {
+              command.Edit();
+              command.Custom().Name("Details").Click("showDetails");
+              command.Destroy();
+           }).HtmlAttributes(new {@class = "button-column"}).Width(270);
+        })
+        .DataSource(dataSource => dataSource
+           .Create(c => c.Action("Create", "Categories"))
+           .Destroy(d => d.Action("Destroy", "Categories"))
+           .Events(e => e.Error("errorHandler").Sync("onSync"))
+           .Read(r => r.Action("Get", "Categories")).Sort(sort => sort.Add(s => s.CategoryName))
+           .Update(u => u.Action("Update", "Categories"))
+           .Model(m =>
+           {
+              m.Id(f => f.CategoryId);
+              m.ParentId(f => f.ParentId);
+              m.Expanded(false);
+              m.Field(f => f.CategoryName);
+              m.Field(f => f.StockSettings);
+              m.Field(f => f.Disinherit);
+           }))
+        .Editable(editable => editable.Mode("popup").TemplateName("Category"))
+        .Events(events => events.Edit("onEdit").Save("onSave").DataBound("onDataBound").Remove("onRemove"))
+        .HtmlAttributes(new {style = "height:800px"})
+        .Sortable(sort => sort.AllowUnsort(false))
+        .Toolbar(toolbar => toolbar.Custom().Name("apply").Text("Filter"))
+        )
+</div>
+      
+@(Html.Kendo().Window().Name("Details")
+     .Title("Category Details")
+     .Visible(false)
+     .Modal(true)
+     .Draggable(true)
+     .Width(600)
+     )
+
+<script type="text/x-kendo-template" id="template">
+         <div id="details-container">
+            <h2>#= CategoryName #</h2>
+            <dl>
+               <dt>Last modified by: #= LastModifiedUser #</dt>
+               <dt>Last modified on: #=kendo.toString(LastModifiedDate ,'dd/MM/yyyy h:mm tt')#</dt>
+               <dt>Added by: #= UserCreated #</dt>
+               <dt>Added on: #=kendo.toString(CreationDate ,'dd/MM/yyyy h:mm tt')#</dt>
+            </dl>
+         </div>
+      </script>
+
+<script type="text/javascript">
+   var detailsTemplate = kendo.template($("#template").html());
+
+   function showDetails(e) {
+      e.preventDefault();
+
+      var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+      var wnd = $("#Details").data("kendoWindow");
+
+      wnd.content(detailsTemplate(dataItem));
+      wnd.center().open();
+   }
+</script>
+
+@section Scripts {
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+         var treeList = $('#Categories').data('kendoTreeList');
+         var toolbarTemplateString = '<span class="toolbar">' +
+            '<span class="toolbar-left">' +
+            '<button data-command="create" class="k-button k-button-icontext k-grid-add">' +
+            '<span class="k-icon k-add"></span>' +
+            'Add new category' +
+            '</button>' +
+            '</span>' +
+            '<span class="toolbar-right">' +
+            '@Html.Label("Name", new {@class = "filter-label"})' +
+            '@Html.Kendo().TextBox().Name("name").HtmlAttributes(new {@class = "filter-control"})' +
+            '<a class="k-button" id="applyFilter">Filter</a>' +
+            '<a class="k-button" id="clearFilter">Clear</a>' +
+            '</span>' +
+            '</span>';
+         $('div.k-grid-toolbar').html(toolbarTemplateString);
+         InitFilterControls();
+         $('#applyFilter').click(function() {
+            var phrase = $('#name').val();
+            if (phrase != '') {
+               var filters = GetFilters(treeList);
+               filters = UpdateSearchFilters(filters, "CategoryName", "contains", phrase, 'and');
+               treeList.dataSource.filter(filters);
+            } else {
+               $('#clearFilter').trigger('click');
+            }
+         });
+
+         $('#clearFilter').click(function() {
+            $('#name').val('');
+            ClearFilters(treeList);
+         });
+
+      });
+
+      function onDataBound(e) {
+         if ($('#name').val() != '') {
+            var treeList = $('#Categories').data('kendoTreeList');
+            var rows = $('tr.k-treelist-group', treeList.tbody);
+            $.each(rows, function(index, row) {
+               treeList.expand(row);
+            });
+         }
+      }
+
+      function onSync(e) {
+         this.read();
+      }
+
+      function onRemove(e) {
+         if (confirm('This will also delete all associated subcategories. Are you sure you want to delete the category ' + e.model.CategoryName + '?')) {
+
+         } else {
+            e.preventDefault();
+            return;
+         }
+
+      }
+
+      function error_handler(e) {
+         var msg = e.xhr.responseJSON.Message;
+         alert(msg);
+         $('#Categories').data('kendoGrid').cancelChanges();
+      }
+
+      function onEdit(e) {
+         $('.k-edit-field').on('keypress', function(ee) {
+            if (ee.keyCode == 13) {
+               $('.k-grid-update').focus().trigger('click');
+            }
+         });
+
+         $('#ParentCategoryList').kendoDropDownList({
+            autobind: true,
+            dataTextField: "Text",
+            dataValueField: "Value",
+            dataSource: {
+               transport: {
+                  read: {
+                     type: "jsonp",
+                     serverFiltering: true,
+                     url: "@Url.Action("GetParents", "Categories")/?id=" + e.model.CategoryId
+                  }
+               }
+            },
+            filter: "startswith",
+            optionLabel: " ",
+         });
+
+         if (!e.model.Disinherit && e.model.parentId != null) {
+            $('#StockSettings').data('kendoMultiSelect').readonly();
+         }
+
+         if (e.model.parentId == null) {
+            $('#Disinherit').closest('.templateRow').remove();
+         }
+
+         $('#Disinherit').click(function(e) {
+            if ($(this).is(":checked")) {
+               $('#StockSettings').data('kendoMultiSelect').enable();
+            } else {
+               $('#StockSettings').data('kendoMultiSelect').readonly();
+            }
+         });
+      }
+
+
+      function onSave(e) {
+         var parentCategoryDropDown = $('#ParentCategoryList').data('kendoDropDownList');
+         var selectedCategory = parentCategoryDropDown.select();
+         if (selectedCategory > 0) {
+            e.model.set("parentId", parentCategoryDropDown.dataItem(selectedCategory).Value);
+         }
+      }
+
+      function errorHandler(e) {
+         if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function(key, value) {
+               if ('errors' in value) {
+                  $.each(value.errors, function() {
+                     message += this + "\n";
+                  });
+               }
+            });
+            getAlert('danger', message);
+         }
+      }
+   </script>
+}

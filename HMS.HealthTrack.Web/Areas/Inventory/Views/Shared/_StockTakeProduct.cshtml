@@ -1,0 +1,55 @@
+﻿@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.StockTakes.SingleProductStockTakeDTO
+@using (Html.BeginForm("SubmitStockTakeForProduct", "StockTakes", FormMethod.Post, new {id = "submitStockTakeForProductForm"}))
+{
+   <div id="stockTakeProductAlert"></div>
+   
+   @Html.HiddenFor(m => m.StockTakeProductId)
+   @Html.HiddenFor(m => m.StockTakeLocationId)
+   @Html.ValidationSummary(false, "", new { @class = "text-danger"})
+   
+   <div class="form-horizontal">
+      <div class="form-group">
+         <div class="control-label col-sm-4">
+            @Html.LabelFor(m => m.StockTakeProductId)
+         </div>
+         <div class="col-sm-7 control-label-text">
+            <span id="Description"></span>
+         </div>
+      </div>
+      
+      <div class="form-group">
+         <div class="control-label col-sm-4">
+            @Html.LabelFor(m => m.StockTakeLocationId)
+         </div>
+         <div class="col-sm-7 control-label-text">
+            <span id="Location"></span>
+         </div>
+      </div>
+      
+      <div class="form-group">
+         <div class="control-label col-sm-4">
+            @Html.LabelFor(m => m.StockLevel)
+         </div>
+         <div class="col-sm-7">
+            @Html.Kendo().IntegerTextBoxFor(m => m.StockLevel)
+         </div>
+      </div>
+      <div class="form-group">
+         <div class="col-sm-12 pull-right" style="text-align:right;">
+            <a class="k-button k-primary" id="submitStockTakeForProduct">Submit</a>
+            <a class="k-button" id="cancelStockTakeForProduct">Cancel</a>
+         </div>
+      </div>
+   </div>
+}
+<style>
+   .k-textbox, .k-datetimepicker, .k-selectbox, .k-combobox, .k-datepicker, .k-numerictextbox, .k-dropdown {
+      width: 20em;
+   }
+
+   .control-label-text {
+      padding-top: 7px;
+      margin-bottom: 0px !important;
+   }
+</style>

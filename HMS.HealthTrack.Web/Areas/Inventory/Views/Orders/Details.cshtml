@@ -1,0 +1,285 @@
+﻿@using HMS.HealthTrack.Web.Data.Model.Clinical
+@using HMS.HealthTrack.Web.Data.Model.Inventory
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.Orders
+@using HMS.HealthTrack.Web.Infrastructure
+@using Kendo.Mvc.UI
+@model DetailsOrdersViewModel
+
+@{
+   ViewBag.Title = "Details";
+}
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Delivery Truck 2.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Order details</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+@Html.Partial("_OrderDetails", Model)
+<br/>
+<div class="row">
+   <div class="col-sm-12">
+      <h4>Items</h4>
+   </div>
+</div>
+<div>
+   @(Html.Kendo().Grid<OrderItemsViewModel>()
+        .Name("grid")
+        .ClientDetailTemplateId("template")
+        .Columns(columns =>
+        {
+           columns.Bound(orderItem => orderItem.Product.SPC).Filterable(true).ClientTemplate("<a href='" + @Url.Action("Details", "Products", new {Area = "Inventory"}) + "/#=ProductId#'>#=Product.SPC#</a>");
+           columns.Bound(orderItem => orderItem.ProductDescription).Title("Description");
+           columns.Bound(orderItem => orderItem.Quantity).Title("Ordered").Width(90);
+           columns.Bound(orderItem => orderItem.GLC).Filterable(false);
+           columns.Bound(orderItem => orderItem.Status);
+           columns.Bound(orderItem => orderItem.ReceivedOn).Format("{0:dd/MM/yyyy HH:mm}").Width(160);
+           columns.Bound(orderItem => orderItem.ReceivedQuantity).Title("Received");
+           columns.Bound(orderItem => orderItem.UnitPrice).Filterable(false).Format("{0:c}");
+           columns.Command(command => command.Custom("Adjust").Text("Edit").Click("adjustItem")).HtmlAttributes(new {@class = "button-column"});
+        })
+        .DataSource(dataSource => dataSource
+           .Ajax()
+           .PageSize(10)
+           .Model(model =>
+           {
+              model.Id(orderItem => orderItem.OrderItemId); // Specify the property which is the unique identifier of the model
+              model.Field(orderItem => orderItem.OrderItemId).Editable(false); // Make the consumptionID property not editable
+           })
+           .Read(read => read.Action("GetOpenOrderItems","OrderItems",new {id = @Model.InventoryOrderId, all = true}))) // Action invoked when the grid needs data
+        .Events(events => events.DataBound("onDataBound"))
+        .Filterable()
+        .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+        .Resizable(resize => resize.Columns(true))
+        .Sortable()
+        )
+</div>
+
+<script id="template" type="text/kendo-tmpl">
+      @(Html.Kendo().Grid<PatientDetails>().Name("PatientDetails_#=ProductId#")
+           .Columns(
+              columns =>
+              {
+                 columns.Bound(c => c.PatientId);
+                 columns.Bound(c => c.Title);
+                 columns.Bound(c => c.FirstName);
+                 columns.Bound(c => c.Surname);
+                 columns.Bound(c => c.Dob).Format("{0:dd/MM/yyyy}");
+                 columns.Bound(c => c.Medicare);
+              })
+           .DataSource(ds => ds.WebApi().PageSize(20).Read(read => read.Action("GetPatientDetails","Orders",new { orderItemId = "#=OrderItemId#", productId = "#=ProductId#"})))
+           .ToClientTemplate()
+           )
+   </script>
+<div class="row" style="padding-top: 1em;">
+   <div class="col-lg-12">
+      <a class="k-button" href="@Url.Action("Index")">Back to list</a>
+      @{
+         if (Model.Status == HelperMethods.GetEnumDisplayName<OrderStatus>(OrderStatus.Ordered))
+         {
+            <span><a class="k-button" id="reverseOrder">Reverse</a></span>
+         }
+         if (Model.Status == HelperMethods.GetEnumDisplayName<OrderStatus>(OrderStatus.Ordered) || Model.Status == HelperMethods.GetEnumDisplayName<OrderStatus>(OrderStatus.PartiallyReceived))
+         {
+            <span><a class="k-button" id="receiveLink" href="@Url.Action("ReceiveOrder", "Stock", new {id = Model.InventoryOrderId})">Receive</a></span>
+         }
+      }
+      <a class="k-button k-primary" href="@Url.Action("Print", "Orders", new {id = Model.InventoryOrderId})" target="_blank">Print</a>
+      @if (Model.Status == HelperMethods.GetEnumDisplayName<OrderStatus>(OrderStatus.Created))
+      {
+         <span><a class="k-button" id="approveLink" href="@Url.Action("Approve", "Orders", new {id = Model.InventoryOrderId})">Approve</a> </span>
+      }
+      else if (Model.Status == HelperMethods.GetEnumDisplayName<OrderStatus>(OrderStatus.Approved))
+      {
+         <span><a class="k-button" id="placeLink" href="@Url.Action("Place", "Orders", new {id = Model.InventoryOrderId})">Place Order</a></span>
+      }
+      
+   </div>
+</div>
+<div id="window">
+   <div id="alertPlaceholder"></div>
+   <div id="windowGrid">
+      @(Html.Kendo().Grid<AdjustStockModel>()
+           .Name("AdjustGrid")
+           .Columns(columns =>
+           {
+              columns.Bound(c => c.StockAdjustmentId).Hidden(true);
+              columns.Bound(c => c.ReceivedOn).Format("{0:dd/MM/yyyy HH:mm}").Width(130);
+              columns.Bound(c => c.Location);
+              columns.Bound(c => c.Adjustable).Title("Adjustable"); 
+              columns.Bound(c => c.Quantity).Title("In Stock");
+              columns.Bound(c => c.ReceivedQuantity).ClientTemplate(Html.Kendo().IntegerTextBox().Name("receivedQuantity_#=StockAdjustmentId#").HtmlAttributes(new { @class = "k-input templateCell", value = "#=ReceivedQuantity#", adjustable = "#=Adjustable#" }).ToClientTemplate().ToHtmlString());
+           })
+           .AutoBind(false)
+           .Events(events => events.DataBound("onAdjustDataBind"))
+           .DataSource(ds => ds.Ajax().Read(read => read.Url(@Url.Action("GetStockForOrderItem", "Stock"))))
+               .Resizable(resize => resize.Columns(true))
+               .Sortable()
+           )
+   </div>
+   <br/>
+   <div id="windowButtons">
+      <button type="button" class="k-button" id="closeWindow">Close</button>
+      <button type="button" class="k-button k-primary" id="saveAdjustment">Save</button>
+   </div>
+</div>
+@section Scripts {
+   <script src="~/Scripts/Inventory.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+         var grid = $('#grid').data('kendoGrid');
+         var orderStatus = "@Model.Status";
+         var pendingApproval = "@Server.HtmlEncode(HelperMethods.GetEnumDisplayName<OrderStatus>(@OrderStatus.PendingApproval))";
+
+         if ((orderStatus == "@OrderStatus.Created" || orderStatus == "@OrderStatus.Approved" || orderStatus == pendingApproval)) {
+            grid.hideColumn("Status");
+         }
+
+         var partiallyReceived = "@Server.HtmlEncode(HelperMethods.GetEnumDisplayName<OrderStatus>(@OrderStatus.PartiallyReceived))";
+
+         if ((orderStatus != "@OrderStatus.Complete" && orderStatus != partiallyReceived)) {
+            grid.hideColumn(7);
+         }
+
+         createWindow();
+
+         $('#reverseOrder').on('click', function() {
+            if (confirm('Are you sure you want to reverse this order.')) {
+               window.location.href = '@Url.Action("Reverse", "Orders", new {id = Model.InventoryOrderId})';
+            }
+         });
+      });
+
+      function createWindow() {
+         if (!$("#window").data("kendoWindow")) {
+            $("#window").kendoWindow({
+               title: "Adjust order item",
+               scrollable: false,
+               resizable: false,
+               width: 900,
+               visible: false,
+               open: function() {
+                  var win = this;
+                  $('#closeWindow').click(function() {
+                     win.close();
+                  });
+                  $('#saveAdjustment').click(function() {
+                     var adjustments = [];
+                     var rows = $('#AdjustGrid').data('kendoGrid').dataSource.data();
+                     $.each(rows, function(index, value) {
+                        adjustments.push({
+                           StockAdjustmentId: value.StockAdjustmentId,
+                           ReceivedQuantity: $("#receivedQuantity_" + value.StockAdjustmentId).val()
+                        });
+                     });
+
+                     $.ajax({
+                        type: 'POST',
+                        async: false,
+                        data: JSON.stringify(adjustments),
+                        contentType: 'application/json',
+                        url: "@Url.Action("AdjustStockForOrderItem", "StockAdjustments")",
+                        success: function(data) {
+                           getAlert('success', 'Received Quantities changed successfully.');
+                           $('#AdjustGrid').data('kendoGrid').dataSource.read();
+                           $('#grid').data('kendoGrid').dataSource.read();
+                        },
+                        error: function(data) {
+                           getAlert('danger', data.responseJSON.Message);
+                        }
+                     });
+                  });
+               }
+            });
+         }
+      }
+
+      function adjustItem(e) {
+         if ($(e.currentTarget).attr('disabled')) {
+            return;
+         }
+         var dataItem = this.dataItem($(e.currentTarget).closest('tr'));
+         var url = '@Url.Action("GetStockForOrderItem", "Stock")'; // the url for the grid with received stock
+         var window = $('#window').data('kendoWindow');
+         var dataSource = $('#AdjustGrid').data('kendoGrid').dataSource;
+         dataSource.transport.options.read.data = { id: dataItem.OrderItemId };
+         dataSource.transport.options.read.url = url;
+
+         dataSource.read();
+         $('#alertPlaceholder').empty();
+         window.open();
+      }
+
+      function onDataBound(e) {
+         applyGridTooltips();
+         var grid = $('#grid').data('kendoGrid');
+         var gridData = grid.dataSource.view();
+         var dataSource = this.dataSource;
+
+         for (var ii = 0; ii < gridData.length; ii++) {
+            var currentUid = gridData[ii].uid;
+            var status = gridData[ii].Status;
+            if (status != "@( (int) OrderItemStatus.Received )" && status != "@((int) OrderItemStatus.PartiallyReceived)") {
+               var currentRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+               $(currentRow).find('.k-grid-Adjust').kendoButton({ enable: false });
+            }
+         }
+
+         this.element.find('tr.k-master-row').each(function() {
+            var row = $(this);
+            var data = dataSource.getByUid(row.data('uid'));
+            if (!data.get('HasConsumptionDetails')) {
+               row.find('.k-hierarchy-cell a').css({ opacity: 0.3, cursor: 'default' }).click(function(e) {
+                  e.stopImmediatePropagation();
+                  return false;
+               });
+            }
+         });
+      }
+
+      function onAdjustDataBind(e) {
+         applyGridTooltips();
+         $(".templateCell").each(function() {
+            if (!$(this).data('kendoNumericTextBox')) {
+               var textbox = $(this).kendoNumericTextBox({
+                  format: "#.##",
+
+               });
+               if ($(this).attr('adjustable') == 'No') {
+                  $(textbox).data('kendoNumericTextBox').enable(false);
+               }
+
+            }
+         });
+         $('#window').data('kendoWindow').center();
+      }
+
+      function onExpandAll(e) {
+         var grid = $('#grid').data('kendoGrid');
+         var dataSource = grid.dataSource;
+         $('#grid').find('tr.k-master-row').each(function() {
+            var row = $(this);
+            var data = dataSource.getByUid(row.data('uid'));
+            if (data.get('HasConsumptionDetails')) {
+               if (e.checked) {
+                  grid.expandRow(row);
+               } else {
+                  grid.collapseRow(row);
+               }
+            }
+         });
+      }
+   </script>
+}
+
+<style>
+   #windowButtons { float: right; }
+
+   .templateCell { width: 90px; }
+</style>

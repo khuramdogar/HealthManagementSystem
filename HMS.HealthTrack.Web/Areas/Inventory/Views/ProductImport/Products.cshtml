@@ -1,0 +1,188 @@
+﻿@using HMS.HealthTrack.Web.Data.Model.Inventory
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.ProductImport
+@using Kendo.Mvc.UI
+@model ProductImportDataViewModel
+@{
+   ViewBag.Title = "Import";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Spreadsheet 1 Edit.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Products to import</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div id="alertPlaceholder"></div>
+<div id="importDetails">
+   @(Html.Partial("_ProductImportDetails", Model))   
+</div>
+<div>
+   @(Html.Kendo().Grid<ProductImportModel>()
+        .Name("Sets")
+        .Columns(columns =>
+        {
+           columns.Bound(c => c.Processed).Title("Imported").ClientTemplate("#if (Processed) {#" +
+                                                                            "<span class='k-icon k-si-tick'>" +
+                                                                            "#} else {#" +
+                                                                            "<span class='k-icon k-si-cancel'>" +
+                                                                            "#}#").Filterable(f => f.Enabled(false));
+           columns.Bound(c => c.Description);
+           columns.Bound(c => c.SPC);
+           columns.Bound(c => c.UPN);
+           columns.Bound(c => c.Supplier);
+           columns.Bound(c => c.Valid).Title("Valid").ClientTemplate("#if (Valid) {#" +
+                                                                     "<span class='k-icon k-si-tick'>" +
+                                                                     "#} else {#" +
+                                                                     "<span class='k-icon k-si-cancel'>" +
+                                                                     "#}#");
+           columns.Command(c =>
+           {
+              c.Custom("Edit").Text("Edit").Click("onEdit");
+              c.Destroy();
+           }).HtmlAttributes(new {@class = "button-column"}).Width(165);
+        })
+        .DataSource(ds => ds.WebApi()
+           .PageSize(15)
+           .Destroy(destroy => destroy.Url(@Url.HttpRouteUrl("DefaultApi", new {controller = "ProductImport", id = "{0}"})))
+           .Events(events => events.Error("error_handler").Sync("onSync"))
+           .Model(model => model.Id(m => m.ProductImportId))
+           .Read(read => read.Url(@Url.HttpRouteUrl("DefaultApi", new {controller = "ProductImport", id = Model.ProductImportDataId})))
+           .Sort(sort => sort.Add(s => s.Valid))
+        )
+        .Events(e => e.DataBound("onDataBound"))
+        .Filterable(f => f.Enabled(true).Extra(false))
+        .Pageable(page => page.Refresh(true).PageSizes(true).ButtonCount(5))
+        .Resizable(resize => resize.Columns(true))
+        .Sortable()
+        .ToolBar(toolbar => toolbar.Template(@<text>
+                                                 <button class="k-button" id="importButton">Run import</button>
+                                              </text>)))
+</div>
+<div id="buttonRow">
+   <a class="k-button" id="return">Back to list</a>
+</div>
+
+@section Scripts {
+   <script src="~/Scripts/Inventory.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+         $('#return').click(function() {
+            window.location.href = '@(Url.Action("Index", "ProductImport"))';
+         });
+
+         if ('@Model.Status' == '@ProductImportStatus.Pending') {
+            $('#importButton').click(function() {
+               $.ajax({
+                  async: false,
+                  contentType: 'application/json',
+                  data: JSON.stringify({
+                     ImportId: @Model.ProductImportDataId,
+                  }),
+                  type: 'POST',
+                  url: "@Url.HttpRouteUrl("DefaultApi", new {controller = "ProductImport"})",
+                  success: function(e) {
+                     var grid = $('#Sets').data('kendoGrid');
+                     refreshDetails();
+                     hideEditDeleteButtons(grid);
+                     $('#importButton').prop('disabled', 'disabled').addClass('k-state-disabled');
+                     getAlert('success', 'Product import in progress. Click here to<a href="@Url.Action("Index")"> return to product imports.</a></p>');
+                  },
+                  error: function(e) {
+                     getAlert('danger', e.responseJSON.Message);
+                  }
+               });
+            });
+         } else {
+            $('#importButton').prop('disabled', 'disabled').addClass('k-state-disabled');
+         }
+      });
+
+      function error_handler(e) {
+         if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function(key, value) {
+               if ('errors' in value) {
+                  $.each(value.errors, function() {
+                     message += this + "\n";
+                  });
+               }
+            });
+            alert(message);
+         }
+      }
+
+      function onDataBound(e) {
+         applyGridTooltips();
+         if ('@Model.Status' == '@(ProductImportStatus.Complete)' || '@Model.Status' == '@(ProductImportStatus.Processing)') {
+            var grid = this;
+            hideEditDeleteButtons(grid);
+         }
+      }
+
+      function hideEditDeleteButtons(grid) {
+         var gridRows = grid.tbody.find("tr");
+         for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            row.find('.k-grid-Edit').hide();
+            row.find('.k-grid-delete').hide();
+         }
+      }
+
+      (function($, kendo) {
+         $.extend(true, kendo.ui.validator, {
+            rules: {
+               numericstring: function(input, params) {
+                  if (input.filter("[data-val-numericstring]").length && input.val()) {
+                     return isNumeric(input.val());
+                  }
+                  return true;
+               },
+               decimalstring: function(input) {
+                  if (input.is("[data-val-decimalstring]") && input.val() != "") {
+                     return isNumeric(input.val());
+                  }
+                  return true;
+               }
+            },
+            messages: {
+               numericstring: function(input) {
+                  return "Value must be a number";
+               },
+               decimalstring: function(input) {
+                  return "Value must be a valid decimal";
+               }
+            }
+         });
+      })(jQuery, kendo);
+
+      function onEdit(e) {
+         var dataItem = $('#Sets').data('kendoGrid').dataItem($(e.currentTarget).closest('tr'));
+         window.location.href = '@(Url.Action("Edit"))/' + dataItem.ProductImportId;
+      }
+
+      function refreshDetails() {
+         $('#alertPlaceholder').empty();
+         $('#importDetails').load('@Url.Action("ProductImportDetails", new {id = Model.ProductImportDataId})');
+      }
+
+      function onSync(e) {
+         $('#alertPlaceholder').empty();
+         refreshDetails();
+      }
+   </script>
+}
+<style type="text/css">
+   .k-invalid-msg {
+      z-index: 11000 !important;
+      display: block;
+   }
+
+   #buttonRow { margin-top: 1em; }
+</style>

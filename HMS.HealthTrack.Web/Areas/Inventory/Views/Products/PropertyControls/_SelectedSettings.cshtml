@@ -1,0 +1,9 @@
+﻿@using Kendo.Mvc.UI
+<div class="page-input">
+   @(Html.Kendo().MultiSelect().Name("SelectedSettings")
+     .DataSource(source => source.Read(read => read.Action("GetAll", "ProductSettings")).ServerFiltering(true))
+     .DataTextField("Text")
+     .DataValueField("SettingId")
+     .HtmlAttributes(new { @class = "page-input", id = "ProductControl", style="padding-right:0 !important;"})
+     .Placeholder("Select settings"))
+</div>

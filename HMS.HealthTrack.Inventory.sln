@@ -1,0 +1,83 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2010
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HMS.HealthTrack.Web", "HMS.HealthTrack.Web\HMS.HealthTrack.Web.csproj", "{13A2334B-B1A2-4E3E-B2B1-04CB994CA3C1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HMS.HealthTrack.Web.Data", "HMS.HealthTrack.Inventory.Data\HMS.HealthTrack.Web.Data.csproj", "{55687582-4E37-4C02-A2B5-B31C9E05D491}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HMS.HealthTrack.Inventory.Test", "HMS.HealthTrack.Inventory.Test\HMS.HealthTrack.Inventory.Test.csproj", "{941E285C-B068-4D81-9AE7-DC508B60F13C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HMS.HealthTrack.Inventory.Common", "HMS.HealthTrack.Inventory.Common\HMS.HealthTrack.Inventory.Common.csproj", "{EEAB3791-9A8C-48FD-82E4-E4FDF99354E0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6696339E-D4BB-4F33-8204-FE3D56597CD3} = {6696339E-D4BB-4F33-8204-FE3D56597CD3}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{F46A3A81-6984-40A1-9E8A-7726CF3FE193}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HMS.HealthTrack.Web.Migrator", "HMS.HealthTrack.Web.Migrator\HMS.HealthTrack.Web.Migrator.csproj", "{84F86E4F-8262-4C28-9E46-BEC22E5E36D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HMS.HealthTrack.Web.IntegrationTesting", "HMS.HealthTrack.Web.IntegrationTesting\HMS.HealthTrack.Web.IntegrationTesting.csproj", "{B75FAAEF-855E-4DD5-8493-BF3668AFB7D8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EDE99EE9-1669-4FA3-B15E-FE0BD8716F07}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		InventoryClient.nswag = InventoryClient.nswag
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HMS.HealthTrack.Inventory.OrderingIntegration", "HMS.HealthTrack.Inventory.OrderingIntegration\HMS.HealthTrack.Inventory.OrderingIntegration.csproj", "{9FF60469-188A-4D32-B2A7-965D909413FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HMS.HealthTrack.Inventory.Client", "HMS.HealthTrack.Inventory.Client\HMS.HealthTrack.Inventory.Client.csproj", "{6696339E-D4BB-4F33-8204-FE3D56597CD3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{13A2334B-B1A2-4E3E-B2B1-04CB994CA3C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13A2334B-B1A2-4E3E-B2B1-04CB994CA3C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13A2334B-B1A2-4E3E-B2B1-04CB994CA3C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13A2334B-B1A2-4E3E-B2B1-04CB994CA3C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55687582-4E37-4C02-A2B5-B31C9E05D491}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55687582-4E37-4C02-A2B5-B31C9E05D491}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55687582-4E37-4C02-A2B5-B31C9E05D491}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55687582-4E37-4C02-A2B5-B31C9E05D491}.Release|Any CPU.Build.0 = Release|Any CPU
+		{941E285C-B068-4D81-9AE7-DC508B60F13C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{941E285C-B068-4D81-9AE7-DC508B60F13C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{941E285C-B068-4D81-9AE7-DC508B60F13C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{941E285C-B068-4D81-9AE7-DC508B60F13C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEAB3791-9A8C-48FD-82E4-E4FDF99354E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEAB3791-9A8C-48FD-82E4-E4FDF99354E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEAB3791-9A8C-48FD-82E4-E4FDF99354E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEAB3791-9A8C-48FD-82E4-E4FDF99354E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84F86E4F-8262-4C28-9E46-BEC22E5E36D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84F86E4F-8262-4C28-9E46-BEC22E5E36D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84F86E4F-8262-4C28-9E46-BEC22E5E36D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84F86E4F-8262-4C28-9E46-BEC22E5E36D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B75FAAEF-855E-4DD5-8493-BF3668AFB7D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B75FAAEF-855E-4DD5-8493-BF3668AFB7D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B75FAAEF-855E-4DD5-8493-BF3668AFB7D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B75FAAEF-855E-4DD5-8493-BF3668AFB7D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FF60469-188A-4D32-B2A7-965D909413FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FF60469-188A-4D32-B2A7-965D909413FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FF60469-188A-4D32-B2A7-965D909413FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FF60469-188A-4D32-B2A7-965D909413FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6696339E-D4BB-4F33-8204-FE3D56597CD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6696339E-D4BB-4F33-8204-FE3D56597CD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6696339E-D4BB-4F33-8204-FE3D56597CD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6696339E-D4BB-4F33-8204-FE3D56597CD3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {76E1492B-1CD1-4A0D-A50F-43D4FE90632B}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,16 @@
+﻿@model dynamic
+
+<span class="k-textbox k-space-right page-input">
+   @Html.Hidden("LedgerId", null, new {@Model.PropertyName})
+   <input id="GLC" readonly="readonly" name="GLC" />
+   <a href="#" class="k-icon k-i-search" id="BrowseLedgers">&nbsp;</a>
+</span>
+
+<script type="text/javascript">
+   $(document).ready(function() {
+      $('#BrowseLedgers').click(function() {
+         $('#ledgerTreeWindow').data('kendoWindow').center().open();
+      });
+   });
+   
+</script>

@@ -1,0 +1,6 @@
+BEGIN TRANSACTION
+
+ALTER TABLE Inventory.StockTake
+ALTER COLUMN StockTakeDate DateTime NOT NULL
+
+COMMIT

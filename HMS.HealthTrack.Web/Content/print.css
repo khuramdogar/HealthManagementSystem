@@ -1,0 +1,18 @@
+﻿body {
+   font-size: 10px;
+}
+
+.alert {
+   display: none;
+}
+
+.k-button {
+   display: none;
+}
+
+.pageInfo {
+   display: none;
+}
+.do-not-print{
+   display: none;
+}

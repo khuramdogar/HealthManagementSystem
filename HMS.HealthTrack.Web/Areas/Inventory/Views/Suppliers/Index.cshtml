@@ -1,0 +1,110 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.Suppliers
+@using Kendo.Mvc.UI
+@model IEnumerable<HMS.HealthTrack.Web.Areas.Inventory.Models.Suppliers.SuppliersViewModel>
+@{
+   ViewBag.Title = "Suppliers";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Delivery Man.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Suppliers</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div id="alertPlaceholder"></div>
+<div>
+   <div id="SuppliersGrid">
+      @(Html.Kendo().Grid<SuppliersViewModel>()
+           .Name("suppliers")
+           .Columns(column =>
+           {
+              column.Bound(c => c.Name).Title("Name");
+              column.Bound(c => c.company_ID).Title("").Filterable(false).Width(110).ClientTemplate("<a title='Details' class='glyphicon glyphicon-list' href=" + @Url.Action("Details", "Suppliers") + "/#: company_ID#></a>");
+           })
+           .DataSource(ds => ds.WebApi().PageSize(20)
+              .Model(model => model.Id(m => m.company_ID))
+              .Read(read => read.Url(Url.HttpRouteUrl("DefaultApi", new {controller = "Suppliers"}))).Sort(sort => sort.Add(s => s.Name))
+           )
+           .Events(events => events.DataBound("onDataBound"))
+           .Filterable()
+           .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+           .Resizable(resize => resize.Columns(true))
+           .Sortable()
+           .ToolBar(toolbar => toolbar.Template(@<text>
+                                                    <span class="buttons">
+                                                       <a href="@Url.Action("Create", "Suppliers")" class ="k-button">Add supplier</a>
+                                                    </span>
+                                                    <span class="filters">
+                                                       <label class="filter-label" for="name">Name:</label>
+                                                       @(Html.Kendo().TextBox().Name("name"))
+                                                    </span>
+                                                 </text>))
+           )
+   </div>
+</div>
+
+@(Html.Kendo().Window().Name("Details")
+     .Title("Category Details")
+     .Visible(false)
+     .Modal(true)
+     .Draggable(true)
+     .Width(600)
+     )
+
+@*Details template*@
+<script type="text/x-kendo-template" id="template">
+   <div id="details-container">
+      <h2>#= CompanyCompanyName #</h2>
+      <dl>
+         <dt>Last modified by: #= LastModifiedBy #</dt>
+         <dt>Last modified on: #=kendo.toString(LastModifiedOn ,'dd/MM/yyyy h:mm tt')#</dt>
+         <dt>Added by: #= CreatedBy #</dt>
+         <dt>Added on: #=kendo.toString(CreatedOn,'dd/MM/yyyy h:mm tt')#</dt>
+      </dl>
+   </div>
+</script>
+
+@section Scripts {
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+   <script src="~/Scripts/Inventory.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+         $('#name').on('input propertychange paste', function() {
+            customTextFilter($('#suppliers').data('kendoGrid'), "Name", $(this).val());
+         });
+      });
+
+      var detailsTemplate = kendo.template($("#template").html());
+
+      function showDetails(e) {
+         e.preventDefault();
+
+         var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+         var wnd = $("#Details").data("kendoWindow");
+
+         wnd.content(detailsTemplate(dataItem));
+         wnd.center().open();
+      }
+
+      function onDataBound(e) {
+         applyGridTooltips();
+      }
+   </script>
+}
+
+<style>
+   .filter-label {
+      padding-left: .5em;
+      padding-right: .3em;
+      vertical-align: middle;
+   }
+
+   .filters { float: right; }
+</style>

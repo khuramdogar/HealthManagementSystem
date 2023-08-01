@@ -1,0 +1,14 @@
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.Orders
+@{
+    var displayModel = (PrintOrdersDisplayModel) Model;
+    if (displayModel != null)
+    {
+        @Html.DevExpress().DocumentViewer(settings =>
+        {
+            settings.Name = "OrderReport";
+            settings.CallbackRouteValues = new {Controller = "Orders", Action = "OrderReportPartial", id = displayModel.ProductId};
+            settings.ExportRouteValues = new {Controller = "Orders", Action = "OrderReportPartialExport", id = displayModel.ProductId};
+            settings.Report = (XtraReport) displayModel.Report;
+        }).GetHtml()
+    }
+}

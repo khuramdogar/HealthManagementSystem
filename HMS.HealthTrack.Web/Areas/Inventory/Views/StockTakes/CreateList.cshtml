@@ -1,0 +1,253 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.Products
+@using HMS.HealthTrack.Web.Views
+@using Kendo.Mvc.UI
+@model dynamic
+
+@{
+   ViewBag.Title = "Stock take list";
+}
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Bar Scanner Search.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2 id="CheckListTitle">Create stock take check list</h2>
+         </div>
+      </div>
+      <div class="row" id="subtitle">
+         <div class="col-sm-12">
+            Select products to add to stock take list in the grid below
+         </div>
+      </div>
+   </div>
+</div>
+<div id="alertPlaceholder"></div>
+@Html.Hidden("LocationId")
+
+@(Html.Kendo().Grid<IndexProductsViewModel>()
+     .Name("Products")
+     .Columns(columns =>
+     {
+        columns.Bound(c => c.UPN);
+        columns.Bound(c => c.SPC);
+        columns.Bound(c => c.Description);
+     })
+     .DataSource(ds => ds
+        .Ajax()
+        .Events(events => events.Error("error_handler"))
+        .PageSize(20)
+        .Read(read => read.Action("StockTakeProducts", "Products").Data("additionalData"))
+        .Model(model => model.Id(m => m.ProductId))
+     )
+     .Events(events => events.DataBound("onDataBound"))
+     .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+     .Resizable(resize => resize.Columns(true))
+     .ToolBar(t => t.Template(@<text>
+                                  <span class="toolbar">
+                                     <span class="toolbar-left">
+                                        @(Html.Kendo().Button().Name("Create").Content("Create list").Events(e => e.Click("onCreateList")))
+                                        @(Html.Kendo().Button().Name("CreateAll").Content("Create list for all").Events(e => e.Click("onCreateAll")))
+                                        @(Html.Separator())
+                                        @(Html.Kendo().Button().Name("SetLocation").Content("Change location").Events(e => e.Click("onChangeLocation")))
+                                     </span>
+                                     <span class="toolbar-right">
+                                        @(Html.Label("Products:"))
+                                        @(Html.Kendo().DropDownList()
+                                             .DataTextField("Text")
+                                             .DataValueField("Value")
+                                             .Name("ProductFilter")
+                                             .Value("1")
+                                             .BindTo(@ViewBag.StockTakeProductFilters)
+                                             )
+                                        @(Html.Label("at", new {style = "padding-left:0.5em;padding-right:0.5em;"}))
+                                        @(Html.Kendo().DropDownList()
+                                             .DataTextField("Text")
+                                             .DataValueField("Value")
+                                             .Name("ProductsAtLocation")
+                                             .Value("0")
+                                             .BindTo(@ViewBag.ProductLocations))
+                                        @(Html.Kendo().Button().Name("Filter").Content("Filter").Events(e => e.Click("onFilter")))
+                                        @(Html.Kendo().Button().Name("Clear").Content("Clear").Events(e => e.Click("onClear")))
+                                     </span>
+                                  </span>
+                               </text>))
+     )
+<div id="stockTakeLocationSelection"></div>
+
+@section scripts
+{
+   <script src="~/Areas/Inventory/Scripts/StockTakes.js"></script>
+   <script src="~/Scripts/Inventory.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+         createStockTakeLocationSelectionWindow();
+         $('#stockTakeLocationSelection').data('kendoWindow').center().open();
+
+         $('#stockTakeLocationSelection').on('click', '#closeWindow', function() {
+            if ($('#LocationId').val() == '') {
+               getAlert('danger', 'A stock take must have a location set before it can be processed.');
+            }
+         });
+
+         $('#stockTakeLocationSelection').on('click', '#selectLocation', function() {
+            var location = parseInt($('#StockTakeLocation').val());
+            var locationName = $('#StockTakeLocation').data('kendoDropDownList').text();
+            $('#LocationId').val(location);
+            getAlert('warning', 'Stock take will be created for location: <strong>' + locationName + '</strong>');
+            $('#CheckListTitle').html('Create stock take check list for ' + locationName);
+            $('#closeWindow').trigger('click');
+         });
+
+         selectedProducts = [];
+         idField = "ProductId";
+
+         $('#Products').delegate('tbody>tr', 'click', function() {
+            var grid = $('#Products').data('kendoGrid');
+            $(this).toggleClass('k-state-selected');
+            var dataItem = grid.dataItem($(this));
+            if ($(this).hasClass('k-state-selected')) {
+               selectedProducts.push(dataItem.ProductId);
+            } else {
+               selectedProducts.splice($.inArray(dataItem.ProductId, selectedProducts), 1);
+            }
+         });
+      });
+
+      function additionalData() {
+         var filterLocationId = null;
+         var productLocation = $('#ProductsAtLocation').val();
+         if (productLocation != 0) {
+            filterLocationId = productLocation;
+         }
+         return {
+            productFilter: $('#ProductFilter').val(),
+            filterLocationId: filterLocationId,
+         }
+      }
+
+      function onChangeLocation(e) {
+         $('#stockTakeLocationSelection').data('kendoWindow').center().open();
+      }
+
+      function onStockTakeLocationDataBound(e) {
+         this.value(@Html.Encode(@ViewBag.UserPreferredLocation).ToString());
+      }
+
+      function onDataBound(e) {
+         applyGridTooltips();
+         var grid = e.sender;
+         var items = grid.items();
+         items.each(function(index, row) {
+            var dataItem = grid.dataItem(row);
+            if ($.inArray(dataItem.ProductId, selectedProducts) > -1) {
+               if (!$(row).hasClass('k-state-selected')) {
+                  $(row).addClass('k-state-selected');
+               }
+            }
+         });
+      }
+
+      function error_handler(e) {
+         var msg = e.xhr.responseJSON.Message;
+         alert(msg);
+         $('#StockTakes').data('kendoGrid').cancelChanges();
+      }
+
+      function onCreateList(e) {
+         if (selectedProducts.length == 0) {
+            getAlert('warning', 'No products selected. Please select products by clicking rows in the grid below.');
+            return;
+         }
+         var location = $('#LocationId').val();
+         if (location == '') {
+            getAlert('danger', 'No location set. Please set a location before creating a stock take check list.');
+            return;
+         }
+
+         $.ajax({
+            type: 'POST',
+            async: false,
+            contentType: 'application/json',
+            dataType: 'json',
+            url: '@(Url.Action("StockTakeListForProducts"))',
+            data: JSON.stringify({
+               productIds: selectedProducts,
+               locationId: location
+            }),
+            success: function(data) {
+               window.location.href = '@(Url.Action("Edit"))/' + data;
+            },
+            error: function(data) {
+               getAlert('danger', 'Unable to create stock take list from selected items.');
+            }
+         });
+      }
+
+      function onCreateAll(e) {
+         var selectedFilter = $('#ProductFilter').val();
+         var location = $('#LocationId').val();
+         if (location == '') {
+            getAlert('danger', 'No location set. Please set a location before creating a stock take check list.');
+            return;
+         }
+
+         var filterLocationId = null;
+         var productLocation = $('#ProductsAtLocation').val();
+         if (productLocation != 0) {
+            filterLocationId = productLocation;
+         }
+
+         $.ajax({
+            type: 'POST',
+            async: false,
+            contentType: 'application/json',
+            dataType: 'json',
+            url: '@(Url.Action("StockTakeListForProductFilter"))',
+            data: JSON.stringify({
+               productFilter: selectedFilter,
+               locationId: location,
+               filterLocationId: filterLocationId,
+            }),
+            success: function(data) {
+               window.location.href = '@(Url.Action("Edit"))/' + data;
+            },
+            error: function(data) {
+               getAlert('danger', 'Unable to create stock take list from selected items: ' + data);
+            }
+         });
+      }
+
+      function onClear(e) {
+         $('#Products tbody > tr').each(function(index, row) {
+            if ($(row).hasClass('k-state-selected')) {
+               $(row).removeClass('k-state-selected');
+            }
+         });
+      }
+
+      function onFilter(e) {
+         var grid = $('#Products').data('kendoGrid');
+         grid.dataSource.read();
+      }
+
+      function onProductsAtLocationClick(e) {
+         var id = $('#ProductsAtLocationId').val();
+         var grid = $('#Products').data('kendoGrid');
+         if (id == 0) {
+            $('#ProductsAtLocationId').val($('#LocationId').val());
+            $('#ProductsAtLocationId').text("Show all products");
+         } else {
+            if (id == '') {
+               getAlert('danger', 'Please select a location.');
+               return;
+            }
+            $('#ProductsAtLocationId').val(0);
+            $('#ProductsAtLocationId').text("Show products at location");
+         }
+         grid.dataSource.read();
+      }
+
+   </script>
+}

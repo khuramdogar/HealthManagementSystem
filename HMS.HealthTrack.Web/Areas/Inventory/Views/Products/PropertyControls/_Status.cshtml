@@ -1,0 +1,7 @@
+﻿@using HMS.HealthTrack.Web.Data.Model.Inventory
+@using Kendo.Mvc.UI
+@model dynamic
+@(Html.Kendo().DropDownList().Name("ProductStatusDropDown")
+     .BindTo(EnumHelper.GetSelectList(typeof (ProductStatus)).OrderBy(e => e.Text))
+     .DataTextField("Text").DataValueField("Value")
+     .HtmlAttributes(new {@class = "page-input", @Model.PropertyName, @Model.Warning}))

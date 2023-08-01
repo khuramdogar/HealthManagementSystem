@@ -1,0 +1,138 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.Consumptions
+@using HMS.HealthTrack.Web.Views
+@using Kendo.Mvc.UI
+@model dynamic
+
+@{
+   ViewBag.Title = "Consumed items";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Barcode.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Consumed items</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div id="alertPlaceholder"></div>
+@(Html.Kendo().Grid<IndexConsumptionsViewModel>()
+     .Name("grid")
+     .ClientDetailTemplateId("template")
+     .Columns(columns =>
+     {
+        columns.Bound(consumption => consumption.SPC).ClientTemplate("#if(InventoryProductId != '') {#" +
+                                                                                "<a href='" + @Url.Action("Details", "Products") + "/#=InventoryProductId#'>#=SPC#</a>" +
+                                                                                "#} else {#" +
+                                                                                "#=SPC#" +
+                                                                                "#}#");
+        columns.Bound(consumption => consumption.Name).Title("Description");
+        columns.Bound(consumption => consumption.ConsumedOn).Format("{0:dd/MM/yyyy HH:mm}").Filterable(f => f.UI(GridFilterUIRole.DateTimePicker)).Title("Consumed");
+        columns.Bound(consumption => consumption.PatientMRN).Title("MRN");
+        columns.Bound(consumption => consumption.RebateCode);
+        columns.Bound(consumption => consumption.Location);
+     })
+     .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(20)
+        .Read(read => read.Action("GetAll", "Consumptions").Data("productsData"))
+        .Sort(sc => { sc.Add(s => s.ConsumedOn).Descending(); })
+     )
+     .Excel(x=>x.AllPages(true))
+     .Events(events => events.DataBound("onDataBound"))
+     .Filterable()
+     .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+     .Resizable(resize => resize.Columns(true))
+     .Sortable(sort => sort.SortMode(GridSortMode.MultipleColumn))
+     .ToolBar(toolbar =>
+     {
+        toolbar.Template(@<text>
+                             <div class="toolbar">
+                                <span class="toolbar-right">
+                                   <label class="filter-label" for="SelectedCategories">Filter categories:</label>
+                                   @(Html.Kendo().MultiSelect().Name("SelectedCategories")
+                                        .DataTextField("CategoryName").DataValueField("id")
+                                        .HtmlAttributes(new {@class = "filter-control"})
+                                        .TagMode(TagMode.Single))
+                                   @(Html.Kendo().Button().Name("BrowseCategories").Content("Select"))
+                                   @(Html.Separator())
+                                   @Html.Kendo().Button().Name("applyFilter").Content("Filter").Events(events => events.Click("onFilterClick"))
+                                   @Html.Kendo().Button().Name("clearFilter").Content("Clear").Events(events => events.Click("onClearClick"))
+                                </span>
+                             </div>
+                          </text>);
+        toolbar.Excel();
+     }))
+<div id="categoryTreeWindow"></div>
+<script id="template" type="text/kendo-tmpl">
+   @(Html.Kendo().TabStrip()
+        .Name("tabStrip_#=ConsumptionId#")
+        .SelectedIndex(0)
+        .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+        .Items(items =>
+        {
+           items.Add().Text("Patient details").Content("<div id='patient_#=ConsumptionId#'></div><script>getPatientDetails(#=ConsumptionId#,#=ContainerId#)</script>");
+           items.Add().Text("Additional details").Content("<div id='result_#=ConsumptionId#'></div><script>getDetails(#=ConsumptionId#)</script>");
+        }).ToClientTemplate())
+</script>
+
+@section Scripts {
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+   <script src="~/Scripts/Inventory.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+         createCategoryTreeWindow("SelectedCategories");
+         $('#BrowseCategories').click(function() {
+            $('#categoryTreeWindow').data('kendoWindow').center().open();
+         });
+         $($($('#SelectedCategories').siblings()[0]).children()[1]).on('keypress', function(event) {
+            event.preventDefault();
+         });
+      });
+
+      function onDataBound(e) {
+         applyGridTooltips();
+      }
+
+      function onFilterClick(e) {
+         $('#grid').data('kendoGrid').dataSource.read();
+      }
+
+      function onClearClick(e) {
+         var multiSelect = $('#SelectedCategories').data('kendoMultiSelect');
+         multiSelect.value([]);
+         $('#grid').data('kendoGrid').dataSource.read();
+      }
+
+      function productsData() {
+         return {
+            categoryIds: $('#SelectedCategories').val()
+         }
+      }
+
+      function getDetails(consumptionId) {
+         $("#result_" + consumptionId).load("@Url.Action("AdditionalDetails", "Consumptions", new {Area = "Inventory"})?consumptionId=" + consumptionId);
+      };
+
+      function getPatientDetails(consumptionId, containerId) {
+         if (containerId == null) {
+            $("#patient_" + consumptionId).html("<p>There are no patient details associated with this record</p>");
+         } else {
+            $("#patient_" + consumptionId).load("@Url.Action("PatientDetails", "Patient", new {Area = "Inventory"})?containerId=" + containerId);
+         }
+      };
+   </script>
+
+}
+
+<style>
+   .page-input { width: 100% !important; }
+</style>

@@ -1,0 +1,57 @@
+﻿@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.StockAdjustment.StockAdjustmentDetailsViewModel
+@{
+   ViewBag.Title = "Details";
+}
+
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Barcode.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Stock deduction details</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div id="alertPlaceholder"></div>
+<div>
+   @(Html.Kendo().TabStrip()
+        .Name("tabstrip")
+        .Items(tabstrip =>
+        {
+           tabstrip.Add().Text("Details").Selected(true)
+              .Content(@<text>
+                           <br />
+                           @(Html.Partial("AdditionalDetails", Model))
+                        </text>);
+           tabstrip.Add().Text("History")
+              .Content(@<text>
+                           <br />
+                           <dl class="dl-horizontal">
+                              <dt>@Html.DisplayNameFor(m => m.CreatedBy)</dt>
+                              <dd>@Html.DisplayFor(m => m.CreatedBy)</dd>
+
+                              <dt>@Html.DisplayNameFor(m => m.CreatedOn)</dt>
+                              <dd>@Html.DisplayFor(m => m.CreatedOn)</dd>
+
+                              <dt>@Html.DisplayNameFor(m => m.LastModifiedBy)</dt>
+                              <dd>@Html.DisplayFor(m => m.LastModifiedBy)</dd>
+                              
+                              <dt>@Html.DisplayNameFor(m => m.LastModifiedOn)</dt>
+                              <dd>@Html.DisplayFor(m => m.LastModifiedOn)</dd>
+                           </dl>
+                        </text>);
+        })
+        )
+</div>
+<br />
+<div class="row">
+   <div class="col-sm-12">
+      <a class="k-button" href="@Url.Action("Details", "Products", new {id = Model.ProductId})">Return to product</a>
+   </div>
+</div>

@@ -1,0 +1,359 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.StockLocations
+@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Data.Model.Inventory.StockLocation
+
+@{
+   ViewBag.Title = "Reallocate stock";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Shopping Center.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Reallocate stock for @Model.Name</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div class="row">
+   <div class="col-md-5">
+      <dl class="dl-horizontal" id="locationDetails">
+         <dt>@Html.LabelFor(m => m.Name)</dt>
+         <dd>@Html.DisplayFor(m => m.Name) </dd>
+         <dt>@Html.LabelFor(m => m.DeletedOn)</dt>
+         <dd>@Html.DisplayFor(m => m.DeletedOn)</dd>
+         <dt>@Html.LabelFor(m => m.DeletedBy)</dt>
+         <dd>@Html.DisplayFor(m => m.DeletedBy)</dd>
+      </dl>
+   </div>
+</div>
+<div id="alertPlaceholder"></div>
+<div>
+   @(Html.Kendo().Grid<LocationStockModel>()
+        .Name("grid")
+        .Columns(column =>
+        {
+           column.Bound(c => c.StockId).Hidden(true);
+           column.Bound(c => c.Description);
+           column.Bound(c => c.Supplier);
+           column.Bound(c => c.BatchNumber).Title("Batch");
+           column.Bound(c => c.SerialNumber).Title("Serial");
+           column.Bound(c => c.Quantity).Width(140);
+        })
+        .DataSource(ds => ds.Ajax().PageSize(15).Read(read => read.Action("GetStockForLocation", "Stock", new {locationId = @Model.LocationId})))
+        .Filterable()
+        .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+        .Resizable(resize => resize.Columns(true))
+        .Selectable(select => select.Mode(GridSelectionMode.Multiple))
+        .Sortable()
+        .ToolBar(toolbar => toolbar.Template(@<text>
+                                                 <div class="toolbar">
+                                                    <span class="toolbar-left">
+                                                       @(Html.Kendo().DropDownList().Name("ReallocateTo")
+                                                            .DataSource(ds => ds.Read("GetStockLocations", "StockLocations"))
+                                                            .DataTextField("Text").DataValueField("Value")
+                                                            .Events(events => events.DataBound("onLocationDatabound")))
+                                                       @Html.Kendo().Button().Content("Reallocate").Name("Reallocate").Events(events => events.Click("onReallocate"))
+                                                       @Html.Kendo().Button().Content("Reallocate all").Name("ReallocateAll").Events(events => events.Click("onReallocateAll"))
+                                                    </span>
+                                                    <span class="toolbar-right">
+                                                       @(Html.Label("Description", new {id = "descriptionLabel", @class = "filter-label"}))
+                                                       @(Html.Kendo().TextBox().Name("description").HtmlAttributes(new {@class = "filter-control"}))
+                                                       @(Html.Kendo().Button().Name("applyFilter").Content("Apply").Events(events => events.Click("onFilter")))
+                                                       @(Html.Kendo().Button().Name("clearFilter").Content("Clear").Events(events => events.Click("onClear")))
+                                                    </span>
+                                                 </div>
+                                              </text>)))
+</div>
+
+@* Reallocate Mutliple Items Window *@
+<div id="reallocateMultipleWindow">
+   <div class="windowRow">
+      <p><span id="promptText"></span> <span id="LocationName"></span>?</p>
+   </div>
+   <div class="orderButtons">
+      @(Html.Kendo().Button().Content("Cancel").Name("CloseReallocateMultipleWindow"))
+      @(Html.Kendo().Button().Content("Reallocate").Name("Confirm").HtmlAttributes(new {@class = "k-primary"}).Events(events => events.Click("onConfirmReallocate")))
+   </div>
+</div>
+
+@* Reallocate Single Item Window *@
+<div id="reallocateSingleWindow">
+   <div class="container-fluid">
+      @Html.Hidden("StockId")
+      <div id="realocateSingleAlertPlaceholder"> </div>
+      <div class="row row-high">
+         <div class="col-sm-4 control-label text-right">
+            <label for="ProductName">Product name</label>
+         </div>
+         <div class="col-sm-7">
+            @(Html.Kendo().TextBox().Name("ProductName").HtmlAttributes(new {@class="page-input", @readonly = "readonly" }))
+         </div>
+      </div>
+      <div class="row row-high">
+         <div class="col-sm-4 control-label text-right">
+            <label for="TotalStock">Total quantity</label>
+         </div>
+         <div class="col-sm-7">
+            @(Html.Kendo().TextBox().Name("TotalStock").HtmlAttributes(new { @class = "page-input", @readonly = "readonly" }))
+         </div>
+      </div>
+
+      <div class="row row-high">
+         <div class="col-sm-4 control-label text-right">
+            <label for="TargetLocation">Move stock to</label>
+         </div>
+         <div class="col-sm-7">
+            @(Html.Kendo().DropDownList().Name("TargetLocation")
+                 .DataSource(ds => ds.Read("GetStockLocations", "StockLocations").ServerFiltering(true))
+                 .DataTextField("Text").DataValueField("Value")
+                 .Events(events => events.DataBound("onLocationDatabound"))
+                 .HtmlAttributes(new {@class="page-input"})
+                 .Value(@Html.Encode(@ViewBag.UserPreferredLocation.ToString())))
+         </div>
+      </div>            
+            
+      <div class="row row-high">
+         <div class="col-sm-4 control-label text-right">
+            <label for="TargetQuantity">Quantity to move</label>
+         </div>
+         <div class="col-sm-7">
+            @(Html.Kendo().NumericTextBox().Name("TargetQuantity").Format("#.##").HtmlAttributes(new { @class = "page-input"}))
+         </div>
+      </div>
+
+      <div class="row row-high">
+         <div class="col-sm-12 pull-right text-right">
+            @(Html.Kendo().Button().Content("Reallocate").Name("ReallocateSingle").HtmlAttributes(new {@class = "k-primary"}).Events(events => events.Click("onReallocateSingle")))
+            @(Html.Kendo().Button().Content("Cancel").Name("CloseReallocateSingleWindow"))
+         </div>
+      </div>
+   </div>
+</div>
+@section Scripts {
+   <script src="~/Scripts/Inventory.js"></script>
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+         var grid = $('#grid').data('kendoGrid');
+         createReallocateSingleWindow();
+         createReallocateMultipleWindow();
+
+         var dialog = $('#reallocateSingleWindow').data('kendoWindow');
+         dialog.bind('open', function(e) {
+            var win = this;
+            $('#CloseReallocateSingleWindow').click(function() {
+               win.close();
+            });
+         });
+
+         var confirmation = $('#reallocateMultipleWindow').data('kendoWindow');
+         confirmation.bind('open', function(e) {
+            var win = this;
+            $('#CloseReallocateMultipleWindow').click(function() {
+               win.close();
+            });
+            $('#LocationName').html($('#ReallocateTo').data('kendoDropDownList').text());
+         });
+      });
+
+      function onFilter(e) {
+         var grid = $('#grid').data('kendoGrid');
+         var filters = GetFilters(grid);
+         filters = UpdateSearchFilters(filters, "Description", "contains", $('#description').val(), "and");
+         grid.dataSource.filter(filters);
+      }
+
+      function onClear(e) {
+         $('#description').val('');
+         ClearFilters($('#grid').data('kendoGrid'));
+      }
+
+      function onReallocate(e) {
+         var grid = $('#grid').data('kendoGrid');
+         var selectedRows = grid.select();
+         var selectedRowsCount = selectedRows.length;
+
+         if (selectedRowsCount == 0) {
+            getAlert('warning', 'Please select a row of stock to reallocate.');
+         } else if (selectedRowsCount == 1) {
+            // reallocate single stock item
+            var rowData = grid.dataItem(selectedRows);
+            $('#StockId').val(rowData.StockId);
+            $("#ProductName").val(rowData.Description);
+            var reallocateTo = $('#ReallocateTo').val();
+            $('#TargetLocation').data('kendoDropDownList').select(function(dataItem) {
+               return dataItem.Value === reallocateTo;
+            });
+            $("#TotalStock").val(rowData.Quantity);
+            $('#TargetQuantity').data('kendoNumericTextBox').value(rowData.Quantity);
+            $('#reallocateSingleWindow').data('kendoWindow').center().open();
+         } else {
+            $('#promptText').html('Are you sure you want to reallocate the selected stock to');
+            $('#reallocateMultipleWindow').data('kendoWindow').center().open();
+         }
+      }
+
+      function onReallocateAll(e) {
+         //dialog
+         $('#grid').data('kendoGrid').clearSelection();
+         $('#promptText').html('Are you sure you want to reallocate ALL stock to');
+         $('#reallocateMultipleWindow').data('kendoWindow').center().open();
+      }
+
+      function onConfirmReallocate() {
+         var grid = $('#grid').data('kendoGrid');
+         var currentLocation = @Model.LocationId;
+         var targetLocation = $('#ReallocateTo').val();
+         var targetLocationName = $('#ReallocateTo').data('kendoDropDownList').text();
+
+         var selectedRows = grid.select();
+         if (selectedRows.length == 0) {
+            //reallocate ALL
+            var reallocateAllUrl = '/api' + '@Url.Action("ReallocateAllStock", "Stock")/';
+            $.ajax({
+               async: false,
+               type: 'POST',
+               contentType: 'application/json',
+               url: reallocateAllUrl,
+               data: JSON.stringify({ CurrentLocation: currentLocation, TargetLocation: targetLocation }),
+               success: function(data) {
+                  getAlert('success', 'Successfully reallocated all stock from @Model.Name to ' + targetLocationName);
+                  grid.dataSource.read();
+                  grid.refresh();
+               },
+               error: function(data) {
+                  getAlert('danger', data.responseJSON.Message);
+               }
+            });
+
+         } else {
+            // reallocate selected
+            var reallocateMultipleUrl = '/api' + '@Url.Action("ReallocateMultipleStock", "Stock")/';
+
+            var stockIds = [];
+            $.each(selectedRows, function(index, value) {
+               stockIds.push(grid.dataItem(value).StockId);
+            });
+            $.ajax({
+               async: false,
+               type: 'POST',
+               contentType: 'application/json',
+               url: reallocateMultipleUrl,
+               data: JSON.stringify({ StockIds: stockIds, TargetLocation: targetLocation }),
+               success: function(data) {
+                  getAlert('success', 'Successfully stock from @Model.Name to ' + targetLocationName);
+                  grid.dataSource.read();
+                  grid.refresh();
+               },
+               error: function(data) {
+                  getAlert('danger', data.responseJSON.Message);
+               }
+            });
+         }
+         $('#CloseReallocateMultipleWindow').trigger('click');
+      }
+
+      function onReallocateSingle(e) {
+         var stockId = $('#StockId').val();
+         var targetLocation = $('#TargetLocation').val();
+         var targetLocationName = $('#TargetLocation').data('kendoDropDownList').text();
+         var quantity = $('#TargetQuantity').val();
+         var productName = $('#ProductName').val();
+         var url = '/api' + '@Url.Action("ReallocateStock", "Stock", new {id = ""})';
+         $.ajax({
+            type: 'POST',
+            async: false,
+            url: url,
+            contentType: 'application/json',
+            data: JSON.stringify({ StockId: stockId, TargetLocation: targetLocation, Quantity: quantity }),
+            success: function(data) {
+               getAlert('success', 'Successfully reallocated <strong>' + quantity + '</strong> of <strong>' + productName + '</strong> to <strong>' + targetLocationName + '</strong>.');
+               $('#grid').data('kendoGrid').refresh();
+            },
+            error: function(data) {
+               getAlert('danger', data.responseJSON.Message);
+            }
+         });
+         $('#CloseReallocateSingleWindow').trigger('click');
+      }
+
+      function createReallocateSingleWindow() {
+         //ensure popup reallocateSingleWindow is created
+         var targetQuantity = $('#TargetQuantity').kendoNumericTextBox();
+
+         if (!$('#reallocateSingleWindow').data('kendoWindow')) {
+            $('#reallocateSingleWindow').kendoWindow({
+               title: 'Reallocate stock',
+               scrollable: false,
+               visible: false,
+               activate: function() {
+                  targetQuantity.on("focus", function() {
+                     var element = this;
+                     setTimeout(function() {
+                        $(element).select();
+                     });
+                  });
+                  $('#TargetQuantity').data('kendoNumericTextBox').focus();
+                  targetQuantity.on("keydown", function(keyEvent) {
+                     var code = (keyEvent.keyCode ? keyEvent.keyCode : keyEvent.which);
+                     if (code == 13) {
+                        $('#ReallocateSingle').trigger('click');
+                     }
+                  });
+               }
+            });
+         }
+      }
+
+      function createReallocateMultipleWindow() {
+         //ensure popup reallocateSingleWindow is created
+         if (!$('#reallocateMultipleWindow').data('kendoWindow')) {
+            $('#reallocateMultipleWindow').kendoWindow({
+               title: 'Reallocate stock confirmation',
+               scrollable: false,
+               visible: false,
+            });
+         }
+      }
+
+      // Remove current location from list of locations
+      function onLocationDatabound(e) {
+         e.sender.select(0);
+         var data = e.sender.dataSource.data();
+         var length = data.length;
+         var item;
+         for (var ii = 0; ii < length; ii++) {
+            item = data[ii];
+            if (item.Value === '@Model.LocationId.ToString()') {
+               var toRemove = e.sender.dataSource.at(ii);
+               e.sender.dataSource.remove(toRemove);
+               e.sender.refresh();
+               return;
+            }
+         }
+      }
+   </script>
+}
+
+<style>
+   .orderButtons {
+      clear: both;
+      padding: .6em;
+      position: relative;
+      text-align: right;
+   }
+
+   .windowRow {
+      padding-bottom: 5px;
+      padding-top: 5px;
+   }
+
+   .k-edit-label { padding-right: 15px; }
+
+   .k-window { width: 600px; }
+</style>

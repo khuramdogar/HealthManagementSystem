@@ -1,0 +1,76 @@
+﻿@model HMS.HealthTrack.Web.Data.Model.Clinical.PatientDetails
+
+@{
+   Layout = null;
+}
+
+@if (Model == null)
+{
+   <div>There are no patient details associated with this record</div>
+}
+else
+{
+   <div>
+      <dl class="dl-horizontal">
+         <dt>
+            Patient number
+         </dt>
+         <dd>
+            @Html.DisplayFor(m => m.PatientId)
+         </dd>
+         <dt>
+            Patient's name
+         </dt>
+         <dd>
+            @if (string.IsNullOrWhiteSpace(Model.Title))
+            {
+               @Html.DisplayFor(model => model.Title)
+            }
+            @Html.DisplayFor(model => model.FirstName) @Html.DisplayFor(model => model.Surname)
+         </dd>
+         <dt>
+            @Html.DisplayNameFor(model => model.Dob)
+         </dt>
+         <dd>
+            @if (Model.Dob.HasValue)
+            {
+               @Model.Dob.Value.ToShortDateString()
+            }
+         </dd>
+
+         <dt>
+            @Html.DisplayNameFor(model => model.PaymentClass)
+         </dt>
+         <dd>
+            @Html.DisplayFor(model => model.PaymentClass)
+         </dd>
+
+         <dt>
+            @Html.DisplayNameFor(model => model.Medicare)
+         </dt>
+         <dd>
+            @Html.DisplayFor(model => model.Medicare)
+         </dd>
+         @if (Model.ExternalPatientIds != null && Model.ExternalPatientIds.Any())
+         {
+            <hr />
+            <dt>Patient's identifiers</dt>
+            <dd>
+               <div class="col-md-4">
+                  <table>
+                     <tr><th>Number</th><th>System</th></tr>
+                     @foreach (var id in Model.ExternalPatientIds)
+                     {
+                        <tr>
+                           <td>@Html.DisplayFor(item => id.Number)</td>
+                           <td>@Html.DisplayFor(item => id.Context)</td>
+                        </tr>
+                     }
+                  </table>
+               </div>
+            </dd>
+         }
+      </dl>
+
+   </div>
+}

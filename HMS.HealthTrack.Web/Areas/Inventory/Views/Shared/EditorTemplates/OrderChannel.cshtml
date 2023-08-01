@@ -1,0 +1,58 @@
+﻿@{
+   Layout = null;
+}
+@using Kendo.Mvc.UI
+
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.OrderChannels.ProductChannelsModel
+
+@Html.HiddenFor(m=>m.ProductId)
+@Html.HiddenFor(m=>m.OrderChannelProductId)
+
+<div class="templateRow">
+   <div class="k-edit-label">
+      <label for="OrderChannelId">Order Channel</label>
+   </div>
+   @(Html.Kendo().DropDownList().Name("OrderChannelId")
+        .DataTextField("Name").DataValueField("OrderChannelId")
+        .DataSource(ds => ds.Read("GetAvailableChannels", "OrderChannels"))
+        .OptionLabel(" ")
+        )
+</div>
+
+<div class="templateRow">
+   <div class="k-edit-label">
+      <label for="Reference">Reference</label>
+   </div>
+   <input type="text" class="k-input k-textbox" name="Reference" data-bind="value:Reference"/>
+</div>
+
+<div class="templateRow">
+   <div class="k-edit-label">
+      <label for="AutomaticOrder">Auto order</label>
+   </div>
+   @Html.Kendo().CheckBoxFor(m=>m.AutomaticOrder)
+</div>
+
+
+<style>
+   .k-window {
+      width: 600px;
+   }
+
+   .k-edit-form-container {
+      width: 555px;
+   }
+
+   .k-edit-label {
+      padding-right: 15px;
+   }
+
+   .templateRow {
+      padding-top: 5px;
+      padding-bottom: 5px;
+   }
+
+   .k-input, .k-dropdown {
+      width: 300px;
+   }
+</style>

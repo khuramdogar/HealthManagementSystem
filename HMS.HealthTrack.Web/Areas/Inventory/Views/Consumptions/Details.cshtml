@@ -1,0 +1,265 @@
+﻿@using HMS.HealthTrack.Web.Data.Model
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.Shared
+@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.Consumptions.ConsumptionDetailsViewModel
+
+@{
+   ViewBag.Title = "Details";
+}
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Barcode Progress.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Consumption notification details</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div id="alertPlaceholder"></div>
+<div>
+   @(Html.Kendo().TabStrip()
+        .Name("tabstrip")
+        .Items(tabstrip =>
+        {
+           tabstrip.Add().Text("Details").Selected(true)
+              .Content(@<text>
+                           <br />
+                           <dl class="dl-horizontal">
+                              <dt>
+                                 @Html.DisplayNameFor(model => model.Name)
+                              </dt>
+                              <dd>
+                                 @Html.DisplayFor(model => model.Name)
+                              </dd>
+                              
+                              <dt>
+                                 @Html.DisplayNameFor(model => model.SPC)
+                              </dt>
+                              <dd>
+                                 @Html.DisplayFor(model => model.SPC)
+                              </dd>
+
+                              <dt>
+                                 @Html.DisplayNameFor(model => model.LPC)
+                              </dt>
+                              <dd>
+                                 @Html.DisplayFor(model => model.LPC)
+                              </dd>
+
+                              <dt>
+                                 @Html.DisplayNameFor(model => model.Price)
+                              </dt>
+                              <dd>
+                                 @Html.DisplayFor(model => model.Price)
+                              </dd>
+
+                              <dt>
+                                 @Html.DisplayNameFor(model => model.GL)
+                              </dt>
+                              <dd>
+                                 @Html.DisplayFor(model => model.GL)
+                              </dd>
+
+                              <dt>
+                                 @Html.DisplayNameFor(model => model.ContainerId)
+                              </dt>
+                              <dd>
+                                 @Html.DisplayFor(model => model.ContainerId)
+                              </dd>
+
+                              <dt>
+                                 @Html.DisplayNameFor(model => model.PatientMRN)
+                              </dt>
+                              <dd>
+                                 @Html.DisplayFor(model => model.PatientMRN)
+                              </dd>
+                              
+                              <dt>
+                                 @Html.DisplayNameFor(model => model.Location)
+                              </dt>
+                              <dd>
+                                 @Html.DisplayFor(model => model.LocationName)
+                              </dd>
+
+                              <dt>
+                                 @Html.DisplayNameFor(model => model.SerialNumber)
+                              </dt>
+                              <dd>
+                                 @Html.DisplayFor(model => model.SerialNumber)
+                              </dd>
+
+                              <dt>
+                                 @Html.DisplayNameFor(model => model.LotNumber)
+                              </dt>
+                              <dd>
+                                 @Html.DisplayFor(model => model.LotNumber)
+                              </dd>
+
+                              <dt>
+                                 @Html.DisplayNameFor(model => model.Quantity)
+                              </dt>
+                              <dd>
+                                 @Html.DisplayFor(model => model.Quantity)
+                              </dd>
+                              
+                              <dt>
+                                 @Html.DisplayNameFor(model => model.ConsumedOn)
+                              </dt>
+                              <dd>
+                                 @Html.DisplayFor(model => model.ConsumedOn)
+                              </dd>
+
+                              <dt>
+                                 @Html.DisplayNameFor(model => model.ProcessingStatus)
+                              </dt>
+                              <dd>
+                                 @if (Model.ProcessingStatus == null)
+                                 {
+                                    @Html.Raw("Unmanaged")
+                                 }
+                                 else
+                                 {
+                                    @Html.DisplayFor(model => model.ProcessingStatus)
+                                 }
+                                 
+                              </dd>
+                              
+                              <dt>
+                                 @Html.DisplayNameFor(model => model.ProcessingStatusMessage)
+                              </dt>
+	                           <dd>
+		                           @Html.Raw(Model.ProcessingStatusMessage)
+	                           </dd>
+
+	                           @if (Model.InventoryProductId.HasValue)
+	                           {
+		                           <dt>
+			                           @Html.DisplayNameFor(model => model.InventoryProductId)
+		                           </dt>
+		                           <dd>
+			                           <a href="@Url.Action("Details", "Products", new {id = Model.InventoryProductId})" title="@Html.DisplayFor(model => model.InventoryProductDescription)">
+				                           @Html.DisplayFor(model => model.InventoryProductDescription)
+			                           </a>
+
+		                           </dd>
+	                           }
+
+                           </dl>
+                        </text>);
+
+           tabstrip.Add().Text("History").
+              Content(@<text>
+                          <br />
+                          <dl class="dl-horizontal">
+                             <dt>
+                                @Html.DisplayNameFor(model => model.userCreated)
+                             </dt>
+                             <dd>
+                                @Html.DisplayFor(model => model.userCreated)
+                             </dd>
+
+                             <dt>
+                                @Html.DisplayNameFor(model => model.dateCreated)
+                             </dt>
+                             <dd>
+                                @Html.DisplayFor(model => model.dateCreated)
+                             </dd>
+
+                             <dt>
+                                @Html.DisplayNameFor(model => model.LastModifiedBy)
+                             </dt>
+                             <dd>
+                                @Html.DisplayFor(model => model.LastModifiedBy)
+                             </dd>
+
+                             <dt>
+                                @Html.DisplayNameFor(model => model.LastModifiedOn)
+                             </dt>
+                             <dd>
+                                @Html.DisplayFor(model => model.LastModifiedOn)
+                             </dd>
+
+                             @if (Model.deleted.HasValue && Model.deleted.Value)
+                             {
+                                <dt>
+                                   @Html.DisplayNameFor(model => model.deletionUser)
+                                </dt>
+                                <dd>
+                                   @Html.DisplayFor(model => model.deletionUser)
+                                </dd>
+
+                                <dt>
+                                   @Html.DisplayNameFor(model => model.deletionDate)
+                                </dt>
+                                <dd>
+                                   @Html.DisplayFor(model => model.deletionDate)
+                                </dd>
+                             }
+                          </dl>
+                       </text>);
+        }))
+</div>
+
+<br/>
+<div class="row">
+   <div class="col-md-10">
+      <a class="k-button" href="@Url.Action("Index", "Consumptions")">View consumptions</a>
+      @if (Model.ProcessingStatus == null || Model.ProcessingStatus == ConsumptionProcessingStatus.Unprocessed || Model.ProcessingStatus == ConsumptionProcessingStatus.Error)
+      {
+         <a class="k-button" id="ignoreConsumption">Ignore</a>
+      }
+      
+      @if (Model.ProcessingStatus == ConsumptionProcessingStatus.Unprocessed || Model.ProcessingStatus == null)
+      {
+         <a class="k-button" href="@Url.Action("ProcessConsumptionNotification", "Consumptions", new {id = Model.UsedId})">Process</a>
+      }
+      @if (Model.ProcessingStatus != ConsumptionProcessingStatus.Processed)
+      {
+         <a class="k-button k-primary" href="@Url.Action("Edit", new {id = Model.UsedId})">Edit</a>
+      }
+      
+   </div>
+</div>
+
+@section Scripts {
+   <script src="~/Scripts/Inventory.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+         if ('@ViewBag.SuccessMessage' != '') {
+            getAlert('success', '@ViewBag.SuccessMessage');
+         }
+
+         $('#backToList').click(function() {
+            if ('@ViewBag.ConsumptionAction' == '') {
+               window.location.href = '@Url.Action("Index")';
+            } else {
+               window.location.href = '@ViewBag.ConsumptionAction';
+            }
+         });
+
+         $('#ignoreConsumption').on('click', function(e) {
+            $.ajax({
+               async: true,
+               type: 'POST',
+               data: JSON.stringify({ ConsumptionId: '@Model.UsedId' }),
+               contentType: 'application/json',
+               url: '@Url.Action("IgnoreConsumption", "Consumptions")',
+               success: function(data) {
+                  if ('@ViewBag.ConsumptionAction' == '') {
+                     window.location.href = '@Url.Action("Index")';
+                  } else {
+                     window.location.href = '@ViewBag.ConsumptionAction';
+                  }
+               },
+               error: function(data) {
+                  getAlert('danger', 'Something went wrong. Please refresh the page.');
+               }
+            });
+         });
+      });
+   </script>
+}

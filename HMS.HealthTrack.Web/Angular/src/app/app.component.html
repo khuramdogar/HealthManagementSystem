@@ -1,0 +1,10 @@
+<div style="text-align:center">
+  <h1>
+    Todo Records Records
+  </h1>
+
+  <span *ngFor="let record of todoRecords">
+    {{record.Id}} - {{record.Description}} - [Created At = {{record.CreatedAt}}]
+    <br />
+  </span>
+</div>

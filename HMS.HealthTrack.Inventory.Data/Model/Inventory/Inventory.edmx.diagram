@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="b5f184eff2f146a882d2d3d75c100732" Name="Diagram1" ZoomLevel="59">
+        <EntityTypeShape EntityType="Model.Company" Width="1.875" PointX="3.25" PointY="22.875" />
+        <EntityTypeShape EntityType="Model.Property" Width="1.5" PointX="21.5" PointY="13.75" FillColor="Black" />
+        <EntityTypeShape EntityType="Model.OrderItem" Width="2.125" PointX="8.75" PointY="7.375" FillColor="Green" />
+        <EntityTypeShape EntityType="Model.Address" Width="1.5" PointX="17.25" PointY="18.625" />
+        <EntityTypeShape EntityType="Model.Category" Width="1.5" PointX="0.5" PointY="18" FillColor="Maroon" />
+        <EntityTypeShape EntityType="Model.ExternalProductMapping" Width="2.25" PointX="0.5" PointY="11.5" FillColor="Maroon" />
+        <EntityTypeShape EntityType="Model.StockLocation" Width="1.5" PointX="13.875" PointY="15.25" />
+        <EntityTypeShape EntityType="Model.OraclePurchaseOrderError" Width="2.375" PointX="18" PointY="14.875" />
+        <EntityTypeShape EntityType="Model.OraclePurchaseOrderReceipt" Width="2.625" PointX="24.375" PointY="13.875" />
+        <EntityTypeShape EntityType="Model.PriceType" Width="1.5" PointX="3" PointY="5.625" FillColor="Maroon" />
+        <EntityTypeShape EntityType="Model.ProductPrice" Width="1.5" PointX="2.875" PointY="7.5" FillColor="Maroon" />
+        <EntityTypeShape EntityType="Model.ProductStockRequest" Width="2.125" PointX="5.875" PointY="19.375" FillColor="DarkGoldenrod" />
+        <EntityTypeShape EntityType="Model.StockSet" Width="1.5" PointX="7.125" PointY="8.125" />
+        <AssociationConnector Association="Model.FK_Inventory_Location_Inventory_Address" />
+        <AssociationConnector Association="Model.FK_Inventory_Product_Price_Inventory_PriceType" />
+        <EntityTypeShape EntityType="Model.Order" Width="1.5" PointX="11.875" PointY="7.25" FillColor="Green" />
+        <EntityTypeShape EntityType="Model.Product" Width="1.875" PointX="3.375" PointY="11.5" FillColor="Maroon" />
+        <AssociationConnector Association="Model.FK_Inventory_Product_Company" />
+        <AssociationConnector Association="Model.FK_Inventory_Product_Company1" />
+        <AssociationConnector Association="Model.FK_Inventory_ExternalProductMapping_Inventory_Product" />
+        <AssociationConnector Association="Model.FK_Inventory_Order_Inventory_Location" />
+        <AssociationConnector Association="Model.FK_Inventory_Order_Item_Inventory_Order" />
+        <AssociationConnector Association="Model.FK_Inventory_Order_Item_Inventory_Product" />
+        <AssociationConnector Association="Model.FK_Inventory_Product_Price_Inventory_Product" />
+        <AssociationConnector Association="Model.FK_Inventory_ProductStockRequest_Inventory_Product" />
+        <EntityTypeShape EntityType="Model.Stock" Width="1.5" PointX="8.875" PointY="18.625" FillColor="DarkGoldenrod" />
+        <AssociationConnector Association="Model.FK_Inventory_Stock_Location" />
+        <AssociationConnector Association="Model.FK_Inventory_Stock_Inventory_Product" />
+        <AssociationConnector Association="Model.FK_ProductStockRequest_Location" />
+        <EntityTypeShape EntityType="Model.StockSetItem" Width="1.5" PointX="5.375" PointY="8.125" />
+        <AssociationConnector Association="Model.FK_Inventory_StockSetItem_Inventory_Product" />
+        <AssociationConnector Association="Model.FK_Inventory_StockSetItem_Inventory_StockSet" />
+        <EntityTypeShape EntityType="Model.OrderItemSource" Width="1.5" PointX="9.625" PointY="11.75" FillColor="Green" />
+        <AssociationConnector Association="Model.FK_OrderItemSource_OrderItem" />
+        <AssociationConnector Association="Model.FK_OrderItemSource_ProductStockRequest" />
+        <EntityTypeShape EntityType="Model.AddressCorporate" Width="1.5" PointX="5.875" PointY="26.25" />
+        <EntityTypeShape EntityType="Model.Supplier" Width="1.5" PointX="1.5" PointY="32.75" />
+        <AssociationConnector Association="Model.FK_AddressCorporate_Company" />
+        <AssociationConnector Association="Model.FK_Supplier_Company" />
+        <EntityTypeShape EntityType="Model.StockSetting" Width="1.5" PointX="1.375" PointY="23.25" />
+        <AssociationConnector Association="Model.CategorySetting" />
+        <AssociationConnector Association="Model.ProductSetting" />
+        <EntityTypeShape EntityType="Model.Manufacturer" Width="1.5" PointX="5.25" PointY="32.75" />
+        <AssociationConnector Association="Model.FK_Manufacturer_Company" />
+        <EntityTypeShape EntityType="Model.UserPreference" Width="1.5" PointX="21.25" PointY="17.375" />
+        <AssociationConnector Association="Model.FK_UserPreferences_Location" />
+        <EntityTypeShape EntityType="Model.StockTake" Width="1.5" PointX="7.5" PointY="11.875" />
+        <EntityTypeShape EntityType="Model.StockTakeItem" Width="1.5" PointX="5.5" PointY="11.875" />
+        <AssociationConnector Association="Model.FK_StockTakeItem_Product" />
+        <AssociationConnector Association="Model.FK_StockTakeItem_StockTake" />
+        <EntityTypeShape EntityType="Model.DashboardNotification" Width="1.875" PointX="14.5" PointY="0.75" />
+        <AssociationConnector Association="Model.FK_Product_StockTakeItem" />
+        <EntityTypeShape EntityType="Model.GeneralLedger" Width="1.5" PointX="3.75" PointY="1" />
+        <EntityTypeShape EntityType="Model.GeneralLedgerTier" Width="1.5" PointX="1" PointY="3.5" />
+        <EntityTypeShape EntityType="Model.GlcSetting" Width="2" PointX="0.5" PointY="7.5" />
+        <AssociationConnector Association="Model.FK_GeneralLedgerTier_GlcSetting1" />
+        <EntityTypeShape EntityType="Model.GeneralLedgerClosure" Width="1.5" PointX="8.5" PointY="0.5" />
+        <AssociationConnector Association="Model.FK_GeneralLedgerClosure_GeneralLedger" />
+        <AssociationConnector Association="Model.FK_GeneralLedgerClosure_GeneralLedger1" />
+        <EntityTypeShape EntityType="Model.GeneralLedgerClosureRoot" Width="1.5" PointX="14.25" PointY="3.75" />
+        <EntityTypeShape EntityType="Model.ClinicalConsumption" Width="2.75" PointX="14.875" PointY="7.375" />
+        <AssociationConnector Association="Model.FK_Product_GeneralLedger" />
+        <EntityTypeShape EntityType="Model.CategoryClosure" Width="1.5" PointX="0.5" PointY="26.25" FillColor="Maroon" />
+        <EntityTypeShape EntityType="Model.CategoryClosureRoot" Width="1.5" PointX="12.625" PointY="0.75" />
+        <AssociationConnector Association="Model.FK_CategoryClosure_ChildCategory" />
+        <AssociationConnector Association="Model.FK_CategoryClosure_ParentCategory" />
+        <AssociationConnector Association="Model.FK_Order_GeneralLedger" />
+        <EntityTypeShape EntityType="Model.ProductCategory" Width="1.5" PointX="6" PointY="23.75" />
+        <AssociationConnector Association="Model.FK_Inventory_ProductCategory_Inventory_Category" />
+        <AssociationConnector Association="Model.FK_Inventory_ProductCategory_Inventory_Product" />
+        <EntityTypeShape EntityType="Model.GeneralLedgerType" Width="1.5" PointX="1.125" PointY="0.875" />
+        <AssociationConnector Association="Model.FK_GeneralLedgerTier_GeneralLedgerType" />
+        <EntityTypeShape EntityType="Model.ProductImport" Width="1.5" PointX="6.375" PointY="0.5" />
+        <AssociationConnector Association="Model.FK_ProductImport_GeneralLedger" />
+        <AssociationConnector Association="Model.FK_ProductImport_Product" />
+        <AssociationConnector Association="Model.FK_ProductImport_Supplier" />
+        <AssociationConnector Association="Model.FK_GeneralLedger_GeneralLedgerTier" />
+        <EntityTypeShape EntityType="Model.Location" Width="1.5" PointX="8.125" PointY="38" />
+        <AssociationConnector Association="Model.FK_Location_AddressCorporate_AddressMailing" />
+        <AssociationConnector Association="Model.FK_Location_AddressCorporate_AddressPrimary" />
+        <AssociationConnector Association="Model.FK_Location_AddressCorporate_AddressRemittance" />
+        <AssociationConnector Association="Model.FK_Location_Location_AddressMailingLocation" />
+        <AssociationConnector Association="Model.FK_Location_Location_AddressRemittanceLocation" />
+        <AssociationConnector Association="Model.FK_StockTake_Location" />
+        <AssociationConnector Association="Model.StockLocationMapping" />
+        <EntityTypeShape EntityType="Model.HealthTrackLocation" Width="1.5" PointX="11.375" PointY="2.75" />
+        <EntityTypeShape EntityType="Model.StockLocationMapping" Width="1.5" PointX="16.125" PointY="22.625" />
+        <AssociationConnector Association="Model.FK_StockLocationMapping_Location" />
+        <EntityTypeShape EntityType="Model.ExternalMappedCategory" Width="2.625" PointX="18.375" PointY="1.75" FillColor="128, 64, 64" />
+        <EntityTypeShape EntityType="Model.ConsumptionNotificationManagement" Width="1.5" PointX="18.5" PointY="11.75" />
+        <AssociationConnector Association="Model.FK_ConsumptionNotificationManagement_Order1" />
+        <EntityTypeShape EntityType="Model.ProductsWithConsumptionForExport" Width="1.5" PointX="19.375" PointY="19.75" />
+        <EntityTypeShape EntityType="Model.ProductImportGeneralLedgerCode" Width="1.5" PointX="11.375" PointY="0.75" />
+        <AssociationConnector Association="Model.FK_ProductImportGeneralLedgerCodes_GeneralLedgerTier" />
+        <AssociationConnector Association="Model.FK_ProductImportGeneralLedgerCodes_ProductImport" />
+        <EntityTypeShape EntityType="Model.ProductImportData" Width="1.5" PointX="8.75" PointY="3.25" />
+        <AssociationConnector Association="Model.FK_ProductImport_ProductImportData" />
+        <EntityTypeShape EntityType="Model.HealthTrackProductMapping" Width="1.5" PointX="13.375" PointY="20.75" />
+        <EntityTypeShape EntityType="Model.UnmanagedConsumption" Width="1.5" PointX="18.375" PointY="4.75" />
+        <EntityTypeShape EntityType="Model.HealthTrackConsumption" Width="1.5" PointX="22.75" PointY="0.875" FillColor="Red" />
+        <EntityTypeShape EntityType="Model.PaymentClassMapping" Width="1.5" PointX="4.875" PointY="5.75" />
+        <AssociationConnector Association="Model.FK_PaymentClassMapping_PriceType" />
+        <EntityTypeShape EntityType="Model.NegativeStock" Width="1.5" PointX="12.375" PointY="13.5" />
+        <EntityTypeShape EntityType="Model.MedicareCategory" Width="1.5" PointX="10.125" PointY="37.5" FillColor="SpringGreen" />
+        <EntityTypeShape EntityType="Model.MedicareGroup" Width="1.5" PointX="14.375" PointY="35.5" FillColor="SpringGreen" />
+        <EntityTypeShape EntityType="Model.MedicareProduct" Width="1.5" PointX="9.75" PointY="32" FillColor="SpringGreen" />
+        <EntityTypeShape EntityType="Model.MedicareProductSponsor" Width="1.5" PointX="6.875" PointY="35.5" FillColor="SpringGreen" />
+        <EntityTypeShape EntityType="Model.MedicareSubGroup" Width="1.5" PointX="14.25" PointY="32.875" FillColor="SpringGreen" />
+        <AssociationConnector Association="Model.FK_MedicareProductSponsor_Manufacturer" />
+        <AssociationConnector Association="Model.FK_MedicareGroup_MedicareCategory" />
+        <AssociationConnector Association="Model.FK_MedicareProducts_MedicareGroup" />
+        <AssociationConnector Association="Model.FK_MedicareSubGroup_MedicareGroup" />
+        <AssociationConnector Association="Model.FK_MedicareProducts_MedicareProductSponsor" />
+        <AssociationConnector Association="Model.FK_MedicareProducts_MedicareSubGroup" />
+        <AssociationConnector Association="Model.FK_MedicareProductSponsor_Supplier" />
+        <EntityTypeShape EntityType="Model.StockAdjustment" Width="1.5" PointX="11.125" PointY="17" />
+        <EntityTypeShape EntityType="Model.StockAdjustmentReason" Width="1.5" PointX="8.875" PointY="27.375" />
+        <AssociationConnector Association="Model.FK_StockAdjustment_GeneralLedger" />
+        <AssociationConnector Association="Model.FK_StockAdjustment_StockAdjustmentReason" />
+        <AssociationConnector Association="Model.FK_StockAdjustment_StockTakeItem" />
+        <EntityTypeShape EntityType="Model.DeductionRequiringPaymentClass" Width="1.5" PointX="21.375" PointY="19.75" />
+        <EntityTypeShape EntityType="Model.StockAdjustmentStock" Width="1.5" PointX="16.375" PointY="25.25" />
+        <AssociationConnector Association="Model.FK_StockAdjustmentStock_Stock" />
+        <AssociationConnector Association="Model.FK_StockAdjustmentStock_StockAdjustment" />
+        <AssociationConnector Association="Model.FK_StockAdjustmentStock_StockAdjustmentStock" />
+        <AssociationConnector Association="Model.FK_StockAdjustment_OrderItem" />
+        <AssociationConnector Association="Model.FK_OrderItemSource_ConsumptionNotificationManagement" />
+        <EntityTypeShape EntityType="Model.ScanCode" Width="1.5" PointX="5.75" PointY="16.875" FillColor="Maroon" />
+        <AssociationConnector Association="Model.FK_ScanCode_Product" />
+        <EntityTypeShape EntityType="Model.OrderChannel" Width="1.5" PointX="23.375" PointY="22.5" FillColor="255, 224, 192" />
+        <EntityTypeShape EntityType="Model.OrderChannelLocation" Width="1.5" PointX="25.625" PointY="19" FillColor="255, 224, 192" />
+        <EntityTypeShape EntityType="Model.OrderChannelProduct" Width="1.5" PointX="28.625" PointY="18.875" FillColor="255, 224, 192" />
+        <EntityTypeShape EntityType="Model.Submission" Width="1.5" PointX="28.625" PointY="14.625" FillColor="255, 224, 192" />
+        <AssociationConnector Association="Model.FK_OrderChannelLocation_Location" />
+        <AssociationConnector Association="Model.FK_Submission_Order" />
+        <AssociationConnector Association="Model.FK_OrderChannelLocation_OrderChannel" />
+        <AssociationConnector Association="Model.FK_OrderChannelProduct_OrderChannel" />
+        <AssociationConnector Association="Model.FK_Submission_OrderChannel" />
+        <AssociationConnector Association="Model.FK_OrderChannelProduct_Product" />
+        <AssociationConnector Association="Model.OrderChannelSupplier" />
+        <EntityTypeShape EntityType="Model.Consumption" Width="2.25" PointX="18.375" PointY="22.75" FillColor="Yellow" />
+        <EntityTypeShape EntityType="Model.ConsumptionReversal" Width="1.5" PointX="21.375" PointY="11.375" />
+        <EntityTypeShape EntityType="Model.ConsumptionManagement" Width="1.5" PointX="25.375" PointY="9.375" />
+        <AssociationConnector Association="Model.FK_ConsumptionManagement_Consumption" />
+        <AssociationConnector Association="Model.FK_ConsumptionManagement_Order" />
+        </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

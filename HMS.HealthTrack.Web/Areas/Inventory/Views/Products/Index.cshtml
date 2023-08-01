@@ -1,0 +1,544 @@
+﻿@using HMS.HealthTrack.Inventory.Common.Constants
+@using HMS.HealthTrack.Web.Data.Model.Inventory
+@using HMS.HealthTrack.Inventory.Common
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.Products
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.Shared
+@using HMS.HealthTrack.Web.Views
+@using Kendo.Mvc.UI
+@model dynamic
+
+@{
+   ViewBag.Title = "Products";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Scale And Box.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Product master list</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div id="alertPlaceholder"></div>
+<div>
+   @(Html.Kendo().Grid<IndexProductsViewModel>()
+        .Name("Products")
+        .Columns(columns =>
+        {
+           columns.Bound(p => p.SPC);
+           columns.Bound(p => p.Description);
+           columns.Bound(p => p.UPN);
+           columns.Bound(p => p.Supplier);
+           columns.Template(@<text></text>).Width(120).ClientTemplate("# if (!Unorderable) {#" +
+                                                                      "<a title=\"Request\" class=\"glyphicon glyphicon-cloud-upload requestProduct\" onclick=\"requestProduct(this);\"></a>" +
+                                                                      "#}#" +
+                                                                      "<a title=\"Details\" class=\"glyphicon glyphicon-list\" href=" + @Url.Action("Details", "Products") + "/#: ProductId #></a>" +
+                                                                      "<a title=\"Delete\" class=\"glyphicon glyphicon-trash delete\"></a>");
+        })
+        .DataSource(dataSource => dataSource
+           .Ajax()
+           .PageSize(20)
+           .Read(read => read.Action("Get", "Products").Data("indexProductsData")).Sort(sort => { sort.Add(s => s.Description); })
+        )
+        .Events(events => events.DataBound("onDataBound"))
+        .Filterable(filterable => filterable.Extra(false))
+        .Pageable(pageable => pageable.Refresh(true).PageSizes(true).ButtonCount(5))
+        .Resizable(resize => resize.Columns(true))
+        .Sortable()
+        .ToolBar(toolbar => toolbar.Template(@<text>
+                                                 <div class="toolbar">
+                                                    <span class="toolbar-left">
+                                                       <a href="~/Inventory/Products/Create" class="k-button">Add Product</a>
+                                                       @(Html.Kendo().Button().Name("openBulkUpdate").Content("Bulk Update").Events(events => events.Click("onOpenBulkUpdate")).HtmlAttributes(new {@id = "bulkUpdate"}))
+                                                    </span>
+                                                    <span class="toolbar-right">
+                                                       <label class="toolbar-label" for="description">Description:</label>
+                                                       @(Html.Kendo().TextBox().Name("description").HtmlAttributes(new {@class = "filter-control"}))
+                                                       @(Html.Separator())
+                                                       @(Html.Kendo().Button().Name("applyFilter").Content("Filter"))
+                                                       @(Html.Kendo().Button().Name("clearFilters").Content("Clear"))
+                                                       @(Html.Separator())
+                                                       @(Html.Kendo().Button().Name("advancedSearch").Content("Adv. Search"))
+                                                    </span>
+                                                 </div>
+
+                                              </text>)
+        )
+        )
+</div>
+
+<div id="window">
+   <div class="container-fluid">
+      <div id="requestProductAlertPlaceholder"></div>
+      <div class="form-horizontal">
+         <div class="form-group">
+            <div class="col-md-3 col-lg-4 control-label">
+               @(Html.Label("Product"))
+            </div>
+            <div class="col-md-6 col-lg-7">
+               @(Html.Kendo().TextBox().Name("ProductDescription").HtmlAttributes(new {@readonly = "readonly", @class="page-input"}))
+            </div>
+         </div>
+      </div>
+      @Html.Partial("_RequestProduct")
+   </div>
+</div>
+
+@{
+   Html.RenderPartial("_DeletePrompt", new DeletePromptModel());
+}
+<div id="advancedSearchWindow"></div>
+<div id="ledgerTreeWindow"></div>
+<div id="bulkUpdateWindow">
+   <div class="container-fluid">
+      <div class="row">
+         <div id="bulkWindowAlert"></div>
+      </div>
+
+      <div class="row">
+         <div class="col-sm-12">
+            <p>Select a detail to update and a new value to apply to all products currently filtered on the product master list. If no filters have been set, this will update <strong>all</strong> products.</p>
+         </div>
+      </div>
+
+      <div class="row">
+         <div class="col-sm-4 control-label text-right">
+            @Html.Label("Detail to update")
+         </div>
+         <div class="col-sm-6">
+            @(Html.Kendo().DropDownList().Name("fieldSelector")
+                 .DataSource(ds => ds.Read(read => read.Action("GetBulkUpdateFields", "Products")).ServerFiltering(true))
+                 .DataTextField("Value").DataValueField("Key")
+                 .Events(events => events.Change("onFieldSelectorChange")).HtmlAttributes(new {@class = "page-input"})                 
+                 )
+         </div>
+      </div>
+      
+      <div class="row" id="SubDetailRow" style="display: none;">
+         <div class="col-sm-4 control-label text-right">
+            @Html.Label("Sub detail")
+         </div>
+         <div class="col-sm-6">
+            <div class="page-input">
+               @(Html.Kendo().DropDownList().Name("SubDetail")
+                    .DataSource(ds => ds.Read(r => r.Action("GetPriceFields", "PriceTypes")))
+                    .DataTextField("Value").DataValueField("Key")
+                    .Events(events => events.Change("onSubDetailSelectorChange"))
+                    .OptionLabel(" ")
+                    .HtmlAttributes(new {@class = "page-input"}))
+            </div>
+         </div>
+      </div>
+
+      <div class="row row-high">
+         <div class="col-sm-4 control-label text-right">
+            @Html.Label("New value")
+         </div>
+         <div class="col-sm-6">
+            <div id="fieldControl" class="page-input">
+               @Html.Kendo().TextBox().Name("placeholder").Enable(false).HtmlAttributes(new {@class = "page-input"})
+            </div>
+         </div>
+      </div>
+
+      <div class="row top-buffer">
+         <div class="col-sm-4 pull-right text-right">
+            @(Html.Kendo().Button().Name("bulkUpdateSubmit").Content("Apply").Events(events => events.Click("onBulkUpdateSubmitClick")).HtmlAttributes(new {@class = "k-primary"}))
+            @(Html.Kendo().Button().Name("cancelBulkUpdate").Content("Close").Events(events => events.Click("onCancelBulkUpdateClick")))
+         </div>
+      </div>
+   </div>
+</div>
+
+@section Scripts{
+   <script src="~/Areas/Inventory/Scripts/AdvancedSearch.js"></script>
+   <script src="~/Scripts/kendoGridFilter.js" ></script>
+   <script src="~/Scripts/Inventory.js"></script>
+
+   <script type="text/javascript">
+      $(document).ready(function () {
+         InitFilterControls();
+         createAdvancedSearch();
+         createWindow();
+         createBulkUpdateWindow();
+         createLedgerTreeWindow(@ViewBag.LedgerType);
+
+         var grid = $('#Products').data('kendoGrid');
+         applyPresetFilterToGrid(grid);
+         bindAdvancedSearchButtonToGrid(grid);
+
+         $('#advancedSearch').click(function () {
+            applyPresetDropDownFilterToAdvSearch(grid);
+            applyPresetMultiSelectFilterToAdvSearch(grid);
+            $('#CategorySelectMode').val('search');
+            openAdvancedSearch();
+         });
+
+         $('#applyFilter').click(function () {
+            var filters = GetFilters(grid);
+            filters = UpdateSearchFilters(filters, "Description", "contains", $('#description').val(), "and");
+
+            $('#alertPlaceholder').empty();
+            grid.dataSource.filter(filters);
+         });
+
+         $('#clearFilters').click(function () {
+            $('#description').val('');
+            ClearAdvancedSearchControls();
+            ClearFilters(grid);
+            $('#alertPlaceholder').empty();
+         });
+      });
+
+      function onDataBound(e) {
+         applyGridTooltips();
+         $('.delete').click(function (e) {
+            var grid = $('#Products').data('kendoGrid');
+            var item = grid.dataItem($(e.currentTarget).closest('tr'));
+            var productId = item.ProductId;
+            $.get("@Url.Action("InStock")/" + productId, function (data) {
+               if (data) {
+                  getAlert('danger', 'Unable to delete product with items in stock. <a href=\"@Url.Action("ViewAvailableStock", "Stock")' + '?productId=' + productId + '&name=' + item.SPC + ' - ' + item.Description + ' \">Please first take care of all available stock for this product.</a>');
+               } else {
+                  dynamicDeletePrompt(grid, item.Description, '@Url.HttpRouteUrl("DefaultApi", new {controller = "Products"})/' + productId);
+               }
+            });
+         });
+
+      }
+
+      function applyPresetDropDownFilterToAdvSearch(grid) {
+         var filter = getFilterField('@ViewBag.PresetFilter');
+         var filterValue = getFilterValue('@ViewBag.PresetFilter');
+
+         if (filter == null || filterValue == null) return;
+         var filters = GetFilters(grid);
+         if (filter != ''
+            && filters.length == 1 && filters[0].field == filter
+            && filters[0].value == (filterValue == 'Yes').toString() && $('#ps' + filter).length > 0
+            && $('#ps' + filter).data('kendoDropDownList').value() == '') {
+            $('#ps' + filter).data('kendoDropDownList').select(function (dataItem) {
+               return dataItem === filterValue;
+            });
+         }
+      }
+
+      function applyPresetMultiSelectFilterToAdvSearch(grid) {
+         var filter = getFilterField('@ViewBag.PresetFilter');
+         var filterValue = getFilterValue('@ViewBag.PresetFilter');
+
+         if ('@ViewBag.PresetFilter' == '@InventoryConstants.ProductsInError') {
+            var filters = GetFilters(grid);
+            if (filters.length == 1 && filters[0].field == filter && filters[0].value == (filterValue == 'Yes').toString()
+               && $('#ps' + filter).length > 0 && $('#ps' + filter).data('kendoDropDownList').value() != '') {
+               if ('@ViewBag.IncludeDisabled' != '' && $('#psStatus').data('kendoMultiSelect').value().length === 0) {
+                  $('#psStatus').data('kendoMultiSelect').value(['@ProductStatus.Current', '@ProductStatus.Pending']);
+               }
+            }
+         }
+      }
+
+      function applyPresetFilterToGrid(grid) {
+         var presetFilter = '@ViewBag.PresetFilter';
+         if (presetFilter != '') {
+            var filterField = getFilterField(presetFilter);
+            var filters = GetFilters(grid);
+            var filterValue = (getFilterValue('@ViewBag.PresetFilter') == "Yes").toString();
+            filters = UpdateSearchFilters(filters, filterField, "eq", filterValue, "and");
+            grid.dataSource.filter(filters);
+            getAlert('warning', '@ViewBag.PresetFilterMessage');
+         }
+      }
+
+      function getFilterField(presetFilter) {
+         if (presetFilter == '@InventoryConstants.Unclassified') {
+            return "Unclassified";
+         }
+
+         if (presetFilter == '@InventoryConstants.PendingConsumedProducts')
+            return "PendingConsumedProducts";
+
+         if (presetFilter == '@InventoryConstants.ProductsInError')
+            return "InError";
+
+         return null;
+      }
+
+      function getFilterValue(presetFilter) {
+         if (presetFilter == '@InventoryConstants.Unclassified') {
+            return "Yes";
+         }
+
+         if (presetFilter == '@InventoryConstants.PendingConsumedProducts')
+            return "Yes";
+
+         if (presetFilter == '@InventoryConstants.ProductsInError')
+            return "Yes";
+
+         return null;
+      }
+
+      function requestProduct(e) {
+         var dialog = $("#window").data("kendoWindow");
+         var item = $('#Products').data('kendoGrid').dataItem($(e).closest('tr'));
+         $('#ProductId').val(item.ProductId);
+         $('#ProductDescription').val(item.Description);
+         dialog.open().center();
+      }
+
+      function createWindow() {
+         if (!$("#window").data("kendoWindow")) {
+            $("#window").kendoWindow({
+               modal: true,
+               scrollable: false,
+               title: "Request Product",
+               width: 400,
+               visible: false,
+               open: function () {
+
+                  var win = this;
+                  $('#closeWindow').click(function () {
+                     win.close();
+                  });
+                  $('#save').click(function () {
+                     $.ajax({
+                        async: false,
+                        type: 'POST',
+                        url: "@Url.HttpRouteUrl("DefaultApi", new {controller = "StockRequests"})/CreateStockRequest",
+                        data: { ProductId: $('#ProductId').val(), RequestedQuantity: $('#Quantity').val(), LocationId: $('#Location').val(), Urgent: $('#IsUrgent').is(':checked') },
+                        success: function (data) {
+                           getAlert('success', "Successfully created a request for the product <a href='@Url.Action("Index", "StockRequests")'><strong>" + $('#ProductDescription').val() + "</strong>.</a>");
+                           $('#closeWindow').trigger('click');
+                        },
+                        error: function (data) {
+                           getAlertForId('requestProductAlertPlaceholder', 'danger', data.responseJSON.Message);
+                        }
+                     });
+                  });
+               },
+               activate: function () {
+                  var numeric = $('#Quantity').kendoNumericTextBox({
+                     format: '#',
+                     decimals: 0
+                  });
+                  numeric.on("focus", function () {
+                     var element = this;
+                     setTimeout(function () {
+                        $(element).select();
+                     });
+                  });
+                  $('#Quantity').data('kendoNumericTextBox').focus();
+               }
+            });
+            $('#closeWindow').html('Cancel');
+         }
+      }
+
+      function createBulkUpdateWindow(e) {
+         if ($("#bulkUpdateWindow").data('kendoWindow'))
+            return;
+         $('#bulkUpdateWindow').kendoWindow({
+            modal: true,
+            resizable: false,
+            scrollable: true,
+            title: "Bulk product update",
+            width: "550px",
+            visible: false,
+            refresh: function (ee) {
+
+            }
+         });
+      }
+
+      function indexProductsData() {
+         var toReturn = productsData();
+         if ('@ViewBag.IncludeDisabled' != '' && toReturn.statuses == undefined) {
+            toReturn.statuses = ['0', '1'];
+         }
+         return toReturn;
+      }
+
+      function onBulkUpdateSubmitClick(e) {
+         e.sender.options.enable = false;
+         $('#cancelBulkUpdate').data('kendoButton').enable(false);
+         var fieldSelector = $('#fieldSelector').data('kendoDropDownList');
+         var subDetail = $('#SubDetail').data('kendoDropDownList');
+         if (fieldSelector.value() == "") {
+            getAlertForId('bulkWindowAlert', 'danger', 'Please select a product detail to update.');
+            e.sender.options.enable = true;
+            $('#cancelBulkUpdate').data('kendoButton').enable(true);
+            return;
+         }
+
+         var grid = $('#Products').data('kendoGrid');
+         var requestObject = (new kendo.data.transports["aspnetmvc-server"]({ prefix: "" }))
+            .options.parameterMap({
+               page: grid.dataSource.page(),
+               sort: grid.dataSource.sort(),
+               filter: grid.dataSource.filter()
+            });
+
+         var url = "@Url.Action("BulkUpdate", "Products", new {propertyName = "", value = "", filter = "~"})";
+         url = url.replace(/filter=([^&]*)/, 'filter=' + (requestObject.filter || '~'));
+         url = url.replace(/propertyName=([^&]*)/, fieldSelector.value());
+         url = url.replace(/value=([^&]*)/, '');
+
+         var categories = $('#psSelectedCategories').data('kendoMultiSelect');
+         var categoryIds;
+         if (categories != undefined) {
+            categoryIds = categories.value();
+         }
+
+         var statuses = $('#psStatus').data('kendoMultiSelect');
+         var statusesValues;
+         if (statuses != undefined) {
+            statusesValues = statuses.value();
+         }
+
+         if (confirm("Are you sure you want to update the '" + fieldSelector.text() + "' " +
+            "of all products currently filtered in the master list? ")) {
+            var value = $(document.querySelector('[propertyname]')).val();
+            if (value != null) {
+               value = value.toString();
+            }
+
+            getAlertForId('bulkWindowAlert', 'info', 'Update in progress. Please wait until the operation is complete.');
+
+            $.ajax({
+               async: false,
+               contentType: 'application/json',
+               type: 'POST',
+               data: JSON.stringify({
+                  propertyName: fieldSelector.value(),
+                  subDetail: subDetail.value(),
+                  value: value,
+                  categoryIds: categoryIds,
+                  statuses: statusesValues
+               }),
+               url: url,
+               success: function (data) {
+                  getAlertForId('bulkWindowAlert', 'success', 'Update of <strong>' + fieldSelector.text() + '</strong> with the new value has been successful for the filtered products.');
+                  e.sender.options.enable = true;
+                  $('#cancelBulkUpdate').data('kendoButton').enable(true);
+               },
+               error: function (data) {
+                  getAlertForId('bulkWindowAlert', 'danger', data.statusText);
+                  e.sender.options.enable = true;
+                  $('#cancelBulkUpdate').data('kendoButton').enable(true);
+               }
+            });
+         } else {
+            e.sender.options.enable = true;
+            $('#cancelBulkUpdate').data('kendoButton').enable(true);
+         }
+      }
+
+      function onCancelBulkUpdateClick(e) {
+         $('#CategoryTree').data('kendoTreeList').dataSource.filter([]);
+         $('#clearCategory').trigger('click');
+         $('#bulkUpdateWindow').data('kendoWindow').close();
+
+      }
+
+      function onOpenBulkUpdate(e) {
+         $('#SubDetailRow').hide();
+
+         var fieldSelector = $('#fieldSelector').data('kendoDropDownList');
+         fieldSelector.text("");
+         fieldSelector.value("");
+         fieldSelector.trigger('change');
+
+         $('#CategorySelectMode').val('bulkupdate');
+
+         $('#bulkUpdateWindow').data('kendoWindow').center().open();
+      }
+
+      function onFieldSelectorChange(e) {
+         $('#bulkWindowAlert').empty();
+         if (e.sender.value() == "") {
+            $("#fieldControl").html('@(Html.Kendo().TextBox().Name("placeholder").Enable(false).HtmlAttributes(new {@class = "page-input"}))');
+            return;
+         }
+
+         if (e.sender.value().indexOf("@InventoryConstants.BulkUpdatePriceTypePrefix") === 0) {
+            $('#SubDetailRow').show();
+            var subDetailDropDown = $('#SubDetail').data('kendoDropDownList');
+            subDetailDropDown.select(0);
+            subDetailDropDown.trigger('change');
+            return;
+         } else {
+            $('#SubDetailRow').hide();
+         }
+
+         $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            data: {
+               updateFieldName: e.sender.value()
+            },
+            url: "@Url.Action("GetHtmlControlForBulkUpdateField", "Products")",
+            success: function (data) {
+               $("#fieldControl").html(data);
+               var bulkUpdateWarning = $(document.querySelector('[warning]')).attr('warning');
+               if (bulkUpdateWarning != undefined && bulkUpdateWarning != "") {
+                  getAlertForId('bulkWindowAlert', 'warning', bulkUpdateWarning);
+               } else {
+                  $('#bulkWindowAlert').empty();
+               }
+               if (e.sender.value().indexOf("@(Nameof<BulkUpdateProductModel>.Property(p => p.SelectedCategories))") === 0) {
+                  $('#CategoryMulti').data('kendoMultiSelect').value([]);
+               }
+            }
+         });
+      }
+
+      function onSubDetailSelectorChange(e) {
+         $('#bulkWindowAlert').empty();
+         if (e.sender.value() == "") {
+            $("#fieldControl").html('@(Html.Kendo().TextBox().Name("placeholder").Enable(false).HtmlAttributes(new {@class = "page-input"}))');
+            return;
+         }
+
+         $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            data: {
+               updateFieldName: e.sender.value()
+            },
+            url: "@Url.Action("GetHtmlControlForBulkUpdateField", "Products")",
+            success: function (data) {
+               $("#fieldControl").html(data);
+            }
+         });
+      }
+
+   </script>
+}
+<style scoped="scoped">
+   a.requestProduct { cursor: pointer; }
+</style>
+
+<style>
+.k-grid td {
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 22px;
+}
+
+   .top-buffer { margin-top: 1em; }
+
+   #bulkUpdateGrid { height: 10em; }
+
+   #bulkWindowAlert .alert {
+      padding-top: 1em;
+      padding-bottom: 1em;
+      margin-bottom: 0.5em;
+   }
+
+</style>

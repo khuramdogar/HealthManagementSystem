@@ -1,0 +1,43 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.StockTakes
+@using HMS.HealthTrack.Web.Views
+@using Kendo.Mvc.UI
+@model StockTakeViewModel
+<div class="row">
+   <div class="col-md-6">
+      <dl class="dl-horizontal" id="stockTakeDetails">
+         <dt>Stock take #</dt>
+         <dd>@Html.DisplayFor(m => m.StockTakeId) </dd>
+         <dt>Name</dt>
+         <dd>@Html.DisplayFor(m => m.Name)</dd>
+         <dt>Date</dt>
+         <dd>@Html.DisplayFor(m => m.StockTakeDate)</dd>
+         <dt>Location</dt>
+         <dd>@Html.DisplayFor(m => m.LocationName)</dd>
+         <dt>Status</dt>
+         <dd>@Html.DisplayFor(m => m.Status)</dd>
+         <dt>Message</dt>
+         <dd>@Html.DisplayWithBreaksFor(m => m.Message)</dd>
+      </dl>
+      @(Html.Kendo().Button().Name("Edit").Content("Edit").Events(events => events.Click("onEditClick")))
+      @(Html.Kendo().Button().Name("Adjust").Content("Confirm and adjust").HtmlAttributes(new {@class = "k-primary"}))
+   </div>
+</div>
+<br />
+
+@(Html.Kendo().Grid<StockTakeItemViewModel>()
+     .Name("StockTakeItems")
+     .Columns(columns =>
+     {
+        columns.Bound(c => c.SPC).Width(200);
+        columns.Bound(c => c.Description);
+        columns.Bound(c => c.StockLevel).Width(120);
+     })
+     .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(10)
+        .Events(events => events.Error("error_handler"))
+        .Read("GetStockTakeItems", "StockTakeItems", new {stockTakeId = Model.StockTakeId})
+     )
+     .Events(events => events.DataBound("onDataBound"))
+     .Pageable(page => page.Refresh(true).PageSizes(true).ButtonCount(5))
+     )

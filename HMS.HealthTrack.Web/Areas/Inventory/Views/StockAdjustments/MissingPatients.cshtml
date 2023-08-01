@@ -1,0 +1,143 @@
+﻿@using HMS.HealthTrack.Web.Data.Model
+@using HMS.HealthTrack.Web.Data.Model.HealthTrackInventory
+@using HMS.HealthTrack.Web.Data.Model.Inventory
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.StockAdjustment
+@using HMS.HealthTrack.Web.Views
+@using Kendo.Mvc.UI
+@model dynamic
+
+@{
+   ViewBag.Title = "Missing patient info";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Patient Man 2 Help.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Stock deductions missing required patient details</h2>
+         </div>
+      </div>
+   </div>
+</div>
+<div id="alertPlaceholder"></div>
+@(Html.Kendo().Grid<IndexStockAdjustmentsViewModel>()
+     .Name("grid")
+     .Columns(columns =>
+     {
+        columns.Bound(deduction => deduction.ProductId).Filterable(ftb => ftb.Cell(cell => cell.ShowOperators(true)).Extra(false)).Width(90);
+        columns.Bound(deduction => deduction.ProductName).Filterable(ftb => ftb.Cell(cell => cell.ShowOperators(true)).Extra(false));
+        columns.Bound(deduction => deduction.AdjustedBy).Title("Consumer").Filterable(ftb => ftb.Cell(cell => cell.ShowOperators(true)).Extra(false)).Width(130);
+        columns.Bound(deduction => deduction.AdjustedOn).Format("{0:dd/MM/yyyy HH:mm}").Filterable(f => f.UI(GridFilterUIRole.DateTimePicker)).Width(150);
+        columns.Bound(deduction => deduction.Quantity).Filterable(ftb => ftb.Extra(false)).Width(120);
+        columns.Command(commands =>
+        {
+           commands.Custom("Ignore").Click("onIgnoreClick");
+        }).Title("").HtmlAttributes(new {@class = "button-column"}).Width(170);
+     })
+     .Events(events => events.DataBound("onDataBound"))
+     .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(20)
+        .Model(model =>
+        {
+           model.Id(deduction => deduction.StockAdjustmentId); // Specify the property which is the unique identifier of the model
+           model.Field(deduction => deduction.StockAdjustmentId).Editable(false); // Make the consumptionID property not editable
+        })
+        .Read(read => read.Url(Url.Action("MissingPatients")))
+        .Sort(sc =>
+        {
+           sc.Add(s => s.AdjustedOn);
+        })
+     )
+     .Resizable(resize => resize.Columns(true))
+     .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+     .ToolBar(toolbar => toolbar.Template(@<text>
+                                              <span class="toolbar">
+                                                 <span class="toolbar-right">
+                                                    <label class="filter-label" for="product">Product: </label>
+                                                    @Html.Kendo().TextBox().Name("product").HtmlAttributes(new {@class = "filter-control"})
+                                                    @Html.Separator()
+                                                    @(Html.Kendo().Button().Name("applyFilter").Content("Filter"))
+                                                    @(Html.Kendo().Button().Name("clearFilter").Content("Clear"))
+                                                 </span>
+                                              </span>
+                                           </text>))
+     .Filterable()
+     .Resizable(resize => resize.Columns(true))
+     .Sortable(sort => sort.SortMode(GridSortMode.MultipleColumn))
+     .ClientDetailTemplateId("template")
+     )
+
+<script id="template" type="text/kendo-tmpl">
+      @(Html.Kendo().TabStrip()
+           .Name("tabStrip_#=StockAdjustmentId#")
+           .SelectedIndex(0)
+           .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+           .Items(items =>
+           {
+              items.Add().Text("Patient details").Content("<div id='patient_#=StockAdjustmentId#'></div><script>getPatientDetails(#=StockAdjustmentId#,#=ClinicalRecordId#)</script>");
+              items.Add().Text("Additional details").Content("<div id='result_#=StockAdjustmentId#'></div><script>getDetails(#=StockAdjustmentId#)</script>");
+           }).ToClientTemplate())
+</script>
+
+@section Scripts {
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+   <script src="~/Scripts/Inventory.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+         InitFilterControls();
+         var grid = $('#grid').data('kendoGrid');
+         var statusFilter = $('#consumptionStatus').data('kendoDropDownList');
+         $('#applyFilter').click(function() {
+            var filters = GetFilters(grid);
+            filters = UpdateSearchFilters(filters, "ProductName", "contains", $('#product').val(), "and");
+            filters = UpdateSearchFilters(filters, "ConsumptionStatus", "eq", statusFilter.value(), "and");
+            grid.dataSource.filter(filters);
+         });
+
+         $('#clearFilter').click(function() {
+            $('#product').val('');
+            statusFilter.select(0);
+            ClearFilters(grid);
+         });
+      });
+
+      function getDetails(adjustmentId) {
+         $("#result_" + adjustmentId).load("@Url.Action("AdditionalDetails", "StockAdjustments", new { Area = "Inventory" })?stockAdjustmentId=" + adjustmentId);
+      };
+
+      function getPatientDetails(adjustmentId, containerId) {
+         if (containerId == null) {
+            $("#patient_" + adjustmentId).html("<p>There are no patient details associated with this record</p>");
+         } else {
+            $("#patient_" + adjustmentId).load("@Url.Action("PatientDetails", "Patient", new {Area = "Inventory"})?containerId=" + containerId);
+         }
+      };
+
+      function dataBound() {
+         this.expandRow(this.tbody.find("tr.k-master-row").first());
+      }
+
+      function onDataBound(e) {
+         applyGridTooltips();
+         $('#grid').find('tr.k-master-row').each(function() {
+            var row = $(this);
+            var grid = $('#grid').data('kendoGrid');
+            var button = $(row).children().children('.k-grid-Ignore')[0];
+            var item = grid.dataItem($(row).closest('tr'));
+            var status = item.get('Status');
+            if (status == '@ConsumptionProcessingStatus.Ignored.ToString()') {
+               $(button).html('Unignore');
+            } else if (status != '@ConsumptionProcessingStatus.Unprocessed' || status != '@ConsumptionProcessingStatus.Processed') {
+               $(button).attr('disabled', 'disabled');
+            }
+         });
+      }
+   </script>
+}

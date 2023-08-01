@@ -1,0 +1,55 @@
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.Products.EditProductsViewModel
+
+@{
+   ViewBag.Title = "Edit";
+}
+<div class="row">
+   <div class="col-md-1">
+      <img src="~/Content/images/Icons/72x72/Scale And Box Edit.png"/>
+   </div>
+   <div class="col-md-8">
+      <h4 class="well-sm">@Model.Description</h4>
+   </div>
+</div>
+<br />
+<div id="alertPlaceholder"></div>
+   @using (Html.BeginForm("Edit", "Products", FormMethod.Post, new {id = "editForm"})) 
+   {
+      @Html.ValidationSummary(true)
+      @Html.HiddenFor(model => model.ProductId)
+
+      @Html.Partial("_ProductForm", Model)
+      <div>
+         <a class="k-button" href="@Url.Action("Details", new { id = Model.ProductId })">Cancel</a>
+         <button type="submit" id="saveButton" class="k-button k-primary">Save</button>
+      </div>
+   }
+
+@section Scripts {
+   @Scripts.Render("~/bundles/jqueryval")
+   <script src="~/Areas/Inventory/Scripts/ScanCode.js"></script>
+
+   <script src="~/Scripts/Inventory.js"></script>
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+         $('#stockTab').hide();
+         var manageStock = $('#ManageStock').is(':checked');
+
+         $('#editForm').submit(function (e) {
+            if (manageStock == true && $('#ManageStock').is(':checked') == false) {
+               if (!confirm('Manage Stock has been unticked. This will result in removal of total stock and reset to 0. Press OK to confirm this change.')) {
+                  event.preventDefault();
+               }
+            }
+         });
+      });
+
+   </script>
+}
+
+<style>
+   .form-control[disabled] {
+      background-color: white !important;
+   }
+</style>

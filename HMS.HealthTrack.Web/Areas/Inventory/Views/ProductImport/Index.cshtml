@@ -1,0 +1,326 @@
+﻿@using HMS.HealthTrack.Web.Data.Model.Inventory
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.ProductImport
+@using Kendo.Mvc.UI
+@model ProductImportDataViewModel
+@{
+   ViewBag.Title = "Product imports";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Spreadsheet 1 Add.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Product imports</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div id="alertPlaceholder"></div>
+<div class="row">
+   <div class="col-sm-2" id="upload-label">
+      <label>Upload new file</label>
+   </div>
+   <div class="col-sm-4">
+      <input type="file" class="form-control" id="uploadFile" accept=".xls,.xlsx" />
+   </div>
+   <div class="col-sm-2">
+      @(Html.Kendo().Button().Name("upload").Content("Upload").Events(events => events.Click("onUploadClick")))
+   </div>
+</div>
+<br/>
+<div>
+   @(
+      Html.Kendo().Grid<ProductImportDataViewModel>()
+         .Name("ImportData")
+         .Columns(columns =>
+         {
+            columns.Bound(c => c.Name);
+            columns.Bound(c => c.Status).Width(100);
+            columns.Bound(c => c.UploadedOn).Format("{0:dd/MM/yyyy HH:mm}").Title("Uploaded").Width(140);
+            columns.Bound(c => c.ImportedOn).Filterable(f => f.Extra(true)).Format("{0:dd/MM/yyyy HH:mm}").Title("Imported").Width(140);
+            columns.Bound(c => c.Count).Title("Products").Width(110);
+            columns.Command(c =>
+            {
+               c.Custom("Import").Text("Import").Click("importProducts");
+               c.Custom("View").Text("View").Click("viewImportProducts");
+               c.Destroy();
+            }).Width(250).HtmlAttributes(new {@class = "button-column"});
+         })
+         .DataSource(ds => ds.WebApi()
+            .PageSize(20)
+            .Model(model => model.Id(m => m.ProductImportDataId))
+            .Read(read => read.Url(@Url.HttpRouteUrl("DefaultApi", new {controller = "ProductImportData"})))
+            .Destroy(destroy => destroy.Url(@Url.HttpRouteUrl("DefaultApi", new {controller = "ProductImportData", id = "{0}"})))
+            .Sort(sort => sort.Add(s => s.UploadedOn).Descending()))
+         .Events(events => events.DataBound("onDataBound"))
+         .Filterable(f => f.Enabled(true).Extra(false))
+         .Pageable(page => page.Refresh(true).PageSizes(true).ButtonCount(5))
+         .Resizable(resize => resize.Columns(true))
+         .Sortable()
+         .ToolBar(toolbar => toolbar.Template(@<text>
+                                                  <div class="toolbar">
+                                                     <span class="toolbar-left">
+                                                        @(Html.Kendo().Button().Name("ProcessFiles").Content("Process all").Events(events => events.Click("onProcessFiles")))
+                                                     </span>
+                                                     <span class="toolbar-right">
+                                                        @(Html.Kendo().Button().Name("Refresh").Content("Refresh").Events(events => events.Click("onRefresh")).HtmlAttributes(new {@class = "toolbar-right"}))
+                                                     </span>
+                                                  </div>
+                                               </text>))
+        )
+</div>
+<div id="errorWindow">
+   <div class="container-fluid">
+      <div id="errorWindowMessage" class="row"></div>
+      <br/>
+      <div id="errorWindowButtons" class="row">
+         <a class="k-button k-primary" id="closeErrorWindow">Close</a>
+      </div>
+   </div>
+</div>
+<script src="~/Scripts/Inventory.js"></script>
+<script type="text/javascript">
+
+   $(document).ready(function() {
+      $('#errorWindow').kendoWindow({
+         modal: true,
+         resizable: true,
+         scrollable: false,
+         title: 'Error message',
+         visible: false,
+         activate: function() {
+            var window = this;
+            $('#closeErrorWindow').click(function() {
+               window.close();
+            });
+
+         },
+      });
+   });
+
+   function viewImportProducts(e) {
+      if ($(e.target).hasClass('k-state-disabled')) {
+         return;
+      }
+
+      var dataItem = this.dataItem($(e.currentTarget).closest('tr'));
+      if (dataItem.Status == '@(ProductImportStatus.Error)') {
+         var messageParts = dataItem.Message.split('.');
+         var messageToDisplay = "";
+         $.each(messageParts, function (index, value) {
+            if (!value.match(/\n/)) {
+               messageToDisplay += "<p>" + value + ".</p>";
+            }
+         });
+         $('#errorWindowMessage').html(messageToDisplay);
+         $('#errorWindow').data('kendoWindow').center().open();
+         $('#errorWindowButtons').css({
+            "bottom": "0",
+            "display": "block",
+            "margin": "auto",
+            "padding": "5px",
+            "position": "absolute",
+            "overflow": "auto",
+            "right": "0",
+         });
+
+         $('#errorWindow').css({
+            "display": "block",
+            "margin": "auto",
+            "overflow": "auto"
+         });
+         return;
+      }
+
+      var id = dataItem.ProductImportDataId;
+      window.location.href = "@Url.Action("Products")/" + id;
+   }
+
+   function importProducts(e) {
+      if ($(e.target).hasClass('k-state-disabled')) {
+         return;
+      }
+      var grid = $('#ImportData').data('kendoGrid');
+      var dataItem = this.dataItem($(e.currentTarget).closest('tr'));
+      var name = dataItem.Name;
+      if (dataItem.Status == '@(ProductImportStatus.Uploaded)') {
+         // import the data
+         $.ajax({
+            async: false,
+            contentType: 'application/json',
+            data: JSON.stringify({
+               ProductImportDataId: dataItem.ProductImportDataId,
+            }),
+            type: 'POST',
+            url: '/api' + '@Url.Action("ProcessProductImport", "ProductImportData")',
+            success: function(data) {
+               grid.dataSource.read();
+               grid.refresh();
+               getAlert('success', "Processing products for <strong>" + name + "</strong>. Please refresh the grid for updates");
+            },
+            error: function(ee) {
+               getAlert('danger', ee.responseJSON.Message);
+            }
+         });
+      } else if (dataItem.Status == '@(ProductImportStatus.Pending)') {
+         // process the data
+         $.ajax({
+            async: false,
+            contentType: 'application/json',
+            data: JSON.stringify({
+               ImportId: dataItem.ProductImportDataId,
+            }),
+            type: 'POST',
+            url: "@Url.HttpRouteUrl("DefaultApi", new {controller = "ProductImport"})",
+            success: function(e) {
+               grid.dataSource.read();
+               grid.refresh();
+               getAlert('success', 'Products are being imported.');
+            },
+            error: function(e) {
+               getAlert('danger', e.responseJSON.Message);
+            }
+         });
+      }
+   }
+
+   function onDataBound(e) {
+      applyGridTooltips();
+      var grid = this;
+      var gridRows = grid.tbody.find("tr");
+      var hasInvalid = false;
+      for (var i = 0; i < gridRows.length; i++) {
+         var row = $(gridRows[i]);
+         var dataItem = grid.dataItem(row);
+         //perform custom check
+         if (dataItem.Status != '@(ProductImportStatus.Pending)' && dataItem.Status != '@(ProductImportStatus.Uploaded)') {
+            //disable buttons using jQuery
+            var importButton = row.find(".k-grid-Import");
+            importButton.prop('disabled', 'disabled').addClass('k-state-disabled');
+            $(importButton).unbind('click');
+         }
+         if (dataItem.Status == '@(ProductImportStatus.Uploaded)') {
+            row.find(".k-grid-Import").text('Process');
+         }
+
+         if (dataItem.Status == '@(ProductImportStatus.Processing)') {
+            row.find('.k-grid-View').prop('disabled', 'disabled').addClass('k-state-disabled');
+            row.find('.k-grid-delete').hide();
+         }
+
+         if (dataItem.Status == '@(ProductImportStatus.Uploaded)') {
+            var viewButton = row.find(".k-grid-View");
+            viewButton.prop('disabled', 'disabled').addClass('k-state-disabled');
+
+         }
+         if (dataItem.Status == '@(ProductImportStatus.Invalid)') {
+            row.find(".k-grid-View").text('Edit');
+            hasInvalid = true;
+         } else if (dataItem.Status == '@(ProductImportStatus.Error)') {
+            row.find(".k-grid-View").text('Message');
+            hasInvalid = true;
+         }
+      }
+
+      if (hasInvalid) {
+         getAlert('warning', 'Imports may contain invalid product details. If an Invalid status is received on your import file, correct via the Edit button before selecting Import.');
+      }
+   }
+
+   function onUploadClick() {
+      var uploadButton = $('#upload').data('kendoButton');
+
+      var inputFilenameContents = $('#uploadFile').val().split('\\');
+      var filename = inputFilenameContents[inputFilenameContents.length - 1];
+      if (filename.length > 300) {
+         getAlert('danger', 'Filename cannot be longer than 300 characters. Please rename the file and try again.');
+         return;
+      }
+
+      var files = $('#uploadFile').get(0).files;
+      if (files.length > 0) {
+         getAlert('warning', 'Uploading file <strong>' + filename + '</strong>... Please wait.');
+         uploadButton.enable(false);
+         if (window.FormData !== undefined) {
+            var data = new FormData();
+            for (var i = 0; i < files.length; i++) {
+               data.append("file" + i, files[i]);
+            }
+            $.ajax({
+               async: true,
+               type: 'POST',
+               url: '/api/inventory/ProductImportData/StoreProductsData',
+               contentType: false,
+               processData: false,
+               data: data,
+               success: function(results) {
+                  getAlert('success', "File <strong>" + filename + "</strong> successfully uploaded.");
+                  $('#ImportData').data('kendoGrid').dataSource.read();
+                  $('#ImportData').data('kendoGrid').refresh();
+                  uploadButton.enable(true);
+                  var input = $('#uploadFile');
+                  input.replaceWith(input.val('').clone(true));
+               },
+               error: function(response) {
+                  getAlert('danger', response.responseJSON.Message);
+                  uploadButton.enable(true);
+               }
+            });
+         } else {
+            alert('This browser does not support HTML5 multiple file uploads.');
+         }
+      } else {
+         getAlert('warning', "Please choose a file to upload.");
+      }
+   }
+
+   function onProcessFiles(e) {
+      $('#ProcessFiles').data('kendoButton').enable(false);
+
+      $.ajax({
+         async: false,
+         type: 'GET',
+         url: '/api' + '@Url.Action("ProcessOutstanding", "ProductImportData")',
+         success: function(data) {
+            getAlert('success', "Processing all pending product imports. Please refresh the grid for updates", "info");
+         },
+         error: function(data) {
+            getAlert('danger', "Unable to process product imports.");
+         }
+      });
+   }
+
+   function onRefresh(e) {
+      $('#ImportData').data('kendoGrid').dataSource.read();
+      $('#ImportData').data('kendoGrid').refresh();
+      var refreshButton = $('#Refresh').data('kendoButton');
+      refreshButton.enable(false);
+      setTimeout(function() {
+         refreshButton.enable(true);
+      }, 3000);
+   }
+</script>
+
+<style>
+   .windowRow {
+      padding-bottom: 5px;
+      padding-top: 5px;
+   }
+
+   .k-edit-label { padding-right: 15px; }
+
+   .k-window { width: 600px; }
+
+   .k-edit-form-container { width: 555px; }
+
+   .k-input, .k-textbox, .k-dropdown { width: 300px; }
+
+   #upload-label {
+      text-align: right;
+      padding-top: 7px;
+   }
+</style>

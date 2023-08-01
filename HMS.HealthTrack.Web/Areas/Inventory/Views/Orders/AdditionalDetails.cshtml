@@ -1,0 +1,61 @@
+﻿@model HMS.HealthTrack.Web.Areas.Inventory.Models.Orders.DetailsOrdersViewModel
+
+@{
+   Layout = null;
+}
+
+<div>
+   <br/>
+   <dl class="dl-horizontal">
+      <dt>
+         @Html.DisplayNameFor(model => model.Status)
+      </dt>
+
+      <dd>
+         @Html.DisplayFor(model => model.Status)
+      </dd>
+
+      <dt>
+         @Html.DisplayNameFor(model => model.Name)
+      </dt>
+      <dd>
+         @Html.DisplayFor(model => model.Name)
+      </dd>
+
+      <dt>
+         @Html.DisplayNameFor(model => model.IsUrgent)
+      </dt>
+      <dd>
+         @Html.DisplayFor(model => model.IsUrgent)
+      </dd>
+
+      <dt>
+         @Html.DisplayNameFor(model => model.DeliveryLocation)
+      </dt>
+      <dd>
+         @Html.DisplayFor(model => model.DeliveryLocation)
+      </dd>
+
+      <dt>
+         @Html.DisplayNameFor(model => model.NeedBy)
+      </dt>
+      <dd>
+         @Html.DisplayFor(model => model.NeedBy)
+      </dd>
+
+      <dt>
+         @Html.DisplayNameFor(model => model.Total)
+      </dt>
+      <dd>
+         @Html.DisplayFor(model => model.Total)
+      </dd>
+
+      <dt>
+         @Html.DisplayNameFor(model => model.Notes)
+      </dt>
+      <dd>
+         @Html.DisplayFor(model => model.Notes)
+      </dd>
+   </dl>
+</div>
+

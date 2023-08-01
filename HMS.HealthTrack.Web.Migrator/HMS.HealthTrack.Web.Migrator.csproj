@@ -1,0 +1,382 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{84F86E4F-8262-4C28-9E46-BEC22E5E36D9}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HMS.HealthTrack.Web.Migrator</RootNamespace>
+    <AssemblyName>HMS.HealthTrack.Web.Migrator</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="dbup-core, Version=4.1.0.0, Culture=neutral, PublicKeyToken=4b419c53bdfd4cbf, processorArchitecture=MSIL">
+      <HintPath>..\packages\dbup-core.4.1.0\lib\net45\dbup-core.dll</HintPath>
+    </Reference>
+    <Reference Include="dbup-sqlserver, Version=4.1.0.0, Culture=neutral, PublicKeyToken=4b419c53bdfd4cbf, processorArchitecture=MSIL">
+      <HintPath>..\packages\dbup-sqlserver.4.1.0\lib\net35\dbup-sqlserver.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\Script0293 - Added SPC to Consumption pricing view.sql" />
+    <EmbeddedResource Include="Scripts\Script0297 - Create Inventory Consumption Management table.sql" />
+    <EmbeddedResource Include="Scripts\Script0296 - Create Inventory Consumption Reversal table.sql" />
+    <EmbeddedResource Include="Scripts\Script0295 - Create Inventory.Consumption table.sql" />
+    <EmbeddedResource Include="Scripts\Script0294 - Added index to stock IsNegative.sql" />
+    <EmbeddedResource Include="Scripts\Script0292 - Fixed HealthTrack Consumption view showing multple external product mappings.sql" />
+    <EmbeddedResource Include="Scripts\Script0291 - Fixed HealthTrack Consumption view showing multple external product mappings.sql" />
+    <EmbeddedResource Include="Scripts\Script0290 - Fixed Consumption Pricing view to restrict to payment class.sql" />
+    <EmbeddedResource Include="Scripts\Script0289 - Add rebate code to ConsumptionPricing View.sql" />
+    <EmbeddedResource Include="Scripts\Script0288 - CREATE ConsumptionPricing View.sql" />
+    <EmbeddedResource Include="Scripts\Script0287 - Recalculate Products In Error.sql" />
+    <EmbeddedResource Include="Scripts\Script0286 - Fix Rebate code on clinical consumption.sql" />
+    <EmbeddedResource Include="Scripts\Script0285 - Speed up clinical consumption query2.sql" />
+    <EmbeddedResource Include="Scripts\Script0284 - Speed up clinical consumption query.sql" />
+    <EmbeddedResource Include="Scripts\Script0283 - Add rebate code and price to clinical consumptions.sql" />
+    <EmbeddedResource Include="Scripts\Script0282 - Added Additional Details to order submissions.sql" />
+    <EmbeddedResource Include="Scripts\Script0281 - Added Order Submission Status.sql" />
+    <EmbeddedResource Include="Scripts\Script0280 - Added OrderOutputMethod configuration property.sql" />
+    <EmbeddedResource Include="Scripts\Script0279 - Added OrgId to Order Channels.sql" />
+    <EmbeddedResource Include="Scripts\Script0278 - Added Reference to Order Channels.sql" />
+    <EmbeddedResource Include="Scripts\Script0277 - CREATE Order Channels.sql" />
+    <EmbeddedResource Include="Scripts\Script0276 - Oracle integration configuration.sql" />
+    <EmbeddedResource Include="Scripts\Script0275 - Archive Ignored consumptions.sql" />
+    <EmbeddedResource Include="Scripts\Script0274 - CREATE scan code table.sql" />
+    <EmbeddedResource Include="Scripts\Script0273 - Remove cyclic foreign key from StockAdjustmentStock.sql" />
+    <EmbeddedResource Include="Scripts\Script0272 - Disable UnclassifiedProducts notification.sql" />
+    <EmbeddedResource Include="Scripts\Script0271 - RECREATE HealthTrackConsumption View to include testDate.sql" />
+    <EmbeddedResource Include="Scripts\Script0270 - MIGRATE and DROP Stock ReceivedOn and ReceivedBy.sql" />
+    <EmbeddedResource Include="Scripts\Script0269 - RECREATE DeductionRequiringPaymentClass.sql" />
+    <EmbeddedResource Include="Scripts\Script0268 - DROP StockAdjustment Status.sql" />
+    <EmbeddedResource Include="Scripts\Script0267 - ALTER OrderItemSource ADD ConsumptionNotificationManagement invUsed_ID.sql" />
+    <EmbeddedResource Include="Scripts\Script0266 - UPDATE ConsumptionNotificationManagement SET Archived and ProcessingStatus.sql" />
+    <EmbeddedResource Include="Scripts\Script0265 - RECREATE HealthTrackConsumption View.sql" />
+    <EmbeddedResource Include="Scripts\Script0264 - RENAME ConsumptionNotificationManagement Ignored fields to Archived.sql" />
+    <EmbeddedResource Include="Scripts\Script0263 - DROP ConsumptionNotificationManagement Override fields.sql" />
+    <EmbeddedResource Include="Scripts\Script0262 - RENAME Product UnmanagedFrom to ReplaceAfter.sql" />
+    <EmbeddedResource Include="Scripts\Script0261 - RECREATE HealthTrackConsumption View ADD Ignored properties.sql" />
+    <EmbeddedResource Include="Scripts\Script0259 - DROP Stock OrderItemId.sql" />
+    <EmbeddedResource Include="Scripts\Script0258 - MIGRATE Stock with OrderItemId to StockAdjustment.sql" />
+    <EmbeddedResource Include="Scripts\Script0257 - ALTER StockAdjustment ADD OrderItemId and relationship.sql" />
+    <EmbeddedResource Include="Scripts\Script0256 - DROP OrderItemSource - StockAdjustmentId.sql" />
+    <EmbeddedResource Include="Scripts\Script0255 - RECREATE NegativeStock only for products with manage stock.sql" />
+    <EmbeddedResource Include="Scripts\Script0254 - REMOVE UncontrolledConsumptions and ProductsWithoutStockControl notification and UPDATE PendingConsumedProducts description.sql" />
+    <EmbeddedResource Include="Scripts\Script0253 - ALTER ConsumptionNotificationManagement ADD IgnoredOn IgnoredBy.sql" />
+    <EmbeddedResource Include="Scripts\Script0252 - INSERT StockAdjustmentReason InitialStock.sql" />
+    <EmbeddedResource Include="Scripts\Script0251 - ALTER Product ADD ManageStock.sql" />
+    <EmbeddedResource Include="Scripts\Script0249 - INSERT StockAdjustmentReason StockManagementWriteOff.sql" />
+    <EmbeddedResource Include="Scripts\Script0250 - ALTER StockAdjustmentReason ADD SystemReason.sql" />
+    <EmbeddedResource Include="Scripts\Script0248 - RECREATE DeductionsRequiringPaymentClass.sql" />
+    <EmbeddedResource Include="Scripts\Script0247 - RECREATE NegativeStock.sql" />
+    <EmbeddedResource Include="Scripts\Script0246 - DROP Stock StockTakeItemId and relationship.sql" />
+    <EmbeddedResource Include="Scripts\Script0245 - ALTER StockAdjustments remove StockId and migrate data.sql" />
+    <EmbeddedResource Include="Scripts\Script0244 - CREATE StockAdjustmentStock.sql" />
+    <EmbeddedResource Include="Scripts\Script0238 - RECREATE HealthTrackConsumption view exclude deleted product mappings.sql" />
+    <EmbeddedResource Include="Scripts\Script0243 - DROP CREATE Inventory Views with StockAdjustment.sql" />
+    <EmbeddedResource Include="Scripts\Script0242 - StockAdjustment add IsPositive.sql" />
+    <EmbeddedResource Include="Scripts\Script0241 - RENAME StockAdjustments StockWriteOffId and Reason.sql" />
+    <EmbeddedResource Include="Scripts\Script0240 - RENAME StockDeductionReason to StockAdjustmentReason.sql" />
+    <EmbeddedResource Include="Scripts\Script0239 - RENAME StockDeduction to StockAdjustment.sql" />
+    <EmbeddedResource Include="Scripts\Script0237 - ALTER Product add UnmanagedFrom.sql" />
+    <EmbeddedResource Include="Scripts\Script0236 - ALTER Stock add index to stock status.sql" />
+    <EmbeddedResource Include="Scripts\Script0235 - ALTER StockDeduction add Note.sql" />
+    <EmbeddedResource Include="Scripts\Script0234 - ALTER StockTake set StockTakeDate not null.sql" />
+    <EmbeddedResource Include="Scripts\Script0233 - ALTER StockTake add name.sql" />
+    <EmbeddedResource Include="Scripts\Script0232 - DROP Supplier and Manufacturer columns from MedicareProducts.sql" />
+    <EmbeddedResource Include="Scripts\Script0231 - RELATIONSHIPS - MedicareProductSponsor to Supplier and Manufacturer.sql" />
+    <EmbeddedResource Include="Scripts\Script0230 - RELATIONSHIPS for MedicareProduct and MedicareGroup.sql" />
+    <EmbeddedResource Include="Scripts\Script0228 - DROP ParentId MedicareGroup.sql" />
+    <EmbeddedResource Include="Scripts\Script0229 - CREATE Inventory.MedicareSubGroup DROP MedicareProduct FKs.sql" />
+    <EmbeddedResource Include="Scripts\Script0227 - CREATE MedicareProductCategory.sql" />
+    <EmbeddedResource Include="Scripts\Script0226 - DROP MedicareCode column from Supplier and Manufacturer.sql" />
+    <EmbeddedResource Include="Scripts\Script0225 - CREATE MedicareProductSponsor.sql" />
+    <EmbeddedResource Include="Scripts\Script0224 - Refresh ConsumptionRequiringPaymentClass view.sql" />
+    <EmbeddedResource Include="Scripts\Script0223 - UPDATE stock and deduction ids to bigint.sql" />
+    <EmbeddedResource Include="Scripts\Script0221 - UPDATE Product set InError for violation of one for one replace.sql" />
+    <EmbeddedResource Include="Scripts\Script0220 - UPDATE Product description where null as result of processor.sql" />
+    <EmbeddedResource Include="Scripts\Script0219 - UPDATE Set InError products.sql" />
+    <EmbeddedResource Include="Scripts\Script0217 - INSERT DashboardNotification ProductsInError.sql" />
+    <EmbeddedResource Include="Scripts\Script0216 - ADD Product InError field.sql" />
+    <EmbeddedResource Include="Scripts\Script0218 - ALTER ProductImport ALTER Supplier Manufacturer increase field length.sql" />
+    <EmbeddedResource Include="Scripts\Script0215 - RENAME Product ReorderSetting.sql" />
+    <EmbeddedResource Include="Scripts\Script0214 - UPDATE Product 1 for 1 replace reorder threshold.sql" />
+    <EmbeddedResource Include="Scripts\Script0213 - ALTER NegativeStock account for zero stock take.sql" />
+    <EmbeddedResource Include="Scripts\Script0212 - REMOVE DashboardNotification MissingStockTakes.sql" />
+    <EmbeddedResource Include="Scripts\Script0211 - Add audit fields to StockDeductionReason.sql" />
+    <EmbeddedResource Include="Scripts\Script0210 - ALTER Stock add received by.sql" />
+    <EmbeddedResource Include="Scripts\Script0209 - ALTER NegativeStock remove hard coded product id.sql" />
+    <EmbeddedResource Include="Scripts\Script0206 - REMOVE DashboardNotification UnmappedProducts and UPDATE consumptions from MissingMapping to Unprocessed.sql" />
+    <EmbeddedResource Include="Scripts\Script0207 - ALTER Product add product status.sql" />
+    <EmbeddedResource Include="Scripts\Script0019 - Add prosthetics category and remove prosthetic from product.sql" />
+    <EmbeddedResource Include="Scripts\Script0208 - ADD GL to StockDeduction.sql" />
+    <EmbeddedResource Include="Scripts\Script0200 - Add disabled flag to StockDeductionReasons.sql" />
+    <EmbeddedResource Include="Scripts\Script0204 - ALTER NegativeStock check for deleted product.sql" />
+    <EmbeddedResource Include="Scripts\Script0203 - UPDATE DashboardNotification UncontrolledConsumptions description.sql" />
+    <EmbeddedResource Include="Scripts\Script0202 - UPDATE ConsumptionNotificationManagement NoStockTake to Unprocessed.sql" />
+    <EmbeddedResource Include="Scripts\Script0201 - REMOVE DashboardNotification ConsumptionsMissingStockTakes.sql" />
+    <EmbeddedResource Include="Scripts\Script0199 - UPDATE ConsumptionNotificationManagement Override to Unprocessed.sql" />
+    <EmbeddedResource Include="Scripts\Script0198 - INSERT DashboardNotification NegativeStock.sql" />
+    <EmbeddedResource Include="Scripts\Script0197 - CREATE NegativeStock.sql" />
+    <EmbeddedResource Include="Scripts\Script0196 - ALTER Stock add IsNegative.sql" />
+    <EmbeddedResource Include="Scripts\Script0181 - Added standard Stock deduction reasons.sql" />
+    <EmbeddedResource Include="Scripts\Script0195 - ALTER PaymentClassMapping remove deleted columns.sql" />
+    <EmbeddedResource Include="Scripts\Script0194 - INSERT DashboardNotification UnmappedPaymentClass.sql" />
+    <EmbeddedResource Include="Scripts\Script0193 - ALTER Product Add UsePaymentClassPrice.sql" />
+    <EmbeddedResource Include="Scripts\Script0192 - ALTER HealthTrackConsumption View add payment class.sql" />
+    <EmbeddedResource Include="Scripts\Script0191 - CREATE PaymentClassMapping.sql" />
+    <EmbeddedResource Include="Scripts\Script0189 - NULLIFY SerialNumbers and BatchNumber of Available Stock.sql" />
+    <EmbeddedResource Include="Scripts\Script0188 - ALTER ProductImport Add rebate code.sql" />
+    <EmbeddedResource Include="Scripts\Script0187 - ALTER ProductImport add message field.sql" />
+    <EmbeddedResource Include="Scripts\Script0186 - ALTER ProductImportData ALTER Name increase length.sql" />
+    <EmbeddedResource Include="Scripts\Script0185 - ALTER HealthTrackConsumption add InventoryProductId.sql" />
+    <EmbeddedResource Include="Scripts\Script0184 - ALTER HealthTrackConsumption add consumed on.sql" />
+    <EmbeddedResource Include="Scripts\Script0183 - UPDATE ConsumptionNotificationManagement - import last modified info.sql" />
+    <EmbeddedResource Include="Scripts\Script0182 - ALTER HealthTrackConsumption View use ConsumptionNotificationManagement modifed info.sql" />
+    <EmbeddedResource Include="Scripts\Script0180 - ALTER ConsumptionNotificationManagement audit info.sql" />
+    <EmbeddedResource Include="Scripts\Script0179 - INSERT ConsumptionNotificationManagement manage consumptions.sql" />
+    <EmbeddedResource Include="Scripts\Script0178 - RECREATE HealthTrackConsumption View for ProcessingStatus.sql" />
+    <EmbeddedResource Include="Scripts\Script0175 - ALTER ConsumptionNotificationManagement add processing fields.sql" />
+    <EmbeddedResource Include="Scripts\Script0176 - CREATE UnmanagedConsumptions View.sql" />
+    <EmbeddedResource Include="Scripts\Script0177 - Added reason to stock deduction.sql" />
+    <EmbeddedResource Include="Scripts\Script0174 - Create StockDeductionReasons.sql" />
+    <EmbeddedResource Include="Scripts\Script0173 - UPDATE DeductionSource change Overriden to HealthTrack.sql" />
+    <EmbeddedResource Include="Scripts\Script0172 - ALTER ConsumptionNotificationManagement add Overridden.sql" />
+    <EmbeddedResource Include="Scripts\Script0171 - REMOVE Stock Takes Enabled setting.sql" />
+    <EmbeddedResource Include="Scripts\Script0170 - UPDATE DashboardNotification change area to Products.sql" />
+    <EmbeddedResource Include="Scripts\Script0169 - RECREATE VIEW HealthTrackProductMapping.sql" />
+    <EmbeddedResource Include="Scripts\Script0168 - UPDATE DashboardNotifications - Disable MissingStockTakes.sql" />
+    <EmbeddedResource Include="Scripts\Script0167 - UPDATE DashboardNotifications - Replace Uncontrolled Products with NoStockTakeConsumptions.sql" />
+    <EmbeddedResource Include="Scripts\Script0166 - CREATE VIEW HealthTrackProductMapping.sql" />
+    <EmbeddedResource Include="Scripts\Script0165 - UPDATE DashboardNotifications - Add ProductIssues.sql" />
+    <EmbeddedResource Include="Scripts\Script0164 - ALTER StockTakeItem remove upn and make productId compulsary.sql" />
+    <EmbeddedResource Include="Scripts\Script0163 - ALTER ProductsWithConsumptionForExpor exclude delted products.sql" />
+    <EmbeddedResource Include="Scripts\Script0162 - ALTER ProductsWithConsumptionForExport.sql" />
+    <EmbeddedResource Include="Scripts\Script0161 - ALTER ProductImport add message field.sql" />
+    <EmbeddedResource Include="Scripts\Script0160 - ALTER ProductImportData ProcessedOn nullable.sql" />
+    <EmbeddedResource Include="Scripts\Script0159 - Create ProductImportGeneralLedgerCodes.sql" />
+    <EmbeddedResource Include="Scripts\Script0158 - Create ProductsWithConsumptionForExport View.sql" />
+    <EmbeddedResource Include="Scripts\Script0157 - ReorderSetting and ProductSettings for ProductImport.sql" />
+    <EmbeddedResource Include="Scripts\Script0156 - reporting fields for HealthTrackConsumptions.sql" />
+    <EmbeddedResource Include="Scripts\Script0155 - reporting fields for ConsumptionNotificationManagement.sql" />
+    <EmbeddedResource Include="Scripts\Script0154 - Update RequestInvoice name.sql" />
+    <EmbeddedResource Include="Scripts\Script0153 - Include HT patientid for no MRN in HealthTrackConsumptionView.sql" />
+    <EmbeddedResource Include="Scripts\Script0152 - Include RebateCode in HealthTrackConsumptionView.sql" />
+    <EmbeddedResource Include="Scripts\Script0151 - Create ContainerPaymentClass view.sql" />
+    <EmbeddedResource Include="Scripts\Script0150 - ConsumptionNotificationManagement link to OrderItem.sql" />
+    <EmbeddedResource Include="Scripts\Script0149 - Add RequestInvoice stock setting.sql" />
+    <EmbeddedResource Include="Scripts\Script0148 - Remove ReportConsumption.sql" />
+    <EmbeddedResource Include="Scripts\Script0147 - Create ConsumptionNotificationManagement.sql" />
+    <EmbeddedResource Include="Scripts\Script0146 - Create ExternalMappedProducts.sql" />
+    <EmbeddedResource Include="Scripts\Script0145 - ReportConsumption not nullable.sql" />
+    <EmbeddedResource Include="Scripts\Script0144 - Default atuo re-order setting.sql" />
+    <EmbeddedResource Include="Scripts\Script0143 - StockTake LocationId not nullable.sql" />
+    <EmbeddedResource Include="Scripts\Script0142 - Removing LastStockTakeId from Product.sql" />
+    <EmbeddedResource Include="Scripts\Script0141 - Rename StockDateDate to StockTakeDate.sql" />
+    <EmbeddedResource Include="Scripts\Script0140 - Add Stock Take Source.sql" />
+    <EmbeddedResource Include="Scripts\Script0139 - Add AutoReorder and ReportConsumption fields to product.sql" />
+    <EmbeddedResource Include="Scripts\Script0138 - Add location name to HealthTrackConsumption.sql" />
+    <EmbeddedResource Include="Scripts\Script0137 - Stock StoredAt not nullable.sql" />
+    <EmbeddedResource Include="Scripts\Script0136 - Add CatId to Extenal Mapped Product Categories view.sql" />
+    <EmbeddedResource Include="Scripts\Script0135 - Create Extenal Mapped Product Categories view.sql" />
+    <EmbeddedResource Include="Scripts\Script0134 - Create HealthTrackLocations View.sql" />
+    <EmbeddedResource Include="Scripts\Script0133 - Remove IsStockLocation from Location.sql" />
+    <EmbeddedResource Include="Scripts\Script0131 - Add LocationId to StockTake.sql" />
+    <EmbeddedResource Include="Scripts\Script0132 - Add StockLocationMapping table.sql" />
+    <EmbeddedResource Include="Scripts\Script0130 - Rename InitialStockCountId to LastStockTakeId.sql" />
+    <EmbeddedResource Include="Scripts\Script0129 - StockTakeItem StockLevel to nullable.sql" />
+    <EmbeddedResource Include="Scripts\Script0128 - Rename StokeTakeId.sql" />
+    <EmbeddedResource Include="Scripts\Script0127 - FK Ledger to LedgerTier and Remove TierType from GeneralLedger.sql" />
+    <EmbeddedResource Include="Scripts\Script0126 - Rename RequiresConsumptionDetails to RequiresPatientDetails.sql" />
+    <EmbeddedResource Include="Scripts\Script0125 - Add ProductID with FK to ProductImport and rename existing.sql" />
+    <EmbeddedResource Include="Scripts\Script0124 - ALTER ProductImportData with audit info.sql" />
+    <EmbeddedResource Include="Scripts\Script0123 - Update GeneralLedgerTier Data and Unique Indexes.sql" />
+    <EmbeddedResource Include="Scripts\Script0122 - Separate ledger type data.sql" />
+    <EmbeddedResource Include="Scripts\Script0120 - Add Ledger Type to General Ledger + rename TierType.sql" />
+    <EmbeddedResource Include="Scripts\Script0121 - Add GeneralLedgerType Table.sql" />
+    <EmbeddedResource Include="Scripts\Script0119 - Alter closure root views to exclude deleted.sql" />
+    <EmbeddedResource Include="Scripts\Script0118 - Remove Product Groups.sql" />
+    <EmbeddedResource Include="Scripts\Script0117 - Rename Product_Category and Rename UsePrimaryCategorySettings and remove primary category glc.sql" />
+    <EmbeddedResource Include="Scripts\Script0115 - Migrate categories and remove ParentId.sql" />
+    <EmbeddedResource Include="Scripts\Script0114 - CREATE Category Closure and Roots view.sql" />
+    <EmbeddedResource Include="Scripts\Script0113 - ALTER Order add LedgerId.sql" />
+    <EmbeddedResource Include="Scripts\Script0112 - REMOVE Category fields.sql" />
+    <EmbeddedResource Include="Scripts\Script0111 - ALTER Product add LedgerId.sql" />
+    <EmbeddedResource Include="Scripts\Script0109 - DROP Charge Account.sql" />
+    <EmbeddedResource Include="Scripts\Script0107 - CREATE General Ledger Closure Roots View.sql" />
+    <EmbeddedResource Include="Scripts\Script0104 - ALTER add audit to General Ledger.sql" />
+    <EmbeddedResource Include="Scripts\Script0102 - INSERT Default General Ledger Tiers.sql" />
+    <EmbeddedResource Include="Scripts\Script0101 - CREATE GeneralLedgerClosure and remove General Ledger ParentId.sql" />
+    <EmbeddedResource Include="Scripts\Script0116 - Add Lot Number to HealthTrackConsumption.sql" />
+    <EmbeddedResource Include="Scripts\Script0110 - UPDATE ClinicalConsumption to use HealthTrackConsumption .sql" />
+    <EmbeddedResource Include="Scripts\Script0108 - Fix ClinicalConsumption for stock deduction rename .sql" />
+    <EmbeddedResource Include="Scripts\Script0106 - Fix ConsumptionRequiringPaymentClass with Consumption to StockDeduction rename.sql" />
+    <EmbeddedResource Include="Scripts\Script0105 - Rename Consumption to StockDeduction.sql" />
+    <EmbeddedResource Include="Scripts\Script0103 - CREATE HealthTrackConsumption view.sql" />
+    <EmbeddedResource Include="Scripts\Script0100 - CREATE General Ledger.sql" />
+    <EmbeddedResource Include="Scripts\Script0096 - INSERT Default GLC properties.sql" />
+    <EmbeddedResource Include="Scripts\Script0099 - INSERT GLC settings.sql" />
+    <EmbeddedResource Include="Scripts\Script0098 - CREATE General Ledger Tier.sql" />
+    <EmbeddedResource Include="Scripts\Script0097 - CREATE GLC Setting.sql" />
+    <EmbeddedResource Include="Scripts\Script0095 - REMOVE CostCenter.sql" />
+    <EmbeddedResource Include="Scripts\Script0093 - CLEAR data for the big refactor.sql" />
+    <EmbeddedResource Include="Scripts\Script0094 - ALTER Charge Account.sql" />
+    <EmbeddedResource Include="Scripts\Script0092 - Remove IsSupplier.sql" />
+    <EmbeddedResource Include="Scripts\Script0091 - Rename ProductImportSet.sql" />
+    <EmbeddedResource Include="Scripts\Script0090 - Default ImportedOn for ProductImportSet.sql" />
+    <EmbeddedResource Include="Scripts\Script0089 - Add ProductsData field to store import data.sql" />
+    <EmbeddedResource Include="Scripts\Script0088 - Remove SurplusStock from StockTakeItem.sql" />
+    <EmbeddedResource Include="Scripts\Script0087 - Add StockTakeItemId to Stock.sql" />
+    <EmbeddedResource Include="Scripts\Script0086 - Correct invalid StockTakesEnabled values.sql" />
+    <EmbeddedResource Include="Scripts\Script0085 - Rename StockTakeItem SPC to UPN.sql" />
+    <EmbeddedResource Include="Scripts\Script0084 - Added initial stock take count to product.sql" />
+    <EmbeddedResource Include="Scripts\Script0083 - Add Notification type.sql" />
+    <EmbeddedResource Include="Scripts\Script0082 - Add Dashboard Notifications.sql" />
+    <EmbeddedResource Include="Scripts\Script0080 - Merge StockTakeItem and StockTakeAdjustment.sql" />
+    <EmbeddedResource Include="Scripts\Script0081 - Add StockTakesEnabled setting.sql" />
+    <EmbeddedResource Include="Scripts\Script0079 - Added StockTake submission tracking.sql" />
+    <EmbeddedResource Include="Scripts\Script0078 - Stock Write offs with multiple consumptions.sql" />
+    <EmbeddedResource Include="Scripts\Script0077 - Stock take adjustments.sql" />
+    <EmbeddedResource Include="Scripts\Script0076 - Modify uniqueness category uniqueness constraint and remove deleted bit.sql" />
+    <EmbeddedResource Include="Scripts\Script0075 - Add StockLevel to StockTake items.sql" />
+    <EmbeddedResource Include="Scripts\Script0074 - Add StockTake tables.sql" />
+    <EmbeddedResource Include="Scripts\Script0073 - Create ProductImport.sql" />
+    <EmbeddedResource Include="Scripts\Script0072 - Create ProductImportSet.sql" />
+    <EmbeddedResource Include="Scripts\Script0071 - Add Unclassified Category.sql" />
+    <EmbeddedResource Include="Scripts\Script0070 - Add UserPreference table.sql" />
+    <EmbeddedResource Include="Scripts\Script0069 - Add unorderable stock setting and assign to New Product category.sql" />
+    <EmbeddedResource Include="Scripts\Script0068 - Remove RecommendedOrder from views.sql" />
+    <EmbeddedResource Include="Scripts\Script0067 - Remove RecommendedOrder from Product.sql" />
+    <EmbeddedResource Include="Scripts\Script0066 - Recreate ConsumptionRequiredPaymentClass without OrderableUnits.sql" />
+    <EmbeddedResource Include="Scripts\Script0065 - Add last modified info to Consumption.sql" />
+    <EmbeddedResource Include="Scripts\Script0064 - Madatory PrimaryCategoryId.sql" />
+    <EmbeddedResource Include="Scripts\Script0063 - Remove InBulk from OrderItem.sql" />
+    <EmbeddedResource Include="Scripts\Script0062 - Remove MinBenefit MaxBenefit OrderableUnits.sql" />
+    <EmbeddedResource Include="Scripts\Script0060 - Add ConsumptionProcessingSize property.sql" />
+    <EmbeddedResource Include="Scripts\Script0059 - Enforce unique external product mapping.sql" />
+    <EmbeddedResource Include="Scripts\Script0058 - Add UsePrimaryCategoryGLC to Product.sql" />
+    <EmbeddedResource Include="Scripts\Script0057 - Add GLC to Category.sql" />
+    <EmbeddedResource Include="Scripts\Script0056 - Rename RecievedOn field in Stock.sql" />
+    <EmbeddedResource Include="Scripts\Script0055 - Add PrimaryCostCenterId property.sql" />
+    <EmbeddedResource Include="Scripts\Script0054 - Add Medicare Products.sql" />
+    <EmbeddedResource Include="Scripts\Script0053 - Adding Group table.sql" />
+    <EmbeddedResource Include="Scripts\Script0050 - Add Manufacturer table.sql" />
+    <EmbeddedResource Include="Scripts\Script0051 - Add MedicareCode to Supplier.sql" />
+    <EmbeddedResource Include="Scripts\Script0049 - Add UsePrimaryCategorySettings option to Product.sql" />
+    <EmbeddedResource Include="Scripts\Script0048 - Add one per order item Product Setting.sql" />
+    <EmbeddedResource Include="Scripts\Script0047 - Update PaymentClass consumption view to use product settings.sql" />
+    <EmbeddedResource Include="Scripts\Script0046 - Remove payment class requirement flag from category.sql" />
+    <EmbeddedResource Include="Scripts\Script0045 - Add ReceievedOn to OrderItem.sql" />
+    <EmbeddedResource Include="Scripts\Script0044 - Add primary charge account setting.sql" />
+    <EmbeddedResource Include="Scripts\Script0043 - Add charge account to order.sql" />
+    <EmbeddedResource Include="Scripts\Script0042 - Add deleted fields to Charge Account.sql" />
+    <EmbeddedResource Include="Scripts\Script0041 - Add Code to Cost Center.sql" />
+    <EmbeddedResource Include="Scripts\Script0040 - Add Charge Account.sql" />
+    <EmbeddedResource Include="Scripts\Script0039 - Add DefaultStockLocationId.sql" />
+    <EmbeddedResource Include="Scripts\Script0038 - Add Product Settings.sql" />
+    <EmbeddedResource Include="Scripts\Script0036 - Add MRN to ClinicalConsumption.sql" />
+    <EmbeddedResource Include="Scripts\Script0037 - Fix MRN in PatientContainerMRN.sql" />
+    <EmbeddedResource Include="Scripts\Script0035 - Add Inventory.PatientContainerMRN.sql" />
+    <EmbeddedResource Include="Scripts\Script0034 - Add Supplier table.sql" />
+    <EmbeddedResource Include="Scripts\Script0033 - StockRequest rename quantity and add ApprovedQuantity.sql" />
+    <EmbeddedResource Include="Scripts\Script0032 - Add PrimaryCategory to Product.sql" />
+    <EmbeddedResource Include="Scripts\Script0030 - Remove RequiresSerialNumber and RequiresBatchNumber from Product.sql" />
+    <EmbeddedResource Include="Scripts\Script0031 - Remove RequiresSerialNumber and RequiresBatchNumber from ConsumptionRequiringPaymentClass View.sql" />
+    <EmbeddedResource Include="Scripts\Script0029 - Remove PaymentClass from consumption.sql" />
+    <EmbeddedResource Include="Scripts\Script0028 - Drop ConsumptionBooking view.sql" />
+    <EmbeddedResource Include="Scripts\Script0027 - Create ConsumptionRequiringPaymentClass View.sql" />
+    <EmbeddedResource Include="Scripts\Script0026 - Set OrderItemSource Quantity to not nullable.sql" />
+    <EmbeddedResource Include="Scripts\Script0025 - PaymentClass checking view using Category.sql" />
+    <EmbeddedResource Include="Scripts\Script0024 - Remove OrderItemId from ProductStockRequest.sql" />
+    <EmbeddedResource Include="Scripts\Script0023 - Add Order Item Source table.sql" />
+    <EmbeddedResource Include="Scripts\Script0022 - Remove ConsumptionRequest link.sql" />
+    <EmbeddedResource Include="Scripts\Script0021 - Remove PayClassRequired.sql" />
+    <EmbeddedResource Include="Scripts\Script0020 - Add RequiresPaymentClass to Category.sql" />
+    <EmbeddedResource Include="Scripts\Script0061 - Add new product category.sql" />
+    <EmbeddedResource Include="Scripts\Script0018 - Unique category name.sql" />
+    <EmbeddedResource Include="Scripts\Script0017- Add type to category.sql" />
+    <EmbeddedResource Include="Scripts\Script0016 - Add identity primary key to Stock Set Item.sql" />
+    <EmbeddedResource Include="Scripts\Script0015 - Add Description and GLC to Cost Center.sql" />
+    <EmbeddedResource Include="Scripts\Script0014 - Create ConsumptionBooking.sql" />
+    <EmbeddedResource Include="Scripts\Script0013 - Add FK from ProductStockRequest to Location.sql" />
+    <EmbeddedResource Include="Scripts\Script0012 - Add Primary Price property.sql" />
+    <EmbeddedResource Include="Scripts\Script0011 - PayClassRequired Property.sql" />
+    <EmbeddedResource Include="Scripts\Script0010 - ProductStockRequest LastModified.sql" />
+    <EmbeddedResource Include="Scripts\Script0008 - Default CreatedOn for Consumption.sql" />
+    <EmbeddedResource Include="Scripts\Script0009 - Orders DeletedOn DeletedBy.sql" />
+    <EmbeddedResource Include="Scripts\Script0007 - Link ProductStockRequest to OrderItem.sql" />
+    <EmbeddedResource Include="Scripts\Script0006 - Link Order Item to Stock.sql" />
+    <EmbeddedResource Include="Scripts\Script0005 - ALTER_OrderItem_Status.sql" />
+    <EmbeddedResource Include="Scripts\Script0004 - Order LastModified.sql" />
+    <EmbeddedResource Include="Scripts\Script0003 - Create clinical consumption view.sql" />
+    <EmbeddedResource Include="Scripts\Script0002 - Initial config for tax rate and price.sql" />
+    <EmbeddedResource Include="Scripts\Script0001 - CREATE_Inventory_Schema.sql" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+    <Content Include="HMS.HealthTrack.Web.Migrator.nuspec" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <ItemGroup>
+    <ConnectionStringMaster Include="../Build/connectionStrings.config" />
+  </ItemGroup>
+  <Target Name="CopyConnectionStrings" BeforeTargets="Build" Inputs="@(ConnectionStringMaster)" Outputs="@(ConnectionStringMaster->'%(Filename)%(Extension)')">
+    <Copy SourceFiles="@(ConnectionStringMaster)" DestinationFolder="$(OutDir)" />
+  </Target>
+  <Import Project="..\packages\OctoPack.3.4.1\tools\OctoPack.targets" Condition="Exists('..\packages\OctoPack.3.4.1\tools\OctoPack.targets')" />
+  <Target Name="EnsureOctoPackImported" BeforeTargets="BeforeBuild" Condition="'$(OctoPackImported)' == ''">
+    <Error Condition="!Exists('..\packages\OctoPack.3.4.1\tools\OctoPack.targets') And ('$(RunOctoPack)' != '' And $(RunOctoPack))" Text="You are trying to build with OctoPack, but the NuGet targets file that OctoPack depends on is not available on this computer. This is probably because the OctoPack package has not been committed to source control, or NuGet Package Restore is not enabled. Please enable NuGet Package Restore to download them. For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\packages\OctoPack.3.4.1\tools\OctoPack.targets') And ('$(RunOctoPack)' != '' And $(RunOctoPack))" Text="OctoPack cannot be run because NuGet packages were restored prior to the build running, and the targets file was unavailable when the build started. Please build the project again to include these packages in the build. You may also need to make sure that your build server does not delete packages prior to each build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

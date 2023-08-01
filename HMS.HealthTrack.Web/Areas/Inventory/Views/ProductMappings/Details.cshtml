@@ -1,0 +1,182 @@
+﻿@using HMS.HealthTrack.Web.Areas.Inventory.Models.Shared
+@using Kendo.Mvc.UI
+@model HMS.HealthTrack.Web.Areas.Inventory.Models.ProductMappings.MappingDetails
+
+@{
+   ViewBag.Title = "Details";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Cargo 2 Help.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>External product mapping details</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div>
+   @(Html.Kendo().TabStrip()
+        .Name("tabstrip")
+        .Items(items =>
+        {
+           items.Add().Text("Details").Selected(true)
+              .Content(@<text>
+                           <br />
+                           <div class="row">
+                              <div class="col-md-3">
+                                 <dl class="dl-horizontal">
+
+                                    <dt>
+                                       @Html.DisplayNameFor(model => model.Overview.SPC)
+                                    </dt>
+
+                                    <dd>
+                                       @Html.DisplayFor(model => model.Overview.SPC)
+                                    </dd>
+                                    <dt>
+                                       @Html.DisplayNameFor(model => model.ExternalProductMapping.ProductSource)
+                                    </dt>
+
+                                    <dd>
+                                       @Html.DisplayFor(model => model.ExternalProductMapping.ProductSource)
+                                    </dd>
+
+                                 </dl>
+                              </div>
+                           </div>
+                           <div class="row">
+                              <div class="col-md-5">
+                                 <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                       <h3 class="panel-title">External product</h3>
+                                    </div>
+                                    <div class="panel-body">
+
+                                       <dl class="dl-horizontal">
+                                          <dt>
+                                             @Html.DisplayNameFor(model => model.ExternalProductMapping.ExternalProductId)
+                                          </dt>
+
+                                          <dd>
+                                             @Html.DisplayFor(model => model.ExternalProductMapping.ExternalProductId)
+                                          </dd>
+                                          <dt>
+                                             @Html.DisplayNameFor(model => model.Overview.ExternalDescription)
+                                          </dt>
+
+                                          <dd>
+                                             @Html.DisplayFor(model => model.Overview.ExternalDescription)
+                                          </dd>
+                                       </dl>
+                                    </div>
+                                 </div>
+                              </div>
+                              <div class="col-md-1 glyphicon glyphicon-arrow-right text-center"></div>
+                              <div class="col-md-5">
+                                 <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                       <h3 class="panel-title">Internal Product</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                       <dl class="dl-horizontal">
+                                          <dt>
+                                             @Html.DisplayNameFor(model => model.ExternalProductMapping.InventoryProductId)
+                                          </dt>
+
+                                          <dd>
+                                             @Html.DisplayFor(model => model.ExternalProductMapping.InventoryProductId)
+                                          </dd>
+                                          <dt>
+                                             @Html.DisplayNameFor(model => model.Overview.InternalDescription)
+                                          </dt>
+
+                                          <dd>
+                                             @Html.DisplayFor(model => model.Overview.InternalDescription)
+                                          </dd>
+                                       </dl>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </text>);
+           items.Add().Text("History").Content(@<text>
+                                                   <br/>
+                                                   <div class="row">
+                                                      <dl class="dl-horizontal">
+                                                         @if (Model.ExternalProductMapping.DeletedOn.HasValue)
+                                                         {
+                                                            <dt>
+                                                               @Html.DisplayNameFor(model => model.ExternalProductMapping.DeletedOn)
+                                                            </dt>
+
+                                                            <dd>
+                                                               @Html.DisplayFor(model => model.ExternalProductMapping.DeletedOn)
+                                                            </dd>
+
+                                                            <dt>
+                                                               @Html.DisplayNameFor(model => model.ExternalProductMapping.DeletedBy)
+                                                            </dt>
+
+                                                            <dd>
+                                                               @Html.DisplayFor(model => model.ExternalProductMapping.DeletedBy)
+                                                            </dd>
+                                                         }
+                                                         @if (Model.ExternalProductMapping.LastModifiedOn.HasValue)
+                                                         {
+                                                            <dt>
+                                                               @Html.DisplayNameFor(model => model.ExternalProductMapping.LastModifiedOn)
+                                                            </dt>
+
+                                                            <dd>
+                                                               @Html.DisplayFor(model => model.ExternalProductMapping.LastModifiedOn)
+                                                            </dd>
+
+                                                            <dt>
+                                                               @Html.DisplayNameFor(model => model.ExternalProductMapping.LastModifiedBy)
+                                                            </dt>
+
+                                                            <dd>
+                                                               @Html.DisplayFor(model => model.ExternalProductMapping.LastModifiedBy)
+                                                            </dd>
+                                                         }
+                                                         <dt>
+                                                            @Html.DisplayNameFor(model => model.ExternalProductMapping.CreatedOn)
+                                                         </dt>
+
+                                                         <dd>
+                                                            @Html.DisplayFor(model => model.ExternalProductMapping.CreatedOn)
+                                                         </dd>
+
+                                                         <dt>
+                                                            @Html.DisplayNameFor(model => model.ExternalProductMapping.CreatedBy)
+                                                         </dt>
+
+                                                         <dd>
+                                                            @Html.DisplayFor(model => model.ExternalProductMapping.CreatedBy)
+                                                         </dd>
+                                                      </dl>
+                                                   </div>
+                                                </text>);
+        }))
+</div>
+<div class="row" style="padding-top:1em;">
+   <div class="col-sm-12">
+      <a class="k-button" href="@Url.Action("Index")">Back to list</a>
+      <a class="k-button" id="Delete">Delete</a>
+      <a class="k-button k-primary" href="@Url.Action("Edit", "ProductMappings", new {id = Model.ExternalProductMapping.ProductMappingId})">Edit</a>
+   </div>
+</div>
+
+@{
+   Html.RenderPartial("_DeletePrompt", new DeletePromptModel
+   {
+      Controller = "ProductMappings",
+      Description = Model.Overview.SPC,
+      Id = Model.ExternalProductMapping.ProductMappingId
+   });
+}

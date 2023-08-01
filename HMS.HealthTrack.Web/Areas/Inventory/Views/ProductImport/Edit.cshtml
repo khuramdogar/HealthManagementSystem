@@ -1,0 +1,545 @@
+﻿@using HMS.HealthTrack.Web.Data.Model.Inventory
+@using HMS.HealthTrack.Web.Areas.Inventory.Models.ProductImport
+@using Kendo.Mvc.UI
+@model ProductImportModel
+@{
+   ViewBag.Title = "Product imports";
+}
+
+<div class="row">
+   <div class="col-xs-2 col-md-2 logo-big">
+      <img src="~/Content/images/Icons/72x72/Spreadsheet 1 Add.png" class="img-responsive" />
+   </div>
+   <div class="col-xs-6 col-md-6 col-lg-10 content-title">
+      <div class="row">
+         <div class="col-sm-12">
+            <h2>Edit product for import</h2>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div id="alertPlaceholder"></div>
+@using (Html.BeginForm("Edit", "ProductImport"))
+{
+   @Html.AntiForgeryToken()
+   @Html.HiddenFor(m => m.ProductImportDataId)
+   @Html.HiddenFor(m => m.ProductImportId)
+   @Html.HiddenFor(m => m.ProductId)
+   @Html.HiddenFor(m => m.ValidGlc)
+
+   <div class="form-horizontal">
+      @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+      
+      <div class="form-group">
+         <div class="col-sm-3 control-label">
+            @Html.LabelFor(model => model.InternalProductId)
+         </div>
+         <div class="col-sm-3">
+            @Html.Kendo().TextBoxFor(model => model.InternalProductId).HtmlAttributes(new {@class = "page-input"})
+            @Html.ValidationMessageFor(model => model.InternalProductId, "", new {@class = "text-danger"})
+         </div>
+      </div>
+
+      <div class="form-group">
+         <div class="col-sm-3 control-label">
+            @Html.LabelFor(model => model.Description)
+         </div>
+         <div class="col-sm-3">
+            @Html.Kendo().TextBoxFor(model => model.Description).HtmlAttributes(new {@class = "page-input"})
+            @Html.ValidationMessageFor(model => model.Description, "", new {@class = "text-danger"})
+         </div>
+      </div>      
+
+      <div class="form-group">
+         <div class="col-sm-3 control-label">
+            @Html.LabelFor(model => model.Notes)
+         </div>
+         <div class="col-sm-3">
+            @Html.Kendo().TextBoxFor(model => model.Notes).HtmlAttributes(new {@class = "page-input"})
+            @Html.ValidationMessageFor(model => model.Notes, "", new {@class = "text-danger"})
+         </div>
+      </div>      
+      
+      <div class="form-group">
+         <div class="col-sm-3 control-label">
+            @Html.LabelFor(model => model.SPC)
+         </div>
+         <div class="col-sm-3">
+            @Html.Kendo().TextBoxFor(model => model.SPC).HtmlAttributes(new {@class = "page-input"})
+            @Html.ValidationMessageFor(model => model.SPC, "", new {@class = "text-danger"})
+         </div>
+      </div>
+
+      <div class="form-group">
+         <div class="col-sm-3 control-label">
+            @Html.LabelFor(model => model.UPN)
+         </div>
+         <div class="col-sm-3">
+            @Html.Kendo().TextBoxFor(model => model.UPN).HtmlAttributes(new {@class = "page-input"})
+            @Html.ValidationMessageFor(model => model.UPN, "", new {@class = "text-danger"})
+         </div>
+      </div>
+      
+      <div class="form-group">
+         <div class="col-sm-3 control-label">
+            @Html.LabelFor(model => model.LPC)
+         </div>
+         <div class="col-sm-3">
+            @Html.Kendo().TextBoxFor(model => model.LPC).HtmlAttributes(new {@class = "page-input"})
+            @Html.ValidationMessageFor(model => model.LPC, "", new {@class = "text-danger"})
+         </div>
+      </div>
+      @Html.HiddenFor(m => m.LedgerId)
+      
+      @*commented out because this reflects the better implementation which will need to be used in the future to cater for a change in the names/number of general ledger codes*@
+
+      @*@{
+         foreach (var tierCodeModel in Model.TierCodeModels)
+         {
+            <div class="form-group">
+               @Html.Label(tierCodeModel.Name, new {@class = "control-label col-md-2"})
+               <div class="col-sm-3">
+                  @(Html.Kendo().ComboBox().Name("LedgerCode_" + tierCodeModel.Tier)
+              .AutoBind(true)
+              .CascadeFrom("LedgerCode_" + (tierCodeModel.Tier - 1))
+               .DataSource(ds => ds.Read(read => read.Action("SearchProductLedgers", "GeneralLedger").Data("filterLedgers("+ tierCodeModel.Tier +")")).ServerFiltering(true))
+              .DataTextField("Text").DataValueField("Value")
+              .Events(events => events.Cascade("onCascade"))
+              .Filter(FilterType.Contains)
+              .HtmlAttributes(new {TierNumber = tierCodeModel.Tier, @class="LedgerCodeCombo"})
+              .Text(tierCodeModel.Code).Value(tierCodeModel.LedgerId != null ? tierCodeModel.LedgerId.ToString() : string.Empty)
+                  )
+               </div>
+            </div>
+         }
+      }*@
+      <div class="form-group" >
+         <div class="col-sm-3 control-label">
+            @Html.Label("General ledger code")
+         </div>
+         <div class="col-md-3" id="glcInvalidError" style="display: none;">
+            <span class="text-danger">Unable to match spreadsheet values to a unique general ledger code. Please choose from the options below.</span>
+         </div>
+      </div>
+      <div class="form-group">
+         <div class="col-sm-3 control-label">
+            @Html.Label("Account code")
+         </div>
+         <div class="col-sm-3">
+            @(Html.Kendo().DropDownList().Name("Account")
+                 .AutoBind(true)
+                 .DataSource(ds => ds.Read(read => read.Action("SearchProductLedgers", "GeneralLedger", new {tier = 1})).ServerFiltering(true))
+                 .DataTextField("Text").DataValueField("Value")
+                 .Events(events => events.DataBound("onAccountDataBound").Cascade("onLedgerCascade"))
+                 .Filter(FilterType.Contains)
+                 .HtmlAttributes(new {@class = "page-input"})
+                 .OptionLabel(" ")
+                 )
+            <span class="glc-validation text-warning" id="AccountValidation"></span>
+         </div>
+      </div>
+      
+      <div class="form-group">
+         <div class="col-sm-3 control-label">
+            @Html.Label("Sub account code")
+         </div>
+         <div class="col-sm-3">
+            @(Html.Kendo().DropDownList().Name("SubAccount")
+                 .AutoBind(false)
+                 .CascadeFrom("Account")
+                 .DataSource(ds => ds.Read(read => read.Action("SearchProductLedgers", "GeneralLedger", new {tier = 2}).Data("filterSubAccounts")).ServerFiltering(true))
+                 .DataTextField("Text").DataValueField("Value")
+                 .Enable(false).Events(events => events.DataBound("onSubAccountDataBound").Cascade("onLedgerCascade"))
+                 .Filter(FilterType.Contains)
+                 .HtmlAttributes(new {@class = "page-input"})
+                 .OptionLabel(" ")
+                 )
+            <span class="glc-validation text-warning" id="SubAccountValidation"></span>
+         </div>
+      </div>
+      
+      <div class="form-group">
+         <div class="col-sm-3 control-label">
+            @Html.Label("Product code")
+         </div>
+         <div class="col-sm-3">
+            @(Html.Kendo().DropDownList().Name("ProductGLC")
+                 .AutoBind(true)
+                 .CascadeFrom("SubAccount")
+                 .DataSource(ds => ds.Read(read => read.Action("SearchProductLedgers", "GeneralLedger", new {tier = 3}).Data("filterProductGLCs")).ServerFiltering(true))
+                 .DataTextField("Text").DataValueField("Value")
+                 .Enable(false).Events(events => events.DataBound("onProductGLCDataBound").Cascade("onLedgerCascade"))
+                 .Filter(FilterType.Contains)
+                 .HtmlAttributes(new {@class = "page-input"})
+                 .OptionLabel(" ")
+                 )
+            <span class="glc-validation text-warning" id="ProductGLCValidation"></span>
+         </div>
+      </div>
+
+      <script>
+         function filterSubAccounts() {
+            return {
+               parentId: $('#Account').val(),
+            }
+         }
+
+         function filterProductGLCs() {
+            return {
+               parentId: $('#SubAccount').val(),
+            }
+         }
+      </script>
+      
+      <div class="form-group">
+         <div class="col-sm-3 control-label">
+            @Html.LabelFor(model => model.Supplier)
+         </div>
+         <div class="col-sm-3">
+            @Html.Kendo().TextBoxFor(model => model.Supplier).HtmlAttributes(new {@class = "page-input"})
+            @(Html.Kendo().DropDownListFor(m => m.SupplierId)
+                 .DataSource(ds => ds.Read(read => read.Action("GetSuppliers", "Suppliers")).ServerFiltering(true))
+                 .DataTextField("Text").DataValueField("Value")
+                 .Events(e => e.Select("onSupplierSelect"))
+                 .Filter(FilterType.Contains)
+                 .HtmlAttributes(new {@class = "page-input", @style = "display:none;"})
+                 .OptionLabel(" "))
+         </div>
+         <div class="col-sm-1 pull-left no-padding-left">
+            <a class="k-button" id="ToggleSupplier">Browse</a>
+         </div>
+         @Html.ValidationMessageFor(model => model.Supplier, "", new {@class = "text-danger"})
+      </div>
+      
+      <div class="form-group">
+         <div class="col-sm-3 control-label">
+            
+            @Html.LabelFor(model => model.MinimumOrder)
+         </div>
+         <div class="col-sm-3">
+            @Html.Kendo().TextBoxFor(model => model.MinimumOrder).HtmlAttributes(new {@class = "page-input"})
+            @Html.ValidationMessageFor(model => model.MinimumOrder, "", new {@class = "text-danger"})
+         </div>
+      </div>
+      
+      <div class="form-group">
+         <div class="col-sm-3 control-label">
+            @Html.LabelFor(model => model.OrderMultiple)
+         </div>
+         <div class="col-sm-3">
+            @Html.Kendo().TextBoxFor(model => model.OrderMultiple).HtmlAttributes(new {@class = "page-input"})
+            @Html.ValidationMessageFor(model => model.OrderMultiple, "", new {@class = "text-danger"})
+         </div>
+      </div>
+      
+      <div class="form-group">
+         <div class="col-sm-3 control-label">
+            @Html.LabelFor(model => model.ReorderThreshold)
+         </div>
+         <div class="col-sm-3">
+            @Html.Kendo().TextBoxFor(model => model.ReorderThreshold).HtmlAttributes(new {@class = "page-input"})
+            @Html.ValidationMessageFor(model => model.ReorderThreshold, "", new {@class = "text-danger"})
+         </div>
+      </div>
+      
+      <div class="form-group">
+         <div class="col-sm-3 control-label">
+            @Html.LabelFor(model => model.TargetStockLevel)
+         </div>
+         <div class="col-sm-3">
+            @Html.Kendo().TextBoxFor(model => model.TargetStockLevel).HtmlAttributes(new {@class = "page-input"})
+            @Html.ValidationMessageFor(model => model.TargetStockLevel, "", new {@class = "text-danger"})
+         </div>
+      </div>
+
+      <div class="form-group">
+         <div class="col-sm-3 control-label">
+            @Html.LabelFor(model => model.PublicUnitPrice)
+         </div>
+         <div class="col-sm-3">
+            @Html.Kendo().TextBoxFor(model => model.PublicUnitPrice).HtmlAttributes(new {@class = "page-input"})
+            @Html.ValidationMessageFor(model => model.PublicUnitPrice, "", new {@class = "text-danger"})
+         </div>
+      </div>
+
+      <div class="form-group">
+         <div class="col-sm-3 control-label">
+            @Html.LabelFor(model => model.PrivateUnitPrice)
+         </div>
+         <div class="col-sm-3">
+            @Html.Kendo().TextBoxFor(model => model.PrivateUnitPrice).HtmlAttributes(new {@class = "page-input"})
+            @Html.ValidationMessageFor(model => model.PrivateUnitPrice, "", new {@class = "text-danger"})
+         </div>
+      </div>
+      
+      <div class="form-group">
+         <div class="col-sm-3 control-label">
+            @Html.LabelFor(model => model.Consignment)
+         </div>
+         <div class="col-sm-3">
+            @Html.Kendo().TextBoxFor(model => model.Consignment).HtmlAttributes(new {@class = "page-input"})
+            @Html.ValidationMessageFor(model => model.Consignment, "", new {@class = "text-danger"})
+         </div>
+      </div>
+      
+      <div class="form-group">
+         <div class="col-sm-3 control-label">
+            @Html.LabelFor(model => model.Sterile)
+         </div>
+         <div class="col-sm-3">
+            @Html.Kendo().TextBoxFor(model => model.Sterile).HtmlAttributes(new {@class = "page-input"})
+            @Html.ValidationMessageFor(model => model.Sterile, "", new {@class = "text-danger"})
+         </div>
+      </div>
+      <div class="form-group">
+         <div class="col-sm-3 control-label">
+            @Html.LabelFor(model => model.AutoReorderSetting)
+         </div>
+         <div class="col-sm-3">
+            @Html.Kendo().TextBoxFor(model => model.AutoReorderSetting).HtmlAttributes(new {@class = "page-input"})
+            @(Html.Kendo().DropDownList()
+                 .Name("ReorderSettingDropDown")
+                 .DataSource(ds => ds.Read("GetAllAsText", "ReorderSettings"))
+                 .DataTextField("Text").DataValueField("Value")
+                 .Events(events => events.Change("onReorderSettingDropDownChange"))
+                 .HtmlAttributes(new {@class = "page-input"})
+                 )
+         </div>
+         <div class="col-sm-1 no-padding-left">
+            <a class="k-button" id="ToggleReorderSetting">Browse</a>
+            @Html.ValidationMessageFor(model => model.AutoReorderSetting, "", new {@class = "text-danger"})
+         </div>
+      </div>
+      <div class="form-group">
+         <div class="col-sm-3 control-label">
+            @Html.LabelFor(model => model.UseCategorySettings)
+         </div>
+         <div class="col-sm-3">
+            @Html.Kendo().TextBoxFor(model => model.UseCategorySettings).HtmlAttributes(new {@class = "page-input"})
+            @Html.ValidationMessageFor(model => model.UseCategorySettings, "", new {@class = "text-danger"})
+         </div>
+      </div>
+      <div class="form-group">
+         <div class="col-sm-3 control-label">
+            @Html.LabelFor(model => model.ProductSettings)
+         </div>
+         <div class="col-sm-3">
+            @Html.Kendo().TextBoxFor(model => model.ProductSettings).HtmlAttributes(new {@class = "page-input"})
+            @(Html.Kendo().MultiSelect().Name("ProductSettingsMultiSelect")
+                 .DataSource(ds => ds.Read("GetAllUserReadable", "ProductSettings"))
+                 .DataTextField("Text").DataValueField("Value")
+                 .Events(events => events.Change("onProductsettingsMultiSelectChange"))
+                 .HtmlAttributes(new {@class = "page-input"})
+                 )
+         </div>
+         <div class="col-sm-1">
+            <a class="k-button" id="ToggleProductSettings">Browse</a>
+         </div>
+         @Html.ValidationMessageFor(model => model.ProductSettings, "", new {@class = "text-danger"})
+      </div>
+      <div class="form-group">
+         <br />
+         <div class="col-md-3">
+            <a class="k-button" href="@Url.Action("Products", new {id = @Model.ProductImportDataId})">Cancel</a>
+            <button type="submit" class="k-button k-primary">Save</button>
+         </div>
+      </div>
+   </div>
+}
+<div id="ledgerTreeWindow"></div>
+
+@section Scripts {
+   @Scripts.Render("~/bundles/jqueryval")
+   <script src="~/Scripts/jquery.validate.js"></script>
+   <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+   <script src="~/Scripts/Inventory.js"></script>
+   <script src="~/Scripts/kendoGridFilter.js"></script>
+   <script type="text/javascript">
+      var validGlc = '@Model.ValidGlc';
+      $(document).ready(function() {
+
+         if ('@Model.Message' != '') {
+            getAlert('danger', '@Model.Message');
+         }
+         // manually correct breadcrumb
+         var invalidBreadcrumb = $('a[href="/Inventory/ProductImport/Products/@Model.ProductImportId"]');
+         invalidBreadcrumb.attr('href', "/Inventory/ProductImport/Products/@Model.ProductImportDataId");
+
+         $('#BrowseLedgers').click(function() {
+            $('#ledgerTreeWindow').data('kendoWindow').center().open();
+         });
+
+         if ('@Model.ValidGlc' == 'False') {
+            $('#AccountValidation').text('Spreadsheet value: ' + '@Model.TierCodeModels[0].Code');
+            $('#SubAccountValidation').text('Spreadsheet value: ' + '@Model.TierCodeModels[1].Code');
+            $('ProductGLCValidation').text('Spreadsheet value: ' + '@Model.TierCodeModels[2].Code');
+            $('#glcInvalidError').show();
+         }
+         // trigger remote validation
+         $('form').validate().element('#SupplierId');
+         $('form').validate().element('#AutoReorderSetting');
+         $('form').validate().element('#ProductSettings');
+
+         if ("@Model.ProductId" != "") {
+            $('#InternalProductId').prop('readonly', 'readonly');
+         }
+
+         if ("@Model.SupplierId" != "") {
+            $('#ToggleSupplier').hide();
+         }
+
+         if ("@Model.SupplierId" == "") {
+            $('#SupplierId').data('kendoDropDownList').wrapper.hide();
+         } else {
+            $('#Supplier').hide();
+         }
+
+         var reorderSettingDropDown = $('#ReorderSettingDropDown').data('kendoDropDownList');
+         reorderSettingDropDown.wrapper.hide();
+         $('#ToggleReorderSetting').click(function() {
+            $('#AutoReorderSetting').hide();
+            reorderSettingDropDown.wrapper.show();
+            $('#ToggleReorderSetting').hide();
+            $('#AutoReorderSetting').val($('#ReorderSettingDropDown').val());
+         });
+
+         var productSettingsMultiSelect = $('#ProductSettingsMultiSelect').data('kendoMultiSelect');
+         productSettingsMultiSelect.wrapper.hide();
+         $('#ToggleProductSettings').click(function() {
+            $('#ProductSettings').hide();
+            productSettingsMultiSelect.wrapper.show();
+            $('#ToggleProductSettings').hide();
+            $('#ProductSettings').val('');
+         });
+
+         $('#ToggleSupplier').on('click', function() {
+            $('#Supplier').hide();
+            $('#SupplierId').data('kendoDropDownList').wrapper.show();
+            $('#ToggleSupplier').hide();
+         });
+
+         $('form').submit(function(e) {
+            if ($('#LedgerId').val() == '') {
+               e.preventDefault();
+            }
+         });
+      });
+
+      function onSupplierSelect(e) {
+         $('#Supplier').val(e.item.text());
+      }
+
+      function onReorderSettingDropDownChange(e) {
+         $('#AutoReorderSetting').val($('#ReorderSettingDropDown').val());
+      }
+
+      function onProductsettingsMultiSelectChange(e) {
+         var settings = [], settingsString;
+         var selectedSettings = $('#ProductSettingsMultiSelect').val();
+         if (selectedSettings != null && selectedSettings.length > 0) {
+            $.each(selectedSettings, function(index, value) {
+               settings.push(value);
+            });
+            settingsString = settings.join();
+         } else {
+            settingsString = "";
+         }
+
+         $('#ProductSettings').val(settingsString);
+      }
+
+      function onAccountDataBound(e) {
+         validateLedgerCodeSection('Account', '@Model.TierCodeModels[0].Code', '@Model.TierCodeModels[0].LedgerId');
+      }
+
+      function onSubAccountDataBound(e) {
+         validateLedgerCodeSection('SubAccount', '@Model.TierCodeModels[1].Code', '@Model.TierCodeModels[1].LedgerId');
+      }
+
+      function onProductGLCDataBound(e) {
+         validateLedgerCodeSection('ProductGLC', '@Model.TierCodeModels[2].Code', '@Model.TierCodeModels[2].LedgerId');
+      }
+
+      function validateLedgerCodeSection(controlName, originalCode, codeModelLedgerId) {
+         var dropDownList = $('#' + controlName).data('kendoDropDownList');
+
+         if (codeModelLedgerId != '' && dropDownList.select() == 0) {
+            dropDownList.select(function(dataItem) {
+               return dataItem.Value === codeModelLedgerId;
+            });
+         }
+
+         var validationText = $('#' + controlName + 'Validation');
+         if (codeModelLedgerId == '' && originalCode != '') {
+            $(validationText).text('The code ' + originalCode + ' did not uniquely match a known code. Please select one from the list.');
+            $(validationText).removeClass('text-warning');
+            if (!validationText.hasClass('text-danger')) {
+               validationText.addClass('text-danger');
+            }
+         } else if (originalCode != '') {
+            setGlcOriginalValueMessage(validationText, originalCode);
+         }
+      }
+
+      function setGlcOriginalValueMessage(validationText, originalCode) {
+         validationText.text('The original code value is ' + originalCode);
+         validationText.removeClass('text-danger');
+         if (!validationText.hasClass('text-warning')) {
+            validationText.addClass('text-warning');
+         }
+      }
+
+      function onLedgerCascade(e) {
+         var accountGlc = $('#Account').data('kendoDropDownList').value();
+         var subAccountGlc = $('#SubAccount').data('kendoDropDownList').value();
+         var productGlc = $('#ProductGLC').data('kendoDropDownList').value();
+
+         if (productGlc != "") {
+            $('#LedgerId').val(productGlc);
+            // if code is not blank and ledger is blank then change to warning text otherwise danger text
+         } else if (subAccountGlc != "") {
+            $('#LedgerId').val(subAccountGlc);
+         } else if (accountGlc != "") {
+            $('#LedgerId').val(accountGlc);
+         } else {
+            $('#LedgerId').val("");
+         }
+      }
+
+   </script>
+}
+
+<style>
+   .dl-horizontal:after, .wrapper:after {
+      content: "";
+      display: block;
+      clear: both;
+      height: 0;
+      visibility: hidden;
+   }
+
+   #tabstrip {
+      margin-bottom: 20px;
+      margin-top: 20px;
+   }
+
+   .windowRow {
+      padding-bottom: 5px;
+      padding-top: 5px;
+   }
+
+   .windowButtons {
+      border-style: solid;
+      border-width: 1px 0 0;
+      bottom: -1em;
+      clear: both;
+      padding: .6em;
+      position: relative;
+      text-align: right;
+   }
+
+   .k-grid-content { height: 90%; }
+
+
+</style>

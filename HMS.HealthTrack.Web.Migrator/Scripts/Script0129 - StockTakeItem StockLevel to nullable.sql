@@ -1,0 +1,8 @@
+BEGIN TRANSACTION
+GO
+
+ALTER TABLE Inventory.StockTakeItem
+ALTER COLUMN StockLevel int NULL
+GO
+
+COMMIT

@@ -1,0 +1,144 @@
+﻿@model HMS.HealthTrack.Web.Areas.Inventory.Models.Consumptions.ConsumptionDetailsViewModel
+
+@{
+   Layout = null;
+}
+
+<div>
+   <dl class="dl-horizontal">
+      <dt>
+         @Html.DisplayNameFor(model => model.UsedId)
+      </dt>
+      <dd>
+         @Html.DisplayFor(model => model.UsedId)
+      </dd>
+
+      <dt>
+         @Html.DisplayNameFor(model => model.SerialNumber)
+      </dt>
+      <dd>
+         @Html.DisplayFor(model => model.SerialNumber)
+      </dd>
+
+      <dt>
+         @Html.DisplayNameFor(model => model.LotNumber)
+      </dt>
+
+      <dd>
+         @Html.DisplayFor(model => model.LotNumber)
+      </dd>
+      
+      <dt>
+         @Html.DisplayNameFor(model => model.ConsumedOn)
+      </dt>
+
+      <dd>
+         @Html.DisplayFor(model => model.ConsumedOn)
+      </dd>
+
+      <dt>
+         @Html.DisplayNameFor(model => model.Location)
+      </dt>
+
+      <dd>
+         @Html.DisplayFor(model => model.LocationName)
+      </dd>
+   
+      @if (Model.deletionDate.HasValue)
+      {
+         <dt>
+            @Html.DisplayNameFor(model => model.deletionDate)
+         </dt>
+
+         <dd>
+            @Html.DisplayFor(model => model.deletionDate)
+         </dd>
+
+         <dt>
+            @Html.DisplayNameFor(model => model.deletionUser)
+         </dt>
+
+         <dd>
+            @Html.DisplayFor(model => model.deletionUser)
+         </dd>
+         
+      }
+      <dt>
+         @Html.DisplayNameFor(model => model.Quantity)
+      </dt>
+
+      <dd>
+         @Html.DisplayFor(model => model.Quantity)
+      </dd>
+      
+      <dt>
+         @Html.DisplayNameFor(model => model.ContainerId)
+      </dt>
+
+      <dd>
+         @Html.DisplayFor(model => model.ContainerId)
+      </dd>
+      
+      <dt>
+         @Html.DisplayNameFor(model => model.ProductId)
+      </dt>
+      <dd>
+         @Html.DisplayFor(model => model.ProductId)
+      </dd>
+
+      
+      <dt>
+         @Html.DisplayNameFor(model => model.ProcessingStatus)
+      </dt>
+
+      <dd>
+         @Html.DisplayFor(model => model.ProcessingStatus)
+      </dd>
+      
+      <dt>
+         @Html.DisplayNameFor(model => model.dateCreated)
+      </dt>
+
+      <dd>
+         @Html.DisplayFor(model => model.dateCreated)
+      </dd>
+
+      @if (!string.IsNullOrWhiteSpace(Model.userCreated))
+      {
+         <dt>
+            @Html.DisplayNameFor(model => model.userCreated)
+         </dt>
+
+         <dd>
+            @Html.DisplayFor(model => model.userCreated)
+         </dd>
+      }
+      
+      <dt>
+         @Html.DisplayNameFor(model => model.LastModifiedBy)
+      </dt>
+
+      <dd>
+         @Html.DisplayFor(model => model.LastModifiedBy)
+      </dd>
+
+      <dt>
+         @Html.DisplayNameFor(model => model.LastModifiedOn)
+      </dt>
+
+      <dd>
+         @Html.DisplayFor(model => model.LastModifiedOn)
+      </dd>
+
+      @if (Model.InventoryProductId.HasValue)
+      {
+         <dt>
+            @Html.DisplayNameFor(model => model.InventoryProductId)
+         </dt>
+         <dd>
+            <a href="@Url.Action("Details", "Products")/@Model.InventoryProductId">@Html.DisplayFor(model => model.InventoryProductDescription)</a>
+         </dd>
+      }
+   </dl>
+
+</div>

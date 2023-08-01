@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="6c602ad4eb1a4e93bc348271b8d6659f" Name="Diagram1">
+        <EntityTypeShape EntityType="HealthTrackSecurity.HealthTrackAuthorisation" Width="2.25" PointX="4.875" PointY="4.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="HealthTrackSecurity.HealthTrackPermission" Width="2.25" PointX="4.875" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="HealthTrackSecurity.HealthTrackUser" Width="2.625" PointX="8" PointY="0.5" IsExpanded="true" />
+        <AssociationConnector Association="HealthTrackSecurity.HealthTrackPermissionHealthTrackAuthorisation" />
+        <EntityTypeShape EntityType="HealthTrackSecurity.HealthTrackGroup" Width="1.5" PointX="0.875" PointY="2.875" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
